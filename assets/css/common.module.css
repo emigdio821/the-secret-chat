@@ -1,0 +1,30 @@
+.text-blinking {
+  margin-left: 6px;
+  font-weight: bolder;
+  animation: blinking 0.5s alternate infinite;
+}
+
+.ghost-animation {
+  animation: ghost 2s alternate infinite;
+}
+
+@keyframes blinking {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ghost {
+  0% {
+    transform: rotate(40deg);
+  }
+
+  30%,
+  100% {
+    transform: rotate(0);
+  }
+}

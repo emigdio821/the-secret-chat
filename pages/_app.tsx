@@ -1,8 +1,15 @@
-import '../styles/globals.css'
+/* eslint-disable react/jsx-props-no-spreading */
+import theme from 'lib/theme'
 import type { AppProps } from 'next/app'
+import { ChakraProvider } from '@chakra-ui/react'
+import { SessionProvider } from 'next-auth/react'
 
-function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+export default function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <SessionProvider session={pageProps.session}>
+      <ChakraProvider theme={theme}>
+        <Component {...pageProps} />
+      </ChakraProvider>
+    </SessionProvider>
+  )
 }
-
-export default MyApp
