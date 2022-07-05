@@ -48,9 +48,14 @@ export default function ProfileMenu() {
             </VStack>
           ) : (
             <Stack alignItems="center" direction="row">
-              <Avatar w={6} h={6} src={user.image || ''} />
+              <Avatar
+                size="xs"
+                bg="gray.900"
+                src={user.image || ''}
+                name={user.name || ''}
+              />
               {user.name && (
-                <Text display={{ base: 'none', sm: 'inherit' }}>
+                <Text noOfLines={1} display={{ base: 'none ', sm: 'inherit' }}>
                   {user?.name?.split(' ')[0]}
                 </Text>
               )}
