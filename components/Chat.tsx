@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Box,
   Text,
@@ -9,28 +9,25 @@ import {
   FormControl,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { Client, Conversation as Conver, Message } from '@twilio/conversations'
-import { BiGhost, BiLogOut } from 'react-icons/bi'
+import { useGlobalContext } from 'context/global'
+import { BiGhost, BiLogOut, BiUserPlus } from 'react-icons/bi'
 import { sendMessage, leaveRoom, getMessages } from 'lib/chat'
+import { Message } from '@twilio/conversations'
+import actions from 'context/globalActions'
 import ChatBubble from './ChatBubble'
 
-interface ChatProps {
-  client: Client
-  conversation: Conver
-  callback: Dispatch<SetStateAction<Conver | undefined>>
-}
-
 function ScrollBottom({ messages }: { messages: Message[] }) {
-  const elementRef = React.useRef<HTMLDivElement>(null)
+  const elementRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     elementRef?.current?.scrollIntoView()
   }, [messages])
   return <div ref={elementRef} />
 }
 
-export default function Chat({ client, conversation, callback }: ChatProps) {
-  const [messages, setMessages] = React.useState<Message[]>([])
-  const [message, setMessage] = React.useState('')
+export default function Chat() {
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState<Message[]>([])
+  const { dispatch, client, conversation } = useGlobalContext()
 
   async function handleSendMessage(e: React.FormEvent) {
     e.preventDefault()
@@ -41,14 +38,18 @@ export default function Chat({ client, conversation, callback }: ChatProps) {
   async function handleLeaveRoom() {
     const status = await leaveRoom(conversation)
     if (status) {
-      callback(undefined)
+      dispatch({
+        type: actions.removeConversation,
+      })
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function getMsgs() {
-      const msg = await getMessages(conversation)
-      setMessages(msg.items)
+      const msgs = await getMessages(conversation)
+      if (msgs) {
+        setMessages(msgs.items)
+      }
     }
 
     if (conversation.status === 'joined') {
@@ -60,16 +61,29 @@ export default function Chat({ client, conversation, callback }: ChatProps) {
     })
 
     return () => {
-      client?.removeAllListeners()
+      client.removeAllListeners()
     }
   }, [conversation, client])
 
   return (
     <>
-      <Heading my={10}>Room: {conversation.friendlyName}</Heading>
-      <Button onClick={() => handleLeaveRoom()} leftIcon={<BiLogOut />}>
-        Leave room
-      </Button>
+      <Heading mb={10} noOfLines={2}>
+        {conversation.friendlyName}
+      </Heading>
+      <Stack direction="row" justifyContent="space-between">
+        <Button
+          // onClick={() => handleAddUser}
+          leftIcon={<BiUserPlus size={22} />}
+        >
+          Add user
+        </Button>
+        <Button
+          onClick={() => handleLeaveRoom()}
+          leftIcon={<BiLogOut size={22} />}
+        >
+          Leave room
+        </Button>
+      </Stack>
       <Box
         p={6}
         mt={6}
@@ -101,7 +115,7 @@ export default function Chat({ client, conversation, callback }: ChatProps) {
             <FormControl isRequired>
               <Input
                 value={message}
-                placeholder="Message..."
+                placeholder="Message"
                 focusBorderColor="#B2ABCC"
                 onChange={(e) => setMessage(e.target.value)}
               />

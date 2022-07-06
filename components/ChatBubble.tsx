@@ -1,55 +1,57 @@
+import formatDate from 'utils'
 import { useSession } from 'next-auth/react'
 import { Message } from '@twilio/conversations'
-import { Avatar, Stack, useColorModeValue, Text } from '@chakra-ui/react'
+import { Avatar, Stack, useColorModeValue, Text, Box } from '@chakra-ui/react'
 
 interface ChatBubbleProps {
   message: Message
 }
 
 export default function ChatBubble({ message }: ChatBubbleProps) {
-  const { author, body } = message
+  const { author, body, dateCreated } = message
   const mainMsgBg = useColorModeValue('gray.300', '#141414')
   const secondaryMsgBg = useColorModeValue('gray.100', '#202020')
-
   const { data: session } = useSession()
+  const currentUser = session?.user?.email || ''
+  const userImg = session?.user?.image || ''
+  const isAuthor = author === currentUser
 
-  if (author === session?.user?.email) {
-    return (
-      <Stack py={1} spacing={2} alignItems="center" direction="row-reverse">
-        <Avatar
-          size="xs"
-          bg="gray.700"
-          name={author || ''}
-          src={session?.user?.image || ''}
-        />
-        <Stack
-          p={2}
-          minW={100}
-          maxW={350}
-          spacing={2}
-          bg={mainMsgBg}
-          borderRadius="md"
-        >
-          <Text>{body}</Text>
-        </Stack>
-      </Stack>
-    )
-  }
   return (
-    <Stack py={1} spacing={2} direction="row" alignItems="center">
-      <Avatar size="xs" bg="gray.700" name={author || ''} />
+    <Stack
+      py={2}
+      spacing={2}
+      alignItems="center"
+      direction={isAuthor ? 'row-reverse' : 'row'}
+    >
+      <Avatar
+        size="xs"
+        bg="gray.700"
+        name={author || ''}
+        src={isAuthor ? userImg : ''}
+      />
       <Stack
         p={2}
+        px={4}
         minW={100}
-        maxW={350}
-        spacing={2}
+        maxW={400}
+        spacing={4}
+        boxShadow="xl"
+        bg={isAuthor ? mainMsgBg : secondaryMsgBg}
         borderRadius="md"
-        bg={secondaryMsgBg}
       >
         <Text>{body}</Text>
-        <Text fontSize={10} opacity={0.5}>
-          {author}
-        </Text>
+        <Box>
+          {dateCreated && (
+            <Text fontSize={10} opacity={0.35}>
+              {formatDate(dateCreated)}
+            </Text>
+          )}
+          {!isAuthor && (
+            <Text fontSize={10} opacity={0.4}>
+              {author}
+            </Text>
+          )}
+        </Box>
       </Stack>
     </Stack>
   )

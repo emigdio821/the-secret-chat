@@ -5,3 +5,9 @@ export interface Session {
     image: string
   }
 }
+
+export interface ModalCallbackProps {
+  inputVal: string
+  onClose: () => void
+  setInputVal: (val: string) => void
+}

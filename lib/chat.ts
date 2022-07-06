@@ -1,4 +1,4 @@
-import { Conversation, Paginator, Message } from '@twilio/conversations'
+import { Conversation } from '@twilio/conversations'
 
 interface SendMessageProps {
   message: string
@@ -41,9 +41,7 @@ export async function addParticipant(
   }
 }
 
-export async function getMessages(
-  conversation: Conversation,
-): Promise<Paginator<Message>> {
-  const messages = await conversation.getMessages(30)
+export async function getMessages(conversation: Conversation) {
+  const messages = await conversation.getMessages()
   return messages
 }
