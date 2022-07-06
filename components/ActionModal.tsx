@@ -71,6 +71,7 @@ export default function ActionModal({
                   size="md"
                   value={inputVal}
                   placeholder="Room name"
+                  focusBorderColor="#B2ABCC"
                   onChange={(e: OnChangeType) => setInputVal(e.target.value)}
                 />
                 {error && (

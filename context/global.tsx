@@ -13,19 +13,22 @@ interface CtxInterface {
   conversation: Conversation
 }
 
-const GlobalContext = createContext<CtxInterface | null>(null)
+const GlobalContext = createContext<CtxInterface>(null as any)
 const useGlobalContext = () => useContext(GlobalContext)
 
 function GlobalProvider({ children }: Provider) {
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const [state, dispatch] = useReducer<React.Reducer<any, any>>(
+    reducer,
+    initialState,
+  )
   const { client, conversation, error } = state
-  const providerValue: CtxInterface = useMemo(
+  const providerValue = useMemo(
     () => ({ client, conversation, error, dispatch }),
     [client, conversation, error],
   )
 
   return (
-    <GlobalContext.Provider value={providerValue}>
+    <GlobalContext.Provider value={providerValue as CtxInterface}>
       {children}
     </GlobalContext.Provider>
   )
