@@ -1,13 +1,15 @@
 import { Participant as Part } from '@twilio/conversations'
-import { Box, Stack, Heading, useColorModeValue } from '@chakra-ui/react'
+import { Box, Stack, Heading, useColorModeValue, Text } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
 import Participant from './Participant'
+import MotionDiv from './MotionDiv'
 
 export default function Participants() {
   const mainBg = useColorModeValue('#E8E8E8', '#272727')
-  const { conversation } = useGlobalContext()
+  const { conversation, client } = useGlobalContext()
+  const [partiJoined, setPartiJoined] = useState<Part>()
+  const [partiLeft, setPartiLeft] = useState<Part>()
   const [participants, setParticipants] = useState<Part[]>([])
 
   useEffect(() => {
@@ -16,10 +18,37 @@ export default function Participants() {
       setParticipants(parts)
     }
 
+    client.on('participantJoined', (participant) => {
+      getParticipants()
+      setPartiJoined(participant)
+    })
+
+    client.on('participantLeft', (participant) => {
+      getParticipants()
+      setPartiLeft(participant)
+    })
+
     if (conversation) {
       getParticipants()
     }
-  }, [conversation])
+
+    let timeOut: any
+    if (partiJoined || partiLeft) {
+      timeOut = setTimeout(() => {
+        setPartiJoined(undefined)
+        setPartiLeft(undefined)
+      }, 3000)
+    }
+
+    return () => {
+      if (timeOut) {
+        clearTimeout(timeOut)
+      }
+      if (client) {
+        client.removeAllListeners()
+      }
+    }
+  }, [conversation, client, partiJoined, partiLeft])
 
   return (
     <Stack spacing={0} w={{ base: '100%', sm: 200 }}>
@@ -27,13 +56,29 @@ export default function Participants() {
         py={2}
         zIndex={1}
         bg={mainBg}
+        alignItems={{ base: 'center', sm: 'flex-start' }}
         borderTopEndRadius="md"
         borderTopLeftRadius="md"
-        height={{ base: undefined, sm: '40px' }}
+        direction={{ base: 'row', sm: 'column' }}
+        // maxHeight={{ base: undefined, sm: '100px' }}
       >
         <Heading px={4} size="md">
           Participants
         </Heading>
+        {partiJoined && (
+          <MotionDiv>
+            <Text fontSize="xs" px={4}>
+              {partiJoined.identity} joined
+            </Text>
+          </MotionDiv>
+        )}
+        {partiLeft && (
+          <MotionDiv>
+            <Text fontSize="xs" px={4}>
+              {partiLeft.identity} left
+            </Text>
+          </MotionDiv>
+        )}
       </Stack>
       <Box
         px={4}
@@ -46,17 +91,13 @@ export default function Participants() {
         height={{ base: undefined, sm: 'calc(100% - 40px)' }}
       >
         {participants.length > 0 && (
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            initial={{ opacity: 0, y: -10 }}
-          >
+          <MotionDiv>
             <Stack direction={{ base: 'row', sm: 'column' }}>
               {participants.map((part: Part) => (
                 <Participant key={part.sid} participant={part} />
               ))}
             </Stack>
-          </motion.div>
+          </MotionDiv>
         )}
       </Box>
     </Stack>

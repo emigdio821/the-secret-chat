@@ -1,9 +1,9 @@
 import {
-  Text,
   Modal,
   Stack,
   Input,
   Button,
+  Spinner,
   ModalBody,
   ModalHeader,
   FormControl,
@@ -11,18 +11,18 @@ import {
   ModalOverlay,
   useDisclosure,
   useColorModeValue,
-  Spinner,
 } from '@chakra-ui/react'
 import { SetStateAction, useState } from 'react'
 import { BiGhost, BiRightArrowAlt } from 'react-icons/bi'
 import { useGlobalContext } from 'context/global'
 import actions from 'context/globalActions'
 import { ModalCallbackProps } from 'types/index'
-import { motion } from 'framer-motion'
+import AlertError from './AlertError'
 
 interface ActionModalProps {
   btnLabel: string
   headerTitle: string
+  inputLabel?: string
   BtnIcon?: React.ElementType
   action: ({ inputVal, onClose, setInputVal }: ModalCallbackProps) => void
 }
@@ -36,10 +36,21 @@ export default function ActionModal({
   BtnIcon,
   btnLabel,
   headerTitle,
+  inputLabel = 'Room name',
 }: ActionModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { dispatch, error, isLoading } = useGlobalContext()
   const [inputVal, setInputVal] = useState<string>('')
+
+  function handleOpenModal() {
+    setInputVal('')
+    if (error) {
+      dispatch({
+        type: actions.removeError,
+      })
+    }
+    onOpen()
+  }
 
   function handleCloseModal() {
     setInputVal('')
@@ -60,7 +71,7 @@ export default function ActionModal({
     <>
       <Modal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={() => handleCloseModal()}
         closeOnOverlayClick={false}
         motionPreset="slideInBottom"
       >
@@ -71,27 +82,17 @@ export default function ActionModal({
             <form onSubmit={handleFormSubmit}>
               <FormControl isRequired>
                 <Input
+                  mb={4}
                   size="md"
                   value={inputVal}
                   disabled={isLoading}
-                  placeholder="Room name"
+                  placeholder={inputLabel}
                   focusBorderColor="#B2ABCC"
                   onChange={(e: OnChangeType) => setInputVal(e.target.value)}
                 />
-                {error && (
-                  <motion.div
-                    key={error}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                    initial={{ opacity: 0, y: -10 }}
-                  >
-                    <Text color="#ff6961" fontSize="xs" pt={2}>
-                      {error}
-                    </Text>
-                  </motion.div>
-                )}
+                {error && <AlertError error={error} />}
               </FormControl>
-              <Stack direction="row-reverse" my={4}>
+              <Stack direction="row-reverse" mb={2} mt={4}>
                 <Button
                   size="sm"
                   type="submit"
@@ -125,7 +126,8 @@ export default function ActionModal({
       </Modal>
       <Button
         mr={2}
-        onClick={onOpen}
+        size="sm"
+        onClick={() => handleOpenModal()}
         leftIcon={BtnIcon ? <BtnIcon size={22} /> : undefined}
       >
         {headerTitle}

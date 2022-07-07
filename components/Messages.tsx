@@ -19,11 +19,20 @@ function ScrollBottom({ messages }: MessagesProps) {
 
 export default function Messages({ messages }: MessagesProps) {
   const mainBg = useColorModeValue('#E8E8E8', '#272727')
+  const msgsPresent = messages.length > 0
 
   return (
-    <Box p={6} w="100%" bg={mainBg} overflowY="auto" borderRadius="md">
+    <Stack
+      p={6}
+      w="100%"
+      bg={mainBg}
+      height="100%"
+      justify={msgsPresent ? 'inherit' : 'center'}
+      overflowY="auto"
+      borderRadius="md"
+    >
       <Box>
-        {messages.length > 0 ? (
+        {msgsPresent ? (
           <>
             {messages.map((msg: Message) => (
               <motion.div
@@ -37,7 +46,7 @@ export default function Messages({ messages }: MessagesProps) {
             ))}
           </>
         ) : (
-          <Stack alignItems="center" justify="center" height={352}>
+          <Stack alignItems="center" justify="center">
             <BiGhost size={40} />
             <Text textAlign="center" fontWeight={600}>
               Boo!, there are no messages yet
@@ -46,6 +55,6 @@ export default function Messages({ messages }: MessagesProps) {
         )}
       </Box>
       <ScrollBottom messages={messages} />
-    </Box>
+    </Stack>
   )
 }

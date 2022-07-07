@@ -15,18 +15,7 @@ export async function sendMessage({ message, conversation }: SendMessageProps) {
 }
 
 export async function leaveRoom(conversation: Conversation) {
-  let status
-  try {
-    status = await conversation.leave()
-  } catch (error) {
-    status = error
-  }
-
-  return status
-
-  // if (conversation.status === 'joined') {
-  //   await conversation.leave()
-  // }
+  await conversation.leave()
 }
 
 export async function addParticipant(

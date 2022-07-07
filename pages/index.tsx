@@ -4,19 +4,20 @@ import createClient from 'lib/client'
 import getAccessToken from 'lib/user'
 import Helmet from 'components/Helmet'
 import { Heading } from '@chakra-ui/react'
+import { ModalCallbackProps, Session } from 'types'
 import actions from 'context/globalActions'
 import AppWrapper from 'components/AppWrapper'
 import ActionModal from 'components/ActionModal'
 import { useGlobalContext } from 'context/global'
-import { ModalCallbackProps } from 'types'
 import { BiMessageAltAdd, BiMessageAltDots } from 'react-icons/bi'
+import { getSession, GetSessionParams } from 'next-auth/react'
+import { Message } from '@twilio/conversations'
 
 const joinLbl = 'Join'
 const createLbl = 'Create'
 
-export default function Index() {
+export default function Index({ session }: { session: Session }) {
   const { dispatch, client, conversation } = useGlobalContext()
-
   const handleCreateChatRoom = async ({
     onClose,
     inputVal,
@@ -24,7 +25,7 @@ export default function Index() {
   }: ModalCallbackProps) => {
     setInputVal('')
     dispatch({
-      type: actions.addLoading,
+      type: actions.setLoading,
     })
     if (inputVal && client) {
       try {
@@ -56,9 +57,8 @@ export default function Index() {
     inputVal,
     setInputVal,
   }: ModalCallbackProps) => {
-    setInputVal('')
     dispatch({
-      type: actions.addLoading,
+      type: actions.setLoading,
     })
     if (inputVal && client) {
       try {
@@ -75,6 +75,7 @@ export default function Index() {
         })
       }
     }
+    setInputVal('')
     dispatch({
       type: actions.removeLoading,
     })
@@ -94,12 +95,30 @@ export default function Index() {
       initClient()
     }
 
+    if (client) {
+      client.on('tokenExpired', () => {
+        console.log('token expired!')
+        if (session) {
+          initClient()
+        }
+      })
+    }
+
+    if (conversation) {
+      conversation.on('messageAdded', (msg: Message) => {
+        dispatch({
+          type: actions.addMessage,
+          payload: msg,
+        })
+      })
+    }
+
     return () => {
       if (client) {
         client.removeAllListeners()
       }
     }
-  }, [client, dispatch])
+  }, [client, conversation, dispatch, session])
 
   return (
     <AppWrapper>
@@ -124,4 +143,14 @@ export default function Index() {
       {conversation && client && <Chat />}
     </AppWrapper>
   )
+}
+
+export async function getServerSideProps(ctx: GetSessionParams) {
+  const session = await getSession(ctx)
+
+  return {
+    props: {
+      session,
+    },
+  }
 }

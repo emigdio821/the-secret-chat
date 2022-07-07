@@ -1,31 +1,49 @@
-import { Client, Conversation } from '@twilio/conversations'
+import { Client, Conversation, Message } from '@twilio/conversations'
+import { InitialState as StateType, ActionPayload } from 'types'
 import actions from './globalActions'
 
 const initialState = {
   error: '',
-  client: null,
+  messages: [],
   isLoading: false,
+  client: undefined,
   conversation: undefined,
-}
+} as StateType
 
-interface State {
-  error: string
-  client: Client
-  isLoading: boolean
-  conversation: Conversation
-}
-
-interface Action {
-  type: string
-  payload: string
-}
-
-const reducer = (state: State, action: Action) => {
+const reducer = (state: StateType, action: ActionPayload): StateType => {
   switch (action.type) {
     case actions.addError:
       return {
         ...state,
-        error: action.payload,
+        error: action.payload as string,
+      }
+    case actions.addMessage: {
+      return {
+        ...state,
+        messages: [...state.messages, action.payload] as Message[],
+      }
+    }
+    case actions.removeMessages: {
+      return {
+        ...state,
+        messages: [],
+      }
+    }
+    case actions.addMessages:
+      return {
+        ...state,
+        messages: action.payload as Message[],
+      }
+
+    case actions.setLoading:
+      return {
+        ...state,
+        isLoading: true,
+      }
+    case actions.removeLoading:
+      return {
+        ...state,
+        isLoading: false,
       }
     case actions.removeError:
       return {
@@ -35,12 +53,12 @@ const reducer = (state: State, action: Action) => {
     case actions.addClient:
       return {
         ...state,
-        client: action.payload,
+        client: action.payload as Client,
       }
     case actions.addConversation:
       return {
         ...state,
-        conversation: action.payload,
+        conversation: action.payload as Conversation,
       }
     case actions.removeConversation:
       return {

@@ -25,9 +25,9 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
     >
       <Avatar
         size="xs"
-        bg="gray.700"
         name={author || ''}
         src={isAuthor ? userImg : ''}
+        bg={isAuthor ? 'gray.800' : 'gray.700'}
       />
       <Stack
         p={2}
@@ -36,8 +36,8 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
         maxW={400}
         spacing={4}
         boxShadow="xl"
-        bg={isAuthor ? mainMsgBg : secondaryMsgBg}
         borderRadius="md"
+        bg={isAuthor ? mainMsgBg : secondaryMsgBg}
       >
         <Text>{body}</Text>
         <Box>
