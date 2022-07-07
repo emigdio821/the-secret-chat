@@ -4,12 +4,14 @@ import actions from './globalActions'
 const initialState = {
   error: '',
   client: null,
+  isLoading: false,
   conversation: undefined,
 }
 
 interface State {
   error: string
   client: Client
+  isLoading: boolean
   conversation: Conversation
 }
 

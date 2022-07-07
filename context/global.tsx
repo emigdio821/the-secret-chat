@@ -7,10 +7,11 @@ interface Provider {
 }
 
 interface CtxInterface {
-  error: string | null
   client: Client
-  dispatch: React.Dispatch<any>
+  isLoading: boolean
+  error: string | null
   conversation: Conversation
+  dispatch: React.Dispatch<any>
 }
 
 const GlobalContext = createContext<CtxInterface>(null as any)
@@ -21,10 +22,10 @@ function GlobalProvider({ children }: Provider) {
     reducer,
     initialState,
   )
-  const { client, conversation, error } = state
+  const { client, conversation, error, isLoading } = state
   const providerValue = useMemo(
-    () => ({ client, conversation, error, dispatch }),
-    [client, conversation, error],
+    () => ({ client, conversation, error, dispatch, isLoading }),
+    [client, conversation, error, isLoading],
   )
 
   return (

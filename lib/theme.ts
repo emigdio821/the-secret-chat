@@ -5,7 +5,7 @@ import { Dict } from '@chakra-ui/utils'
 const styles = {
   global: (props: StyleFunctionProps | Dict<any>) => ({
     body: {
-      bg: mode('inherit', '#333')(props),
+      bg: mode('#f5f5f5', '#333')(props),
     },
   }),
 }

@@ -65,7 +65,7 @@ export default function ProfileMenu() {
         <MenuList
           px={2}
           boxShadow="xl"
-          bg={useColorModeValue('#fafafa', '#141414')}
+          bg={useColorModeValue('#E8E8E8', '#141414')}
         >
           <MenuGroup title={user?.name || undefined}>
             <MenuItem

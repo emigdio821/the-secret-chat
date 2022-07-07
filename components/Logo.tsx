@@ -1,6 +1,6 @@
 import { Flex, Heading } from '@chakra-ui/react'
 import { BiGhost } from 'react-icons/bi'
-import styles from 'assets/css/common.module.css'
+import styles from 'styles/common.module.css'
 
 interface LogoProps {
   bigSize?: boolean

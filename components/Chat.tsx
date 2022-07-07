@@ -1,28 +1,19 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Box,
-  Text,
   Input,
   Stack,
   Button,
   Heading,
   FormControl,
-  useColorModeValue,
 } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
-import { BiGhost, BiLogOut, BiUserPlus } from 'react-icons/bi'
+import { BiLogOut, BiUserPlus } from 'react-icons/bi'
 import { sendMessage, leaveRoom, getMessages } from 'lib/chat'
 import { Message } from '@twilio/conversations'
 import actions from 'context/globalActions'
-import ChatBubble from './ChatBubble'
-
-function ScrollBottom({ messages }: { messages: Message[] }) {
-  const elementRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    elementRef?.current?.scrollIntoView()
-  }, [messages])
-  return <div ref={elementRef} />
-}
+import Messages from './Messages'
+import Participants from './Participants'
 
 export default function Chat() {
   const [message, setMessage] = useState('')
@@ -67,7 +58,7 @@ export default function Chat() {
 
   return (
     <>
-      <Heading mb={10} noOfLines={2}>
+      <Heading mb={6} noOfLines={2}>
         {conversation.friendlyName}
       </Heading>
       <Stack direction="row" justifyContent="space-between">
@@ -84,31 +75,17 @@ export default function Chat() {
           Leave room
         </Button>
       </Stack>
-      <Box
-        p={6}
+      <Stack
         mt={6}
+        // spacing={0}
+        height={500}
+        direction={{ base: 'column', sm: 'row' }}
         minHeight={400}
-        overflowY="auto"
-        borderRadius="md"
         maxHeight="calc(100vh - 400px)"
-        bg={useColorModeValue('#fafafa', '#272727')}
       >
-        <Box>
-          {!messages || messages.length === 0 ? (
-            <Stack alignItems="center" justify="center" height={352}>
-              <BiGhost size={40} />
-              <Text fontWeight={600}>Boo!, there are no messages yet</Text>
-            </Stack>
-          ) : (
-            <>
-              {messages.map((msg: Message) => (
-                <ChatBubble key={msg.sid} message={msg} />
-              ))}
-            </>
-          )}
-        </Box>
-        <ScrollBottom messages={messages} />
-      </Box>
+        <Participants />
+        <Messages messages={messages} />
+      </Stack>
       <Box my={6}>
         <form onSubmit={handleSendMessage}>
           <Stack direction="row">

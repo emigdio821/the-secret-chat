@@ -4,34 +4,31 @@ import {
   Stack,
   Button,
   Center,
+  IconButton,
+  useColorMode,
   useColorModeValue,
-  // useColorMode,
-  // IconButton,
 } from '@chakra-ui/react'
 import Logo from 'components/Logo'
 import { signIn } from 'next-auth/react'
 import { FaGithub } from 'react-icons/fa'
-import darkBg from 'assets/images/dark-bg.svg'
-import lighBg from 'assets/images/light-bg.svg'
-// import { BiMoon, BiSun } from 'react-icons/bi'
+import { BiMoon, BiSun } from 'react-icons/bi'
 
 export default function Login() {
-  const loginBg = useColorModeValue(lighBg, darkBg)
   const btnBg = useColorModeValue('gray.900', 'gray.100')
   const btnColor = useColorModeValue('white', 'black')
   const btnHoverColor = useColorModeValue('gray.700', 'gray.200')
   const btnActiveColor = useColorModeValue('gray.900', 'gray.100')
-  // const { toggleColorMode } = useColorMode()
-  // const SwitchIcon = useColorModeValue(BiMoon, BiSun)
+  const { toggleColorMode } = useColorMode()
+  const SwitchIcon = useColorModeValue(BiMoon, BiSun)
 
   return (
-    <Center p={6} minH="100vh" bgImage={loginBg}>
+    <Center p={6} minH="100vh">
       <Box
         w="md"
         rounded="md"
-        boxShadow="2xl"
+        boxShadow="xl"
         overflow="hidden"
-        bg={useColorModeValue('#fafafa', '#333')}
+        bg={useColorModeValue('#E8E8E8', '#141414')}
       >
         <Box p={6}>
           <Stack spacing={0} align="center" mb={5}>
@@ -40,7 +37,7 @@ export default function Login() {
               Start chatting now
             </Text>
           </Stack>
-          <Stack align="center">
+          <Stack justifyContent="center" direction="row">
             <Button
               bg={btnBg}
               color={btnColor}
@@ -60,10 +57,10 @@ export default function Login() {
             >
               Log in with Github
             </Button>
-            {/* <IconButton
+            <IconButton
               bg={btnBg}
-              p="0 20px"
-              color={btnColor}
+              p={[0, 4]}
+              color={useColorModeValue('yellow.400', 'purple.800')}
               borderRadius="full"
               onClick={toggleColorMode}
               aria-label="Switch theme"
@@ -74,7 +71,7 @@ export default function Login() {
               _active={{
                 bg: btnActiveColor,
               }}
-            /> */}
+            />
           </Stack>
         </Box>
       </Box>
