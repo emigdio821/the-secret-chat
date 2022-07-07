@@ -45,7 +45,7 @@ export default function Login() {
               leftIcon={<FaGithub size={20} />}
               onClick={() =>
                 signIn('github', {
-                  callbackUrl: 'http://192.168.0.224:3000/',
+                  callbackUrl: '/',
                 })
               }
               _hover={{
