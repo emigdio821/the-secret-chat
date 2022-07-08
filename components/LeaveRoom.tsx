@@ -91,7 +91,7 @@ export default function LeaveRoom() {
                 ml={3}
                 size="sm"
                 colorScheme="red"
-                leftIcon={<BiLogOut size={16} />}
+                leftIcon={<BiLogOut />}
                 onClick={() => handleLeaveRoom()}
               >
                 Leave
@@ -102,10 +102,18 @@ export default function LeaveRoom() {
       </AlertDialog>
       <Button
         size="sm"
+        bg={useColorModeValue('#333', '#262626')}
+        color="#fafafa"
+        _hover={{
+          bg: '#444',
+        }}
+        _active={{
+          bg: '#333',
+        }}
+        leftIcon={<BiLogOut />}
         onClick={() => handleOpenModal()}
-        leftIcon={<BiLogOut size={22} />}
       >
-        Leave room
+        Leave
       </Button>
     </>
   )

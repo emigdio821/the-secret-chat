@@ -54,15 +54,13 @@ export default function Participants() {
     <Stack spacing={0} w={{ base: '100%', sm: 200 }}>
       <Stack
         py={2}
-        zIndex={1}
         bg={mainBg}
-        alignItems={{ base: 'center', sm: 'flex-start' }}
         borderTopEndRadius="md"
         borderTopLeftRadius="md"
         direction={{ base: 'row', sm: 'column' }}
-        // maxHeight={{ base: undefined, sm: '100px' }}
+        alignItems={{ base: 'center', sm: 'flex-start' }}
       >
-        <Heading px={4} size="md">
+        <Heading px={4} pt={2} size={{ base: 'xs', sm: 'sm' }}>
           Participants
         </Heading>
         {partiJoined && (
@@ -84,7 +82,7 @@ export default function Participants() {
         px={4}
         bg={mainBg}
         overflowY="auto"
-        py={{ base: 4, sm: 6 }}
+        py={{ base: 3, sm: 6 }}
         borderBottomEndRadius="md"
         borderBottomLeftRadius="md"
         display={{ base: 'flex', sm: 'inherit' }}

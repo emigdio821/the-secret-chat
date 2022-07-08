@@ -29,9 +29,11 @@ export default function ProfileMenu() {
     <Box>
       <Menu>
         <MenuButton
+          px={2}
           bg="#333"
+          size="sm"
           as={Button}
-          color="#fff"
+          color="#fafafa"
           disabled={!user}
           borderRadius="full"
           _hover={{
@@ -65,7 +67,7 @@ export default function ProfileMenu() {
         <MenuList
           px={2}
           boxShadow="xl"
-          bg={useColorModeValue('#E8E8E8', '#141414')}
+          bg={useColorModeValue('#fafafa', '#262626')}
         >
           <MenuGroup title={user?.name || undefined}>
             <MenuItem
@@ -95,7 +97,7 @@ export default function ProfileMenu() {
             }
             icon={<BiLogOut size={16} color="#ff6961 " />}
           >
-            <Text color="#ff6961">Logout</Text>
+            <Text color="#ff6961">Log out</Text>
           </MenuItem>
         </MenuList>
       </Menu>

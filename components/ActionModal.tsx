@@ -23,6 +23,7 @@ interface ActionModalProps {
   btnLabel: string
   headerTitle: string
   inputLabel?: string
+  mainBtnLbl?: string
   BtnIcon?: React.ElementType
   action: ({ inputVal, onClose, setInputVal }: ModalCallbackProps) => void
 }
@@ -36,6 +37,7 @@ export default function ActionModal({
   BtnIcon,
   btnLabel,
   headerTitle,
+  mainBtnLbl = headerTitle,
   inputLabel = 'Room name',
 }: ActionModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -96,10 +98,10 @@ export default function ActionModal({
                 <Button
                   size="sm"
                   type="submit"
-                  disabled={!inputVal}
+                  disabled={!inputVal || isLoading}
                   rightIcon={
                     !isLoading ? (
-                      <BiRightArrowAlt size={16} />
+                      <BiRightArrowAlt />
                     ) : (
                       <Spinner
                         size="sm"
@@ -110,7 +112,7 @@ export default function ActionModal({
                     )
                   }
                 >
-                  {!isLoading ? btnLabel : <BiGhost size={22} />}
+                  {!isLoading ? btnLabel : <BiGhost size={18} />}
                 </Button>
                 <Button
                   size="sm"
@@ -125,12 +127,19 @@ export default function ActionModal({
         </ModalContent>
       </Modal>
       <Button
-        mr={2}
         size="sm"
+        bg={useColorModeValue('#333', '#262626')}
+        color="#fafafa"
+        _hover={{
+          bg: '#444',
+        }}
+        _active={{
+          bg: '#333',
+        }}
         onClick={() => handleOpenModal()}
-        leftIcon={BtnIcon ? <BtnIcon size={22} /> : undefined}
+        leftIcon={BtnIcon ? <BtnIcon /> : undefined}
       >
-        {headerTitle}
+        {mainBtnLbl}
       </Button>
     </>
   )

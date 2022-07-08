@@ -41,20 +41,27 @@ export default function Chat() {
 
   return (
     <>
-      <Heading mb={6} noOfLines={2}>
-        {conversation.friendlyName}
-      </Heading>
-      <Stack direction="row" justifyContent="space-between" mb={6}>
-        <AddParticipant />
-        <LeaveRoom />
+      <Stack
+        mb={4}
+        align="center"
+        direction="row"
+        justifyContent="space-between"
+      >
+        <Heading size="lg" noOfLines={{ base: 2, sm: 1 }}>
+          {conversation.friendlyName}
+        </Heading>
+        <Stack alignItems="flex-end" direction={{ base: 'column', sm: 'row' }}>
+          <AddParticipant />
+          <LeaveRoom />
+        </Stack>
       </Stack>
       <Stack
         mt={6}
-        // spacing={0}
-        height={500}
+        minH={400}
+        spacing={2}
         direction={{ base: 'column', sm: 'row' }}
-        minHeight={400}
-        maxHeight="calc(100vh - 400px)"
+        h={{ base: 'calc(100vh - 252px)', sm: 'xl' }}
+        maxH={{ base: 'calc(100vh - 252px)', sm: 'xl' }}
       >
         <Participants />
         <Messages messages={messages} />

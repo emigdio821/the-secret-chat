@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { Box, Stack, Text, useColorModeValue } from '@chakra-ui/react'
+import { Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import { BiGhost } from 'react-icons/bi'
 import { Message } from '@twilio/conversations'
 import { motion } from 'framer-motion'
+import { useSession } from 'next-auth/react'
 import ChatBubble from './ChatBubble'
 
 interface MessagesProps {
@@ -12,7 +13,9 @@ interface MessagesProps {
 function ScrollBottom({ messages }: MessagesProps) {
   const elementRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    elementRef?.current?.scrollIntoView()
+    elementRef?.current?.scrollIntoView({
+      behavior: 'smooth',
+    })
   }, [messages])
   return <div ref={elementRef} />
 }
@@ -20,41 +23,46 @@ function ScrollBottom({ messages }: MessagesProps) {
 export default function Messages({ messages }: MessagesProps) {
   const mainBg = useColorModeValue('#E8E8E8', '#272727')
   const msgsPresent = messages.length > 0
+  const { data: session } = useSession()
+  const currentUser = session?.user?.email || ''
 
   return (
     <Stack
-      p={6}
+      py={6}
+      px={4}
       w="100%"
       bg={mainBg}
-      height="100%"
-      justify={msgsPresent ? 'inherit' : 'center'}
       overflowY="auto"
       borderRadius="md"
+      overflowX="hidden"
+      justify={msgsPresent ? undefined : 'center'}
+      h={{ base: 'calc(100vh - 252px)', sm: 'inherit' }}
     >
-      <Box>
-        {msgsPresent ? (
-          <>
-            {messages.map((msg: Message) => (
+      {msgsPresent ? (
+        <>
+          {messages.map((msg: Message) => {
+            const isAuthor = msg.author === currentUser
+            return (
               <motion.div
-                key={`${msg.sid}-${msg.dateCreated}-${msg.author}`}
-                animate={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                initial={{ opacity: 0.8, y: 10 }}
+                key={`${msg.sid}-${msg.dateCreated}`}
+                initial={{ opacity: 0, x: isAuthor ? 80 : -80 }}
               >
                 <ChatBubble message={msg} />
               </motion.div>
-            ))}
-          </>
-        ) : (
-          <Stack alignItems="center" justify="center">
-            <BiGhost size={40} />
-            <Text textAlign="center" fontWeight={600}>
-              Boo!, there are no messages yet
-            </Text>
-          </Stack>
-        )}
-      </Box>
-      <ScrollBottom messages={messages} />
+            )
+          })}
+          <ScrollBottom messages={messages} />
+        </>
+      ) : (
+        <Stack alignItems="center">
+          <BiGhost size={40} />
+          <Text textAlign="center" fontWeight={600}>
+            Boo!, there are no messages yet
+          </Text>
+        </Stack>
+      )}
     </Stack>
   )
 }

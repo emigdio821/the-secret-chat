@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { sendMessage } from 'lib/chat'
 import { useGlobalContext } from 'context/global'
-import { Box, Input, Stack, Button, FormControl } from '@chakra-ui/react'
+import { Box, Input, Stack, FormControl, IconButton } from '@chakra-ui/react'
+import { BiSend } from 'react-icons/bi'
 
 export default function ChatInput() {
   const [message, setMessage] = useState('')
@@ -14,7 +15,7 @@ export default function ChatInput() {
   }
 
   return (
-    <Box mt={6}>
+    <Box mt={2}>
       <form onSubmit={handleSendMessage}>
         <Stack direction="row">
           <FormControl isRequired>
@@ -25,9 +26,15 @@ export default function ChatInput() {
               onChange={(e) => setMessage(e.target.value)}
             />
           </FormControl>
-          <Button disabled={!message.trim()} type="submit">
+          <IconButton
+            type="submit"
+            colorScheme="purple"
+            icon={<BiSend />}
+            disabled={!message.trim()}
+            aria-label="Send"
+          >
             Send
-          </Button>
+          </IconButton>
         </Stack>
       </form>
     </Box>

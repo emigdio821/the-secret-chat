@@ -3,7 +3,7 @@ import Chat from 'components/Chat'
 import createClient from 'lib/client'
 import getAccessToken from 'lib/user'
 import Helmet from 'components/Helmet'
-import { Heading } from '@chakra-ui/react'
+import { Heading, Stack } from '@chakra-ui/react'
 import { ModalCallbackProps, Session } from 'types'
 import actions from 'context/globalActions'
 import AppWrapper from 'components/AppWrapper'
@@ -20,13 +20,14 @@ export default function Index({ session }: { session: Session }) {
   const { dispatch, client, conversation } = useGlobalContext()
   const handleCreateChatRoom = async ({
     onClose,
-    inputVal,
     setInputVal,
+    inputVal: inVal,
   }: ModalCallbackProps) => {
     setInputVal('')
     dispatch({
       type: actions.setLoading,
     })
+    const inputVal = inVal.trim()
     if (inputVal && client) {
       try {
         const conver = await client.createConversation({
@@ -43,7 +44,7 @@ export default function Index({ session }: { session: Session }) {
       } catch {
         dispatch({
           type: actions.addError,
-          payload: `Room "${inputVal}" already exists or something went wrong, try again`,
+          payload: 'Already exists or something went wrong, try again',
         })
       }
     }
@@ -71,7 +72,7 @@ export default function Index({ session }: { session: Session }) {
       } catch {
         dispatch({
           type: actions.addError,
-          payload: `Room "${inputVal}" doesn't exist or you don't have access to it`,
+          payload: 'Doesn\'t exist or you don\'t have access to it',
         })
       }
     }
@@ -97,6 +98,7 @@ export default function Index({ session }: { session: Session }) {
 
     if (client) {
       client.on('tokenExpired', () => {
+        // eslint-disable-next-line no-console
         console.log('token expired!')
         if (session) {
           initClient()
@@ -126,18 +128,20 @@ export default function Index({ session }: { session: Session }) {
       {!conversation && (
         <>
           <Heading mb={6}>Welcome</Heading>
-          <ActionModal
-            btnLabel={createLbl}
-            BtnIcon={BiMessageAltAdd}
-            action={handleCreateChatRoom}
-            headerTitle="Create chat room"
-          />
-          <ActionModal
-            btnLabel={joinLbl}
-            BtnIcon={BiMessageAltDots}
-            action={handleJoinChatRoom}
-            headerTitle="Join to a chat room"
-          />
+          <Stack direction={{ base: 'column', sm: 'row' }}>
+            <ActionModal
+              btnLabel={createLbl}
+              BtnIcon={BiMessageAltAdd}
+              action={handleCreateChatRoom}
+              headerTitle="Create chat room"
+            />
+            <ActionModal
+              btnLabel={joinLbl}
+              BtnIcon={BiMessageAltDots}
+              action={handleJoinChatRoom}
+              headerTitle="Join to a chat room"
+            />
+          </Stack>
         </>
       )}
       {conversation && client && <Chat />}

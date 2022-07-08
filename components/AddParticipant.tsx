@@ -8,15 +8,16 @@ export default function AddParticipant() {
   const { dispatch, conversation, client } = useGlobalContext()
   const handleAddParticipant = async ({
     onClose,
-    inputVal,
     setInputVal,
+    inputVal: inVal,
   }: ModalCallbackProps) => {
     dispatch({
       type: actions.setLoading,
     })
+    const inputVal = inVal.trim()
     if (inputVal && client) {
       try {
-        await conversation.add(inputVal)
+        await conversation.add(inputVal.trim())
         onClose()
       } catch {
         dispatch({
@@ -34,6 +35,7 @@ export default function AddParticipant() {
   return (
     <ActionModal
       btnLabel="Add"
+      mainBtnLbl="Add"
       BtnIcon={BiUserPlus}
       inputLabel="Participant name"
       action={handleAddParticipant}

@@ -19,7 +19,6 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
   return (
     <Stack
       py={2}
-      spacing={2}
       alignItems="center"
       direction={isAuthor ? 'row-reverse' : 'row'}
     >
