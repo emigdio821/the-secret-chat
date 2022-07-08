@@ -7,8 +7,8 @@ interface DynamicHeadProps {
 }
 
 export default function DynamicHead({
-  title = 'TheScretetChat',
-  description = 'TheScretetChat is a simple secret chat app',
+  title = 'TheSecretChat',
+  description = 'TheSecretChat is a simple secret chat app',
 }: DynamicHeadProps) {
   return (
     <Head>
