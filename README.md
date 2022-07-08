@@ -1,5 +1,18 @@
 ## TheSecretChat
 
+### Create an .env file
+
+```
+GITHUB_ID=
+JWT_SECRET=
+NEXTAUTH_URL=
+GITHUB_SECRET=
+TWILIO_API_KEY=
+TWILIO_API_SECRET=
+TWILIO_ACCOUNT_SID=
+TWILIO_SERVICE_SID=
+```
+
 #### Install the dependencies
 ```bash
 yarn 
