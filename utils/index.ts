@@ -1,4 +1,4 @@
-export default function formatDate(d: Date) {
+export function formatDate(d: Date) {
   return new Date(d).toLocaleString([], {
     hour12: false,
     month: 'short',
@@ -7,4 +7,8 @@ export default function formatDate(d: Date) {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+export function getFirstName(n: string) {
+  return n.split(' ')[0]
 }

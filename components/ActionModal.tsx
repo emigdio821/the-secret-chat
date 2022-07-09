@@ -25,7 +25,7 @@ interface ActionModalProps {
   inputLabel?: string
   mainBtnLbl?: string
   BtnIcon?: React.ElementType
-  action: ({ inputVal, onClose, setInputVal }: ModalCallbackProps) => void
+  action: ({ inputVal, onClose }: ModalCallbackProps) => void
 }
 
 interface OnChangeType {
@@ -41,7 +41,7 @@ export default function ActionModal({
   inputLabel = 'Room name',
 }: ActionModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { dispatch, error, isLoading } = useGlobalContext()
+  const { dispatch, error, isLoading, client } = useGlobalContext()
   const [inputVal, setInputVal] = useState<string>('')
 
   function handleOpenModal() {
@@ -66,7 +66,7 @@ export default function ActionModal({
 
   function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault()
-    action({ inputVal, onClose, setInputVal })
+    action({ inputVal, onClose })
   }
 
   return (
@@ -96,7 +96,6 @@ export default function ActionModal({
               </FormControl>
               <Stack direction="row-reverse" mb={2} mt={4}>
                 <Button
-                  size="sm"
                   type="submit"
                   disabled={!inputVal || isLoading}
                   rightIcon={
@@ -114,11 +113,7 @@ export default function ActionModal({
                 >
                   {!isLoading ? btnLabel : <BiGhost size={18} />}
                 </Button>
-                <Button
-                  size="sm"
-                  colorScheme="gray"
-                  onClick={() => handleCloseModal()}
-                >
+                <Button colorScheme="gray" onClick={() => handleCloseModal()}>
                   Close
                 </Button>
               </Stack>
@@ -127,9 +122,9 @@ export default function ActionModal({
         </ModalContent>
       </Modal>
       <Button
-        size="sm"
-        bg={useColorModeValue('#333', '#262626')}
         color="#fafafa"
+        disabled={!client}
+        bg={useColorModeValue('#333', '#262626')}
         _hover={{
           bg: '#444',
         }}

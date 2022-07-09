@@ -15,10 +15,10 @@ import Helmet from 'components/Helmet'
 export default function NotFound() {
   return (
     <Flex
-      pt={{ base: 10, sm: 20 }}
-      minH={{ base: 'calc(100vh - 222px)', sm: 'calc(100vh - 150px)' }}
       maxW="4xl"
       margin="0 auto"
+      pt={{ base: 10, sm: 20 }}
+      minH={{ base: 'calc(100vh - 222px)', sm: 'calc(100vh - 150px)' }}
     >
       <Helmet title="Not found" />
       <VStack px={{ base: 4, lg: 0 }} justify="center" w="100%">
@@ -26,7 +26,7 @@ export default function NotFound() {
           w="100%"
           borderRadius="xl"
           py={{ base: 10, sm: 20 }}
-          bg={useColorModeValue('#f5f5f5', '#2e2e2e')}
+          bg={useColorModeValue('#e8e8e8', '#2e2e2e')}
         >
           <Box textAlign="center" w="100%">
             <Icon as={BiGhost} fontSize="5rem" />

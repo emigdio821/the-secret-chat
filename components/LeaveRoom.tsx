@@ -81,7 +81,6 @@ export default function LeaveRoom() {
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button
-                size="sm"
                 ref={cancelRef}
                 onClick={() => handleCloseModal()}
               >
@@ -89,7 +88,6 @@ export default function LeaveRoom() {
               </Button>
               <Button
                 ml={3}
-                size="sm"
                 colorScheme="red"
                 leftIcon={<BiLogOut />}
                 onClick={() => handleLeaveRoom()}
@@ -101,7 +99,6 @@ export default function LeaveRoom() {
         </AlertDialogOverlay>
       </AlertDialog>
       <Button
-        size="sm"
         bg={useColorModeValue('#333', '#262626')}
         color="#fafafa"
         _hover={{

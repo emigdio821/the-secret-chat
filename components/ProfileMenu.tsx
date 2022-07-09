@@ -15,8 +15,9 @@ import {
   useColorMode,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { BiLogOut, BiChat, BiChevronDown, BiMoon, BiSun } from 'react-icons/bi'
+import { getFirstName } from 'utils'
 import { signOut, useSession } from 'next-auth/react'
+import { BiLogOut, BiChat, BiChevronDown, BiMoon, BiSun } from 'react-icons/bi'
 
 export default function ProfileMenu() {
   const { data } = useSession()
@@ -31,7 +32,6 @@ export default function ProfileMenu() {
         <MenuButton
           px={2}
           bg="#333"
-          size="sm"
           as={Button}
           color="#fafafa"
           disabled={!user}
@@ -58,7 +58,7 @@ export default function ProfileMenu() {
               />
               {user.name && (
                 <Text noOfLines={1} display={{ base: 'none ', sm: 'inherit' }}>
-                  {user?.name?.split(' ')[0]}
+                  {getFirstName(user.name)}
                 </Text>
               )}
             </Stack>

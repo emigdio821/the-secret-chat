@@ -1,4 +1,9 @@
-import { Client, Conversation, Message } from '@twilio/conversations'
+import {
+  Client,
+  Message,
+  Participant,
+  Conversation,
+} from '@twilio/conversations'
 import { createContext, useReducer, useContext, useMemo } from 'react'
 import { InitialState as StateType, ActionPayload } from 'types'
 import { reducer, initialState } from './globalReducer'
@@ -13,6 +18,7 @@ interface CtxInterface {
   isLoading: boolean
   messages: Message[]
   conversation: Conversation
+  usersTyping: Participant[]
   dispatch: React.Dispatch<ActionPayload>
 }
 
@@ -24,10 +30,19 @@ function GlobalProvider({ children }: Provider) {
     reducer,
     initialState,
   )
-  const { client, conversation, error, isLoading, messages } = state
+  const { client, conversation, error, isLoading, messages, usersTyping } =
+    state
   const providerValue = useMemo(
-    () => ({ client, conversation, error, dispatch, isLoading, messages }),
-    [client, conversation, error, isLoading, messages],
+    () => ({
+      error,
+      client,
+      messages,
+      dispatch,
+      isLoading,
+      usersTyping,
+      conversation,
+    }),
+    [client, conversation, error, isLoading, messages, usersTyping],
   )
 
   return (

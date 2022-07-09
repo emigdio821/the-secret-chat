@@ -1,4 +1,4 @@
-import formatDate from 'utils'
+import { formatDate } from 'utils'
 import { useSession } from 'next-auth/react'
 import { Message } from '@twilio/conversations'
 import { Avatar, Stack, useColorModeValue, Text, Box } from '@chakra-ui/react'

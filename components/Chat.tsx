@@ -47,10 +47,14 @@ export default function Chat() {
         direction="row"
         justifyContent="space-between"
       >
-        <Heading size="lg" noOfLines={{ base: 2, sm: 1 }}>
+        <Heading size={{ base: 'md', sm: 'lg' }} noOfLines={{ base: 2, sm: 1 }}>
           {conversation.friendlyName}
         </Heading>
-        <Stack alignItems="flex-end" direction={{ base: 'column', sm: 'row' }}>
+        <Stack
+          alignItems="flex-end"
+          spacing={{ base: 1, sm: 2 }}
+          direction={{ base: 'row', sm: 'row' }}
+        >
           <AddParticipant />
           <LeaveRoom />
         </Stack>

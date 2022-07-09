@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Chat from 'components/Chat'
 import createClient from 'lib/client'
 import getAccessToken from 'lib/user'
@@ -12,18 +12,22 @@ import { useGlobalContext } from 'context/global'
 import { BiMessageAltAdd, BiMessageAltDots } from 'react-icons/bi'
 import { getSession, GetSessionParams } from 'next-auth/react'
 import { Message } from '@twilio/conversations'
+import { getFirstName } from 'utils'
+import Reconnect from 'components/Reconnect'
 
 const joinLbl = 'Join'
 const createLbl = 'Create'
 
 export default function Index({ session }: { session: Session }) {
   const { dispatch, client, conversation } = useGlobalContext()
+  const [error, setError] = useState<string>('')
+
+  // console.log(usersTyping)
+
   const handleCreateChatRoom = async ({
     onClose,
-    setInputVal,
     inputVal: inVal,
   }: ModalCallbackProps) => {
-    setInputVal('')
     dispatch({
       type: actions.setLoading,
     })
@@ -53,10 +57,22 @@ export default function Index({ session }: { session: Session }) {
     })
   }
 
+  const initClient = useCallback(async () => {
+    try {
+      const accessToken = await getAccessToken()
+      const twilioClient = await createClient(accessToken)
+      dispatch({
+        type: actions.addClient,
+        payload: twilioClient,
+      })
+    } catch {
+      setError('Failed to create twilio client')
+    }
+  }, [dispatch])
+
   const handleJoinChatRoom = async ({
     onClose,
     inputVal,
-    setInputVal,
   }: ModalCallbackProps) => {
     dispatch({
       type: actions.setLoading,
@@ -76,30 +92,18 @@ export default function Index({ session }: { session: Session }) {
         })
       }
     }
-    setInputVal('')
     dispatch({
       type: actions.removeLoading,
     })
   }
 
   useEffect(() => {
-    async function initClient() {
-      const accessToken = await getAccessToken()
-      const twilioClient = await createClient(accessToken)
-      dispatch({
-        type: actions.addClient,
-        payload: twilioClient,
-      })
-    }
-
     if (!client) {
       initClient()
     }
 
     if (client) {
       client.on('tokenExpired', () => {
-        // eslint-disable-next-line no-console
-        console.log('token expired!')
         if (session) {
           initClient()
         }
@@ -113,6 +117,19 @@ export default function Index({ session }: { session: Session }) {
           payload: msg,
         })
       })
+      conversation.on('typingStarted', (participant) => {
+        dispatch({
+          type: actions.addUsersTyping,
+          payload: participant,
+        })
+      })
+
+      conversation.on('typingEnded', (participant) => {
+        dispatch({
+          type: actions.removeUsersTyping,
+          payload: participant,
+        })
+      })
     }
 
     return () => {
@@ -120,14 +137,14 @@ export default function Index({ session }: { session: Session }) {
         client.removeAllListeners()
       }
     }
-  }, [client, conversation, dispatch, session])
+  }, [client, conversation, dispatch, initClient, session])
 
   return (
     <AppWrapper>
       <Helmet />
       {!conversation && (
         <>
-          <Heading mb={6}>Welcome</Heading>
+          <Heading mb={6}>Welcome, {getFirstName(session.user.name)}</Heading>
           <Stack direction={{ base: 'column', sm: 'row' }}>
             <ActionModal
               btnLabel={createLbl}
@@ -145,6 +162,7 @@ export default function Index({ session }: { session: Session }) {
         </>
       )}
       {conversation && client && <Chat />}
+      {error && <Reconnect error={error} initClient={initClient} />}
     </AppWrapper>
   )
 }

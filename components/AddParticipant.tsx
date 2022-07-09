@@ -8,7 +8,6 @@ export default function AddParticipant() {
   const { dispatch, conversation, client } = useGlobalContext()
   const handleAddParticipant = async ({
     onClose,
-    setInputVal,
     inputVal: inVal,
   }: ModalCallbackProps) => {
     dispatch({
@@ -26,7 +25,6 @@ export default function AddParticipant() {
         })
       }
     }
-    setInputVal('')
     dispatch({
       type: actions.removeLoading,
     })

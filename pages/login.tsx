@@ -14,11 +14,11 @@ import { FaGithub } from 'react-icons/fa'
 import { BiMoon, BiSun } from 'react-icons/bi'
 
 export default function Login() {
-  const btnBg = useColorModeValue('gray.900', 'gray.100')
-  const btnColor = useColorModeValue('white', 'black')
-  const btnHoverColor = useColorModeValue('gray.700', 'gray.200')
-  const btnActiveColor = useColorModeValue('gray.900', 'gray.100')
+  const btnColor = '#fafafa'
+  const btnHoverColor = '#444'
+  const btnActiveColor = '#333'
   const { toggleColorMode } = useColorMode()
+  const btnBg = useColorModeValue('#333', '#262626')
   const SwitchIcon = useColorModeValue(BiMoon, BiSun)
 
   return (
@@ -28,7 +28,7 @@ export default function Login() {
         rounded="md"
         boxShadow="xl"
         overflow="hidden"
-        bg={useColorModeValue('#E8E8E8', '#141414')}
+        bg={useColorModeValue('#E8E8E8', '#181818')}
       >
         <Box p={6}>
           <Stack spacing={0} align="center" mb={5}>
@@ -60,11 +60,11 @@ export default function Login() {
             <IconButton
               bg={btnBg}
               p={[0, 4]}
-              color={useColorModeValue('yellow.400', 'purple.800')}
               borderRadius="full"
               onClick={toggleColorMode}
               aria-label="Switch theme"
               icon={<SwitchIcon size={20} />}
+              color={useColorModeValue('yellow.400', 'purple.200')}
               _hover={{
                 bg: btnHoverColor,
               }}

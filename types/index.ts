@@ -1,4 +1,9 @@
-import { Client, Conversation, Message } from '@twilio/conversations'
+import {
+  Client,
+  Message,
+  Participant,
+  Conversation,
+} from '@twilio/conversations'
 
 export interface Session {
   user: {
@@ -11,14 +16,15 @@ export interface Session {
 export interface ModalCallbackProps {
   inputVal: string
   onClose: () => void
-  setInputVal: (val: string) => void
+  // setInputVal: (val: string) => void
 }
 
 export interface InitialState {
   error: string
   isLoading: boolean
-  client: Client | undefined
   messages: Message[]
+  client: Client | undefined
+  usersTyping: Participant[]
   conversation: Conversation | undefined
 }
 
@@ -32,4 +38,6 @@ export interface ActionPayload {
     | boolean
     | Message[]
     | Message
+    | Participant
+    | Participant[]
 }

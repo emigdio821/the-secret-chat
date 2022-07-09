@@ -2,9 +2,11 @@ import { useEffect, useRef } from 'react'
 import { Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import { BiGhost } from 'react-icons/bi'
 import { Message } from '@twilio/conversations'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
+import { useGlobalContext } from 'context/global'
 import ChatBubble from './ChatBubble'
+import TypingBubble from './TypingBubble'
 
 interface MessagesProps {
   messages: Message[]
@@ -25,6 +27,7 @@ export default function Messages({ messages }: MessagesProps) {
   const msgsPresent = messages.length > 0
   const { data: session } = useSession()
   const currentUser = session?.user?.email || ''
+  const { usersTyping } = useGlobalContext()
 
   return (
     <Stack
@@ -53,6 +56,19 @@ export default function Messages({ messages }: MessagesProps) {
               </motion.div>
             )
           })}
+          <AnimatePresence initial={false} exitBeforeEnter>
+            <motion.div
+              key={usersTyping.length > 0 ? 'animate' : 'exit'}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0, x: -80 }}
+              initial={{ opacity: 0, x: -80 }}
+            >
+              {usersTyping.length > 0 && (
+                <TypingBubble participants={usersTyping} />
+              )}
+            </motion.div>
+          </AnimatePresence>
           <ScrollBottom messages={messages} />
         </>
       ) : (
