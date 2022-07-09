@@ -17,9 +17,18 @@ import {
 } from '@chakra-ui/react'
 import { getFirstName } from 'utils'
 import { signOut, useSession } from 'next-auth/react'
-import { BiLogOut, BiChat, BiChevronDown, BiMoon, BiSun } from 'react-icons/bi'
+import {
+  BiSun,
+  BiMoon,
+  BiLogOut,
+  BiHomeSmile,
+  BiChevronDown,
+} from 'react-icons/bi'
+import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 
 export default function ProfileMenu() {
+  const router = useRouter()
   const { data } = useSession()
   const { user } = data || {}
   const { toggleColorMode } = useColorMode()
@@ -70,13 +79,24 @@ export default function ProfileMenu() {
           bg={useColorModeValue('#fafafa', '#262626')}
         >
           <MenuGroup title={user?.name || undefined}>
-            <MenuItem
+            {router.pathname !== '/' && (
+              <NextLink href="/" passHref>
+                <MenuItem
+                  fontSize="sm"
+                  borderRadius="md"
+                  icon={<BiHomeSmile size={16} />}
+                >
+                  <Text>Home</Text>
+                </MenuItem>
+              </NextLink>
+            )}
+            {/* <MenuItem
               fontSize="sm"
               borderRadius="md"
               icon={<BiChat size={16} />}
             >
               My chat rooms
-            </MenuItem>
+            </MenuItem> */}
           </MenuGroup>
           <MenuItem
             fontSize="sm"

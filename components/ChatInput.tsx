@@ -1,21 +1,19 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useGlobalContext } from 'context/global'
-import { Box, Input, Stack, FormControl, IconButton } from '@chakra-ui/react'
+import {
+  Box,
+  Input,
+  Stack,
+  FormControl,
+  IconButton,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import { BiSend } from 'react-icons/bi'
+import { debounce } from 'utils'
 
 export default function ChatInput() {
   const [message, setMessage] = useState('')
   const { conversation } = useGlobalContext()
-
-  async function handleTyping(e: React.ChangeEvent<HTMLInputElement>) {
-    try {
-      setMessage(e.target.value)
-      await conversation.typing()
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to send typing', err)
-    }
-  }
 
   async function handleSendMessage(e: React.FormEvent) {
     e.preventDefault()
@@ -23,10 +21,25 @@ export default function ChatInput() {
     try {
       await conversation.sendMessage(message)
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Something went wrong', err)
+      console.error('Something went wrong ->', err)
     }
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleTypingState = useCallback(
+    debounce(async (e: KeyboardEvent) => {
+      if (e.code === 'Enter') {
+        return
+      }
+
+      try {
+        await conversation.typing()
+      } catch (err) {
+        console.error('Something went wrong ->', err)
+      }
+    }, 200),
+    [],
+  )
 
   return (
     <Box mt={2}>
@@ -35,9 +48,11 @@ export default function ChatInput() {
           <FormControl isRequired>
             <Input
               value={message}
+              bg={useColorModeValue('#fafafa', '#272727')}
               placeholder="Message"
               focusBorderColor="#B2ABCC"
-              onChange={(e) => handleTyping(e)}
+              onKeyDown={(e) => handleTypingState(e)}
+              onChange={(e) => setMessage(e.target.value)}
             />
           </FormControl>
           <IconButton

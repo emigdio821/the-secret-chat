@@ -23,7 +23,8 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
       direction={isAuthor ? 'row-reverse' : 'row'}
     >
       <Avatar
-        size="xs"
+        size="sm"
+        boxShadow="xl"
         name={author || ''}
         src={isAuthor ? userImg : ''}
         bg={isAuthor ? 'gray.800' : 'gray.700'}

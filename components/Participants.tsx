@@ -3,21 +3,41 @@ import { Box, Stack, Heading, useColorModeValue, Text } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useSession } from 'next-auth/react'
 import Participant from './Participant'
 import MotionDiv from './MotionDiv'
+
+type Session = string | null | undefined
+
+function sortParticipants(parts: Part[], session: Session) {
+  const currUser = session
+  if (!currUser) return parts
+
+  return parts.sort((x, y) => {
+    if (x.identity === currUser) return -1
+    if (y.identity === currUser) return 1
+    return 0
+  })
+}
 
 export default function Participants() {
   const notifBg = useColorModeValue('gray.300', '#141414')
   const { conversation, client } = useGlobalContext()
-  const mainBg = useColorModeValue('#E8E8E8', '#272727')
+  const mainBg = useColorModeValue('#EDEDED', '#272727')
   const [partiJoined, setPartiJoined] = useState<Part>()
   const [partiLeft, setPartiLeft] = useState<Part>()
   const [participants, setParticipants] = useState<Part[]>([])
+  const { data: session } = useSession()
 
   useEffect(() => {
     async function getParticipants() {
-      const parts = await conversation.getParticipants()
-      setParticipants(parts)
+      try {
+        const parts = await conversation.getParticipants()
+        sortParticipants(parts, session?.user?.email)
+        setParticipants(parts)
+      } catch (err) {
+        console.error('Failed to get participants ->', err)
+      }
     }
 
     client.on('participantJoined', (participant) => {
@@ -50,7 +70,7 @@ export default function Participants() {
         client.removeAllListeners()
       }
     }
-  }, [conversation, client, partiJoined, partiLeft])
+  }, [conversation, client, partiJoined, partiLeft, session?.user?.email])
 
   return (
     <Stack spacing={0} w={{ base: '100%', sm: 200 }}>
@@ -90,7 +110,7 @@ export default function Participants() {
         <AnimatePresence initial={false} exitBeforeEnter>
           {partiLeft && (
             <motion.div
-              key={partiJoined ? 'animate' : 'exit'}
+              key={partiLeft ? 'animate' : 'exit'}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
               initial={{ opacity: 0, y: -10 }}
@@ -122,7 +142,10 @@ export default function Participants() {
       >
         {participants.length > 0 && (
           <MotionDiv>
-            <Stack direction={{ base: 'row', sm: 'column' }}>
+            <Stack
+              direction={{ base: 'row', sm: 'column' }}
+              align={{ base: 'center', sm: 'flex-start' }}
+            >
               {participants.map((part: Part) => (
                 <Participant key={part.sid} participant={part} />
               ))}

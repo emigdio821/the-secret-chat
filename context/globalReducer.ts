@@ -76,11 +76,18 @@ const reducer = (state: StateType, action: ActionPayload): StateType => {
         ...state,
         conversation: undefined,
       }
-    case actions.addUsersTyping:
+    case actions.addUsersTyping: {
+      const part = action.payload as Participant
+
+      if (state.usersTyping.some((p) => p.sid === part.sid)) {
+        return state
+      }
+
       return {
         ...state,
-        usersTyping: [...state.usersTyping, action.payload] as Participant[],
+        usersTyping: [...state.usersTyping, part],
       }
+    }
     case actions.removeUsersTyping: {
       const part = action.payload as Participant
       return {

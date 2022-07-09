@@ -80,10 +80,7 @@ export default function LeaveRoom() {
               {error && <AlertError error={error} />}
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button
-                ref={cancelRef}
-                onClick={() => handleCloseModal()}
-              >
+              <Button ref={cancelRef} onClick={() => handleCloseModal()}>
                 Cancel
               </Button>
               <Button
@@ -105,7 +102,7 @@ export default function LeaveRoom() {
           bg: '#444',
         }}
         _active={{
-          bg: '#333',
+          bg: '#262626',
         }}
         leftIcon={<BiLogOut />}
         onClick={() => handleOpenModal()}

@@ -1,6 +1,7 @@
 import { useSession } from 'next-auth/react'
 import { Participant as Part } from '@twilio/conversations'
 import { Avatar, Stack, Text } from '@chakra-ui/react'
+import ParticipantMenu from './ParticipantMenu'
 
 interface ChatBubbleProps {
   participant: Part
@@ -24,26 +25,39 @@ export default function Participant({ participant }: ChatBubbleProps) {
   const currentUser = session?.user?.email || ''
   const userImg = session?.user?.image || ''
   const isAuthor = identity === currentUser
+  const { conversation } = participant
+  const isAdmin = currentUser === conversation.createdBy
 
   return (
     <Stack
-      spacing={2}
+      align="center"
       py={{ base: 0, sm: 1 }}
-      px={{ base: 2, sm: 0 }}
-      alignItems="center"
+      spacing={{ base: 1, sm: 2 }}
       direction={{ base: 'column', sm: 'row' }}
     >
-      <Avatar
-        h={4}
-        w={4}
-        size="xs"
-        bg="gray.700"
-        name={identity || 'Unknown'}
-        src={isAuthor ? userImg : ''}
-      />
-      <Stack maxW={20} borderRadius="md">
-        {isAuthor ? <User p="You" /> : <User p={identity} />}
-      </Stack>
+      {isAdmin && currentUser !== identity ? (
+        <ParticipantMenu
+          userImg={userImg}
+          identity={identity}
+          isAuthor={isAuthor}
+          participant={participant}
+          conversation={conversation}
+        />
+      ) : (
+        <>
+          <Avatar
+            h={4}
+            w={4}
+            size="xs"
+            bg="gray.700"
+            name={identity || 'Unknown'}
+            src={isAuthor ? userImg : ''}
+          />
+          <Stack maxW={20} borderRadius="md">
+            {isAuthor ? <User p="You" /> : <User p={identity} />}
+          </Stack>
+        </>
+      )}
     </Stack>
   )
 }

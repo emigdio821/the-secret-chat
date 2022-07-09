@@ -23,18 +23,26 @@ function ScrollBottom({ messages }: MessagesProps) {
 }
 
 export default function Messages({ messages }: MessagesProps) {
-  const mainBg = useColorModeValue('#E8E8E8', '#272727')
   const msgsPresent = messages.length > 0
   const { data: session } = useSession()
   const currentUser = session?.user?.email || ''
   const { usersTyping } = useGlobalContext()
+  const mainGradient = useColorModeValue(
+    'rgba(237, 237, 237, 0.2)',
+    'rgba(39, 39, 39, 0.4)',
+  )
+  const secondGradient = useColorModeValue(
+    'rgba(237, 237, 237, 1)',
+    'rgba(39, 39, 39, 1)',
+  )
+  const mainBg = `linear-gradient(180deg, ${mainGradient}, ${secondGradient} 85%),radial-gradient(ellipse at top left, rgba(13, 110, 253, 0.2), transparent 50%),radial-gradient(ellipse at top right, rgba(255, 228, 132, 0.2), transparent 50%),radial-gradient(ellipse at center right, rgba(112, 44, 249, 0.2), transparent 50%),radial-gradient(ellipse at center left, rgba(214, 51, 132, 0.2), transparent 50%)`
 
   return (
     <Stack
       py={6}
       px={4}
       w="100%"
-      bg={mainBg}
+      bgImage={mainBg}
       overflowY="auto"
       borderRadius="md"
       overflowX="hidden"

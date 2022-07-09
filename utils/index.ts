@@ -12,3 +12,13 @@ export function formatDate(d: Date) {
 export function getFirstName(n: string) {
   return n.split(' ')[0]
 }
+
+export function debounce(fn: Function, delay: number = 300) {
+  let timer: NodeJS.Timeout
+  return (...args: any[]) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      fn(...args)
+    }, delay)
+  }
+}

@@ -22,8 +22,6 @@ export default function Index({ session }: { session: Session }) {
   const { dispatch, client, conversation } = useGlobalContext()
   const [error, setError] = useState<string>('')
 
-  // console.log(usersTyping)
-
   const handleCreateChatRoom = async ({
     onClose,
     inputVal: inVal,

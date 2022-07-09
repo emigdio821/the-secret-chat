@@ -129,7 +129,7 @@ export default function ActionModal({
           bg: '#444',
         }}
         _active={{
-          bg: '#333',
+          bg: '#262626',
         }}
         onClick={() => handleOpenModal()}
         leftIcon={BtnIcon ? <BtnIcon /> : undefined}
