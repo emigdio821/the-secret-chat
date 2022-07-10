@@ -8,7 +8,7 @@ interface ReconnectProps {
 
 export default function Reconnect({ error, initClient }: ReconnectProps) {
   return (
-    <Box mt={6}>
+    <Box>
       <Text size="md">{error}</Text>
       <Button
         color="#fafafa"

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import Chat from 'components/Chat'
 import createClient from 'lib/client'
 import getAccessToken from 'lib/user'
 import Helmet from 'components/Helmet'
@@ -14,6 +13,8 @@ import { getSession, GetSessionParams } from 'next-auth/react'
 import { Message } from '@twilio/conversations'
 import { getFirstName } from 'utils'
 import Reconnect from 'components/Reconnect'
+import MyConversations from 'components/MyConversations'
+import { useRouter } from 'next/router'
 
 const joinLbl = 'Join'
 const createLbl = 'Create'
@@ -21,6 +22,7 @@ const createLbl = 'Create'
 export default function Index({ session }: { session: Session }) {
   const { dispatch, client, conversation } = useGlobalContext()
   const [error, setError] = useState<string>('')
+  const router = useRouter()
 
   const handleCreateChatRoom = async ({
     onClose,
@@ -83,6 +85,7 @@ export default function Index({ session }: { session: Session }) {
           payload: conver,
         })
         onClose()
+        router.push(`/chats/${conver.sid}`)
       } catch {
         dispatch({
           type: actions.addError,
@@ -140,27 +143,35 @@ export default function Index({ session }: { session: Session }) {
   return (
     <AppWrapper>
       <Helmet />
-      {!conversation && (
-        <>
-          <Heading mb={6}>Welcome, {getFirstName(session.user.name)}</Heading>
-          <Stack direction={{ base: 'column', sm: 'row' }}>
-            <ActionModal
-              btnLabel={createLbl}
-              BtnIcon={BiMessageAltAdd}
-              action={handleCreateChatRoom}
-              headerTitle="Create chat room"
-            />
-            <ActionModal
-              btnLabel={joinLbl}
-              BtnIcon={BiMessageAltDots}
-              action={handleJoinChatRoom}
-              headerTitle="Join to a chat room"
-            />
-          </Stack>
-        </>
-      )}
-      {conversation && client && <Chat />}
-      {error && <Reconnect error={error} initClient={initClient} />}
+      <>
+        <Heading as="h2" size={{ base: 'md', sm: 'lg' }} mb={6}>
+          Welcome, {getFirstName(session.user.name)}
+        </Heading>
+        {error ? (
+          <Reconnect
+            error="Failed to create twilio client"
+            initClient={initClient}
+          />
+        ) : (
+          <>
+            <Stack direction={{ base: 'column', sm: 'row' }} mb={12}>
+              <ActionModal
+                btnLabel={createLbl}
+                BtnIcon={BiMessageAltAdd}
+                action={handleCreateChatRoom}
+                headerTitle="Create chat room"
+              />
+              <ActionModal
+                btnLabel={joinLbl}
+                BtnIcon={BiMessageAltDots}
+                action={handleJoinChatRoom}
+                headerTitle="Join to a chat room"
+              />
+            </Stack>
+            {client && <MyConversations />}
+          </>
+        )}
+      </>
     </AppWrapper>
   )
 }

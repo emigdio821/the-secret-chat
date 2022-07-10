@@ -26,7 +26,7 @@ export default function NotFound() {
           w="100%"
           borderRadius="xl"
           py={{ base: 10, sm: 20 }}
-          bg={useColorModeValue('#e8e8e8', '#2e2e2e')}
+          bg={useColorModeValue('#EDEDED', '#2e2e2e')}
         >
           <Box textAlign="center" w="100%">
             <Icon as={BiGhost} fontSize="5rem" />

@@ -37,7 +37,7 @@ export default function Login() {
         rounded="md"
         boxShadow="xl"
         overflow="hidden"
-        bg={useColorModeValue('#E8E8E8', '#222222')}
+        bg={useColorModeValue('#EDEDED', '#222222')}
       >
         <Box p={6}>
           <Stack spacing={0} align="center" mb={5}>

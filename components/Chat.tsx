@@ -31,6 +31,9 @@ export default function Chat() {
     }
 
     if (conversation.status === 'joined') {
+      dispatch({
+        type: actions.removeMessages,
+      })
       getMsgs()
     }
 
