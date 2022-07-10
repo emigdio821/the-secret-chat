@@ -22,3 +22,28 @@ export function debounce(fn: Function, delay: number = 300) {
     }, delay)
   }
 }
+
+type SortValue = string
+export function sortArray(
+  items: any[],
+  sortBy: string,
+  sortByValue?: SortValue,
+) {
+  if (!sortBy) return items
+
+  if (sortByValue) {
+    return items.sort((x, y) => {
+      if (x[sortBy] === sortByValue) return -1
+      if (y[sortBy] === sortByValue) return 1
+      return 0
+    })
+  }
+
+  return items.sort((x, y) => {
+    const xVal = x[sortBy].toLowerCase()
+    const yVal = y[sortBy].toLowerCase()
+    if (xVal < yVal) return -1
+    if (xVal > yVal) return 1
+    return 0
+  })
+}

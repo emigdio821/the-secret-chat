@@ -69,8 +69,12 @@ export default function Messages({ messages }: MessagesProps) {
               key={usersTyping.length > 0 ? 'animate' : 'exit'}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2 }}
-              exit={{ opacity: 0, x: -80 }}
-              initial={{ opacity: 0, x: -80 }}
+              exit={{ opacity: 0, x: -10 }}
+              initial={{ opacity: 0, x: -10 }}
+              style={{
+                bottom: 0,
+                position: 'absolute',
+              }}
             >
               {usersTyping.length > 0 && (
                 <TypingBubble participants={usersTyping} />

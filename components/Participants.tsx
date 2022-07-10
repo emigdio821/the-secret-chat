@@ -1,24 +1,12 @@
-import { Participant as Part } from '@twilio/conversations'
-import { Box, Stack, Heading, useColorModeValue, Text } from '@chakra-ui/react'
-import { useGlobalContext } from 'context/global'
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { sortArray } from 'utils'
 import { useSession } from 'next-auth/react'
-import Participant from './Participant'
+import { useGlobalContext } from 'context/global'
+import { Participant as Part } from '@twilio/conversations'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Box, Stack, Heading, useColorModeValue, Text } from '@chakra-ui/react'
 import MotionDiv from './MotionDiv'
-
-type Session = string | null | undefined
-
-function sortParticipants(parts: Part[], session: Session) {
-  const currUser = session
-  if (!currUser) return parts
-
-  return parts.sort((x, y) => {
-    if (x.identity === currUser) return -1
-    if (y.identity === currUser) return 1
-    return 0
-  })
-}
+import Participant from './Participant'
 
 export default function Participants() {
   const notifBg = useColorModeValue('gray.300', '#141414')
@@ -33,7 +21,7 @@ export default function Participants() {
     async function getParticipants() {
       try {
         const parts = await conversation.getParticipants()
-        sortParticipants(parts, session?.user?.email)
+        sortArray(parts as [], 'identity', session?.user?.email || '')
         setParticipants(parts)
       } catch (err) {
         console.error('Failed to get participants ->', err)

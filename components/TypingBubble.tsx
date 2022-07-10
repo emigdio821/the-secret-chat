@@ -15,7 +15,7 @@ export default function TypingBubble({ participants }: TypingBubbleProps) {
       : `${participants[0].identity} is typing...`
 
   return (
-    <Stack py={2} alignItems="center" direction="row">
+    <Stack py={2} alignItems="center" direction="row" opacity={0.9}>
       <Avatar
         size="xs"
         bg="gray.700"
@@ -27,12 +27,11 @@ export default function TypingBubble({ participants }: TypingBubbleProps) {
         px={4}
         minW={100}
         maxW={400}
-        spacing={4}
-        boxShadow="xl"
+        boxShadow="lg"
         borderRadius="md"
         bg={useColorModeValue('gray.100', '#202020')}
       >
-        <Text fontSize="xs">{text}</Text>
+        <Text fontSize={10}>{text}</Text>
       </Stack>
     </Stack>
   )

@@ -11,12 +11,16 @@ export async function addParticipant(
   try {
     const result = await conversation.add(participant)
     return result
-  } catch (e) {
-    return Promise.reject(e)
+  } catch (err) {
+    return Promise.reject(err)
   }
 }
 
 export async function getMessages(conversation: Conversation) {
-  const messages = await conversation.getMessages()
-  return messages
+  try {
+    const messages = await conversation.getMessages()
+    return messages
+  } catch (err) {
+    return Promise.reject(err)
+  }
 }

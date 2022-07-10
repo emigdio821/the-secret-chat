@@ -13,12 +13,13 @@ import {
 } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
 // import NextLink from 'next/link'
-import { BiChat, BiGhost } from 'react-icons/bi'
+import { BiGhost, BiRightArrowAlt } from 'react-icons/bi'
 import { useEffect, useState } from 'react'
 import { Conversation } from '@twilio/conversations'
 import actions from 'context/globalActions'
 import { useRouter } from 'next/router'
 import { AnimatePresence } from 'framer-motion'
+import { sortArray } from 'utils'
 import MotionDiv from './MotionDiv'
 
 export default function MyConversations() {
@@ -51,7 +52,8 @@ export default function MyConversations() {
         })
         try {
           const convers = await client.getSubscribedConversations()
-          setConversations(convers.items)
+          const sortedConvers = sortArray(convers.items as [], 'friendlyName')
+          setConversations(sortedConvers)
         } catch (err) {
           console.error('Failed to retreive conversations ->', err)
         }
@@ -90,16 +92,14 @@ export default function MyConversations() {
                 <GridItem>
                   <Box p={6} bg={bg} borderRadius="lg">
                     <Stack spacing={6}>
-                      <Stack direction="row" align="center">
-                        <Heading as="h5" size="sm" noOfLines={1}>
-                          {friendlyName}
-                        </Heading>
-                        <BiChat size={18} />
-                      </Stack>
+                      <Heading as="h5" size="sm" noOfLines={1}>
+                        {friendlyName}
+                      </Heading>
                       {/* <NextLink href={`/chats/${sid}`}> */}
                       <Button
                         onClick={() => getConversation(sid)}
                         boxShadow="xl"
+                        rightIcon={<BiRightArrowAlt />}
                         disabled={isLoading}
                         bg={btnBg}
                         color="#fafafa"

@@ -10,7 +10,7 @@ import ChatInput from './ChatInput'
 import AddParticipant from './AddParticipant'
 
 export default function Chat() {
-  const { dispatch, client, conversation, messages } = useGlobalContext()
+  const { dispatch, conversation, messages } = useGlobalContext()
 
   useEffect(() => {
     async function getMsgs() {
@@ -36,11 +36,7 @@ export default function Chat() {
       })
       getMsgs()
     }
-
-    return () => {
-      client.removeAllListeners()
-    }
-  }, [conversation, client, dispatch])
+  }, [conversation, dispatch])
 
   return (
     <>
@@ -66,6 +62,7 @@ export default function Chat() {
         mt={6}
         minH={400}
         spacing={2}
+        position="relative"
         direction={{ base: 'column', sm: 'row' }}
         h={{ base: 'calc(100vh - 252px)', sm: 'xl' }}
         maxH={{ base: 'calc(100vh - 252px)', sm: 'xl' }}
