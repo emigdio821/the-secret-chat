@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { initClient } from 'lib/client'
 import Helmet from 'components/Helmet'
 import { Heading, Stack } from '@chakra-ui/react'
@@ -56,13 +56,17 @@ export default function Index({ session }: { session: Session }) {
     })
   }
 
-  async function newClient() {
-    const client = await initClient()
-    dispatch({
-      type: actions.addClient,
-      payload: client,
-    })
-  }
+  const newClient = useCallback(async () => {
+    try {
+      const twilioClient = await initClient()
+      dispatch({
+        type: actions.addClient,
+        payload: twilioClient,
+      })
+    } catch {
+      setError('Something went wrong, try again')
+    }
+  }, [dispatch])
 
   const handleJoinChatRoom = async ({
     onClose,
@@ -83,7 +87,7 @@ export default function Index({ session }: { session: Session }) {
       } catch {
         dispatch({
           type: actions.addError,
-          payload: "Doesn't exist or you don't have access to it",
+          payload: 'Doesn\'t exist or you don\'t have access to it',
         })
       }
     }
@@ -132,7 +136,7 @@ export default function Index({ session }: { session: Session }) {
         client.removeAllListeners()
       }
     }
-  }, [client, conversation, dispatch, initClient, session])
+  }, [client, conversation, dispatch, newClient, session])
 
   return (
     <AppWrapper>

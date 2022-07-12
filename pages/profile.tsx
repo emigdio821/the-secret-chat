@@ -17,14 +17,14 @@ import { Session } from 'types'
 import Helmet from 'components/Helmet'
 import { initClient } from 'lib/client'
 import actions from 'context/globalActions'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import AppWrapper from 'components/AppWrapper'
 import { AnimatePresence } from 'framer-motion'
 import useBgGradient from 'hooks/useBgGradient'
-import MotionDiv from '../components/MotionDiv'
 import { useGlobalContext } from 'context/global'
 import { BiEraser, BiGhost } from 'react-icons/bi'
 import { getSession, GetSessionParams } from 'next-auth/react'
+import MotionDiv from '../components/MotionDiv'
 
 export default function Profile({ session }: { session: Session }) {
   const bgGradient = useBgGradient()
@@ -35,15 +35,15 @@ export default function Profile({ session }: { session: Session }) {
   const sameName =
     client?.user.friendlyName === inputName || user.email === inputName
 
-  async function newClient() {
+  const newClient = useCallback(async () => {
     dispatch({
       type: actions.setLoading,
     })
     try {
-      const client = await initClient()
+      const twilioClient = await initClient()
       dispatch({
         type: actions.addClient,
-        payload: client,
+        payload: twilioClient,
       })
     } catch (err) {
       console.error('Could not create Client ->', err)
@@ -51,7 +51,7 @@ export default function Profile({ session }: { session: Session }) {
     dispatch({
       type: actions.removeLoading,
     })
-  }
+  }, [dispatch])
 
   useEffect(() => {
     if (!client) {
@@ -73,7 +73,7 @@ export default function Profile({ session }: { session: Session }) {
     return () => {
       client?.removeAllListeners()
     }
-  }, [client])
+  }, [client, newClient])
 
   async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -109,6 +109,7 @@ export default function Profile({ session }: { session: Session }) {
             <Image
               h={40}
               w={40}
+              alt="profile"
               bg="gray.700"
               rounded="full"
               boxShadow="xl"
