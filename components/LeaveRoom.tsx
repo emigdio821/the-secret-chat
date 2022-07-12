@@ -15,27 +15,23 @@ import {
   AlertDialogOverlay,
   AlertDialogContent,
 } from '@chakra-ui/react'
+import useCleanup from 'hooks/useCleanup'
+import { useRouter } from 'next/router'
 import AlertError from './AlertError'
 
 export default function LeaveRoom() {
+  const router = useRouter()
+  const cleanUp = useCleanup()
   const cancelRef = useRef<HTMLButtonElement>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { dispatch, conversation, error } = useGlobalContext()
 
-  function sessionCleanup() {
-    dispatch({
-      type: actions.removeConversation,
-    })
-    dispatch({
-      type: actions.removeMessages,
-    })
-  }
-
   async function handleLeaveRoom() {
     try {
       await leaveRoom(conversation)
-      sessionCleanup()
+      cleanUp()
       onClose()
+      router.push('/')
     } catch (e) {
       dispatch({
         type: actions.addError,

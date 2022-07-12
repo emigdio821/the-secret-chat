@@ -13,16 +13,17 @@ interface MessagesProps {
 }
 
 function ScrollBottom({ messages }: MessagesProps) {
-  const elementRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    elementRef?.current?.scrollIntoView({
+    scrollRef?.current?.scrollIntoView({
       behavior: 'smooth',
     })
   }, [messages])
-  return <div ref={elementRef} />
+  return <div ref={scrollRef} />
 }
 
 export default function Messages({ messages }: MessagesProps) {
+  const msgsContainer = useRef<HTMLDivElement>(null)
   const msgsPresent = messages.length > 0
   const { data: session } = useSession()
   const currentUser = session?.user?.email || ''
@@ -37,17 +38,25 @@ export default function Messages({ messages }: MessagesProps) {
   )
   const mainBg = `linear-gradient(180deg, ${mainGradient}, ${secondGradient} 85%),radial-gradient(ellipse at top left, rgba(13, 110, 253, 0.2), transparent 50%),radial-gradient(ellipse at top right, rgba(255, 228, 132, 0.2), transparent 50%),radial-gradient(ellipse at center right, rgba(112, 44, 249, 0.2), transparent 50%),radial-gradient(ellipse at center left, rgba(214, 51, 132, 0.2), transparent 50%)`
 
+  let scrollBottom = false
+  const elContainer = msgsContainer.current
+  if (elContainer) {
+    const { scrollHeight, scrollTop, clientHeight } = msgsContainer.current
+    scrollBottom = scrollTop + clientHeight === scrollHeight
+  }
+
   return (
     <Stack
       py={6}
       px={4}
       w="100%"
+      ref={msgsContainer}
       bgImage={mainBg}
       overflowY="auto"
       borderRadius="md"
       overflowX="hidden"
+      h={{ base: 'calc(100vh - 100px )', sm: 'inherit' }}
       justify={msgsPresent ? undefined : 'center'}
-      h={{ base: 'calc(100vh - 252px)', sm: 'inherit' }}
     >
       {msgsPresent ? (
         <>
@@ -55,9 +64,9 @@ export default function Messages({ messages }: MessagesProps) {
             const isAuthor = msg.author === currentUser
             return (
               <motion.div
+                key={msg.sid}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                key={`${msg.sid}-${msg.dateCreated}`}
                 initial={{ opacity: 0, x: isAuthor ? 80 : -80 }}
               >
                 <ChatBubble message={msg} />
@@ -81,7 +90,7 @@ export default function Messages({ messages }: MessagesProps) {
               )}
             </motion.div>
           </AnimatePresence>
-          <ScrollBottom messages={messages} />
+          {scrollBottom && <ScrollBottom messages={messages} />}
         </>
       ) : (
         <Stack alignItems="center">

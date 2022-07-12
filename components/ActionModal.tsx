@@ -97,7 +97,7 @@ export default function ActionModal({
               <Stack direction="row-reverse" mb={2} mt={4}>
                 <Button
                   type="submit"
-                  disabled={!inputVal || isLoading}
+                  disabled={!inputVal || !inputVal.trim() || isLoading}
                   rightIcon={
                     !isLoading ? (
                       <BiRightArrowAlt />

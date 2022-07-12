@@ -9,7 +9,6 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react'
 import { BiSend } from 'react-icons/bi'
-import { debounce } from 'utils'
 
 export default function ChatInput() {
   const [message, setMessage] = useState('')
@@ -25,9 +24,8 @@ export default function ChatInput() {
     }
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleTypingState = useCallback(
-    debounce(async (e: KeyboardEvent) => {
+    async (e: React.KeyboardEvent) => {
       if (e.code === 'Enter') {
         return
       }
@@ -37,12 +35,12 @@ export default function ChatInput() {
       } catch (err) {
         console.error('Something went wrong ->', err)
       }
-    }, 200),
-    [],
+    },
+    [conversation],
   )
 
   return (
-    <Box mt={2}>
+    <Box my={2}>
       <form onSubmit={handleSendMessage}>
         <Stack direction="row">
           <FormControl isRequired>

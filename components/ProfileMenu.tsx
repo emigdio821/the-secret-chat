@@ -24,16 +24,28 @@ import {
   BiHomeSmile,
   BiChevronDown,
 } from 'react-icons/bi'
-import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import actions from 'context/globalActions'
+import { useGlobalContext } from 'context/global'
+import useCleanup from 'hooks/useCleanup'
 
 export default function ProfileMenu() {
   const router = useRouter()
   const { data } = useSession()
   const { user } = data || {}
   const { toggleColorMode } = useColorMode()
+  const { dispatch } = useGlobalContext()
   const SwitchIcon = useColorModeValue(BiMoon, BiSun)
   const themeMode = useColorModeValue('Dark', 'Light')
+  const cleanUp = useCleanup()
+
+  function handleHomeClick() {
+    cleanUp()
+    dispatch({
+      type: actions.removeConversation,
+    })
+    router.push('/')
+  }
 
   return (
     <Box>
@@ -80,15 +92,14 @@ export default function ProfileMenu() {
         >
           <MenuGroup title={user?.name || undefined}>
             {router.pathname !== '/' && (
-              <NextLink href="/" passHref>
-                <MenuItem
-                  fontSize="sm"
-                  borderRadius="md"
-                  icon={<BiHomeSmile size={16} />}
-                >
-                  <Text>Home</Text>
-                </MenuItem>
-              </NextLink>
+              <MenuItem
+                fontSize="sm"
+                onClick={() => handleHomeClick()}
+                borderRadius="md"
+                icon={<BiHomeSmile size={16} />}
+              >
+                <Text>Home</Text>
+              </MenuItem>
             )}
             {/* <MenuItem
               fontSize="sm"

@@ -24,6 +24,10 @@ const reducer = (state: StateType, action: ActionPayload): StateType => {
         error: action.payload as string,
       }
     case actions.addMessage: {
+      const msg = action.payload as Message
+      if (state.messages.some((m) => m.sid === msg.sid)) {
+        return state
+      }
       return {
         ...state,
         messages: [...state.messages, action.payload] as Message[],

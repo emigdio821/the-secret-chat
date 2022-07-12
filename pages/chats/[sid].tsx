@@ -1,11 +1,11 @@
 import {
   Box,
-  Heading,
   Icon,
-  VStack,
   Text,
-  useColorModeValue,
   Button,
+  VStack,
+  Heading,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import Chat from 'components/Chat'
 import Helmet from 'components/Helmet'
@@ -36,8 +36,7 @@ export default function ChatPage() {
               <Icon as={BiGhost} fontSize="5rem" />
               <Heading fontSize="3xl">Chat not found</Heading>
               <Text fontSize="lg">
-                Seems like you have not joined this chat. Maybe you have another
-                active chat, try again.
+                Seems like you don&apos;t have an active chat, try again.
               </Text>
               <NextLink href="/">
                 <Button mt={10} leftIcon={<BiArrowBack />}>

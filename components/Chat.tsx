@@ -31,15 +31,12 @@ export default function Chat() {
     }
 
     if (conversation.status === 'joined') {
-      dispatch({
-        type: actions.removeMessages,
-      })
       getMsgs()
     }
   }, [conversation, dispatch])
 
   return (
-    <>
+    <Stack maxH={{ base: 'calc(100vh - 100px )', sm: '2xl' }}>
       <Stack
         mb={4}
         align="center"
@@ -64,13 +61,11 @@ export default function Chat() {
         spacing={2}
         position="relative"
         direction={{ base: 'column', sm: 'row' }}
-        h={{ base: 'calc(100vh - 252px)', sm: 'xl' }}
-        maxH={{ base: 'calc(100vh - 252px)', sm: 'xl' }}
       >
         <Participants />
         <Messages messages={messages} />
       </Stack>
       <ChatInput />
-    </>
+    </Stack>
   )
 }

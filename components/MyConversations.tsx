@@ -12,7 +12,6 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
-// import NextLink from 'next/link'
 import { BiGhost, BiRightArrowAlt } from 'react-icons/bi'
 import { useEffect, useState } from 'react'
 import { Conversation } from '@twilio/conversations'
@@ -30,7 +29,7 @@ export default function MyConversations() {
   const { client, dispatch, isLoading, conversation } = useGlobalContext()
 
   async function getConversation(sid: string) {
-    if (client) {
+    if (client && sid) {
       try {
         const conver = await client.getConversationBySid(sid)
         dispatch({
@@ -95,7 +94,6 @@ export default function MyConversations() {
                       <Heading as="h5" size="sm" noOfLines={1}>
                         {friendlyName}
                       </Heading>
-                      {/* <NextLink href={`/chats/${sid}`}> */}
                       <Button
                         onClick={() => getConversation(sid)}
                         boxShadow="xl"
@@ -112,7 +110,6 @@ export default function MyConversations() {
                       >
                         Join
                       </Button>
-                      {/* </NextLink> */}
                     </Stack>
                   </Box>
                 </GridItem>

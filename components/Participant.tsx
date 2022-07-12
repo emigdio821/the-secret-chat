@@ -26,7 +26,8 @@ export default function Participant({ participant }: ChatBubbleProps) {
   const userImg = session?.user?.image || ''
   const isAuthor = identity === currentUser
   const { conversation } = participant
-  const isAdmin = currentUser === conversation.createdBy
+  // const isAdmin = currentUser === conversation.createdBy
+  const isAdmin = false
 
   return (
     <Stack
