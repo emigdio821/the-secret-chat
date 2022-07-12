@@ -6,7 +6,6 @@ import {
   Avatar,
   VStack,
   Button,
-  Spinner,
   MenuList,
   MenuItem,
   MenuGroup,
@@ -30,6 +29,7 @@ import { useRouter } from 'next/router'
 import actions from 'context/globalActions'
 import { useGlobalContext } from 'context/global'
 import useCleanup from 'hooks/useCleanup'
+import Spinner from './Spinner'
 
 export default function ProfileMenu() {
   const router = useRouter()
@@ -69,7 +69,7 @@ export default function ProfileMenu() {
         >
           {!user ? (
             <VStack w="100%" h="100%" bg="#333" justify="center">
-              <Spinner size="sm" speed="0.6s" color="#B2ABCC" thickness="4px" />
+              <Spinner />
             </VStack>
           ) : (
             <Stack alignItems="center" direction="row">

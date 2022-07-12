@@ -3,7 +3,6 @@ import {
   Stack,
   Input,
   Button,
-  Spinner,
   ModalBody,
   ModalHeader,
   FormControl,
@@ -18,6 +17,7 @@ import { useGlobalContext } from 'context/global'
 import actions from 'context/globalActions'
 import { ModalCallbackProps } from 'types/index'
 import AlertError from './AlertError'
+import Spinner from './Spinner'
 
 interface ActionModalProps {
   btnLabel: string
@@ -98,18 +98,7 @@ export default function ActionModal({
                 <Button
                   type="submit"
                   disabled={!inputVal || !inputVal.trim() || isLoading}
-                  rightIcon={
-                    !isLoading ? (
-                      <BiRightArrowAlt />
-                    ) : (
-                      <Spinner
-                        size="sm"
-                        speed="0.6s"
-                        color="#B2ABCC"
-                        thickness="4px"
-                      />
-                    )
-                  }
+                  rightIcon={!isLoading ? <BiRightArrowAlt /> : <Spinner />}
                 >
                   {!isLoading ? btnLabel : <BiGhost size={18} />}
                 </Button>

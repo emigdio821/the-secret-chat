@@ -86,11 +86,11 @@ export default function Participants() {
         <AnimatePresence initial={false} exitBeforeEnter>
           {partiJoined && (
             <motion.div
-              key={partiJoined ? 'animate' : 'exit'}
+              exit={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
               initial={{ opacity: 0, y: -5 }}
-              exit={{ opacity: 0, y: -5 }}
+              key={partiJoined ? 'animate' : 'exit'}
             >
               <Text
                 bg={notifBg}
@@ -108,11 +108,11 @@ export default function Participants() {
         <AnimatePresence initial={false} exitBeforeEnter>
           {partiLeft && (
             <motion.div
-              key={partiLeft ? 'animate' : 'exit'}
+              exit={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
               initial={{ opacity: 0, y: -10 }}
-              exit={{ opacity: 0, y: -10 }}
+              key={partiLeft ? 'animate' : 'exit'}
             >
               <Text
                 rounded="lg"

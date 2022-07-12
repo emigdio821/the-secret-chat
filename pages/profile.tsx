@@ -9,7 +9,6 @@ import {
   Button,
   VStack,
   Heading,
-  Spinner,
   FormControl,
   useColorModeValue,
 } from '@chakra-ui/react'
@@ -24,7 +23,8 @@ import useBgGradient from 'hooks/useBgGradient'
 import { useGlobalContext } from 'context/global'
 import { BiEraser, BiGhost } from 'react-icons/bi'
 import { getSession, GetSessionParams } from 'next-auth/react'
-import MotionDiv from '../components/MotionDiv'
+import MotionDiv from 'components/MotionDiv'
+import Spinner from 'components/Spinner'
 
 export default function Profile({ session }: { session: Session }) {
   const bgGradient = useBgGradient()
@@ -61,7 +61,6 @@ export default function Profile({ session }: { session: Session }) {
     if (client) {
       if (client.user.friendlyName) setFName(client.user.friendlyName)
       client.on('stateChanged', async (state) => {
-        console.log('test')
         if (state === 'initialized') {
           if (client.user.friendlyName) {
             setFName(client.user.friendlyName)
@@ -181,18 +180,7 @@ export default function Profile({ session }: { session: Session }) {
                   _active={{
                     bg: '#222222',
                   }}
-                  rightIcon={
-                    !isLoading ? (
-                      <BiEraser />
-                    ) : (
-                      <Spinner
-                        size="sm"
-                        speed="0.6s"
-                        color="#B2ABCC"
-                        thickness="4px"
-                      />
-                    )
-                  }
+                  rightIcon={!isLoading ? <BiEraser /> : <Spinner />}
                 >
                   {isLoading ? <BiGhost size={18} /> : 'Update'}
                 </Button>

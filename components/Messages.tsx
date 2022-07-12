@@ -5,9 +5,9 @@ import { Message } from '@twilio/conversations'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { useGlobalContext } from 'context/global'
+import useBgGradient from 'hooks/useBgGradient'
 import ChatBubble from './ChatBubble'
 import TypingBubble from './TypingBubble'
-import useBgGradient from '../hooks/useBgGradient'
 
 interface MessagesProps {
   messages: Message[]
