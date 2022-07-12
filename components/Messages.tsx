@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Stack, Text, useColorModeValue } from '@chakra-ui/react'
+import { Stack, Text } from '@chakra-ui/react'
 import { BiGhost } from 'react-icons/bi'
 import { Message } from '@twilio/conversations'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react'
 import { useGlobalContext } from 'context/global'
 import ChatBubble from './ChatBubble'
 import TypingBubble from './TypingBubble'
+import useBgGradient from '../hooks/useBgGradient'
 
 interface MessagesProps {
   messages: Message[]
@@ -23,21 +24,12 @@ function ScrollBottom({ messages }: MessagesProps) {
 }
 
 export default function Messages({ messages }: MessagesProps) {
+  const bgGradient = useBgGradient()
   const msgsContainer = useRef<HTMLDivElement>(null)
   const msgsPresent = messages.length > 0
   const { data: session } = useSession()
   const currentUser = session?.user?.email || ''
   const { usersTyping } = useGlobalContext()
-  const mainGradient = useColorModeValue(
-    'rgba(237, 237, 237, 0.2)',
-    'rgba(39, 39, 39, 0.4)',
-  )
-  const secondGradient = useColorModeValue(
-    'rgba(237, 237, 237, 1)',
-    'rgba(39, 39, 39, 1)',
-  )
-  const mainBg = `linear-gradient(180deg, ${mainGradient}, ${secondGradient} 85%),radial-gradient(ellipse at top left, rgba(13, 110, 253, 0.2), transparent 50%),radial-gradient(ellipse at top right, rgba(255, 228, 132, 0.2), transparent 50%),radial-gradient(ellipse at center right, rgba(112, 44, 249, 0.2), transparent 50%),radial-gradient(ellipse at center left, rgba(214, 51, 132, 0.2), transparent 50%)`
-
   let scrollBottom = false
   const elContainer = msgsContainer.current
   if (elContainer) {
@@ -50,12 +42,11 @@ export default function Messages({ messages }: MessagesProps) {
       py={6}
       px={4}
       w="100%"
-      ref={msgsContainer}
-      bgImage={mainBg}
+      rounded="md"
       overflowY="auto"
-      borderRadius="md"
       overflowX="hidden"
-      h={{ base: 'calc(100vh - 100px )', sm: 'inherit' }}
+      ref={msgsContainer}
+      bgImage={bgGradient}
       justify={msgsPresent ? undefined : 'center'}
     >
       {msgsPresent ? (

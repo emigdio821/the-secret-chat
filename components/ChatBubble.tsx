@@ -35,8 +35,8 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
         minW={100}
         maxW={400}
         spacing={4}
+        rounded="md"
         boxShadow="xl"
-        borderRadius="md"
         bg={isAuthor ? mainMsgBg : secondaryMsgBg}
       >
         <Text>{body}</Text>

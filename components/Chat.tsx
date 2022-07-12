@@ -36,7 +36,7 @@ export default function Chat() {
   }, [conversation, dispatch])
 
   return (
-    <Stack maxH={{ base: 'calc(100vh - 100px )', sm: '2xl' }}>
+    <Stack maxH={{ base: 'calc(100vh - 120px )', sm: '2xl' }}>
       <Stack
         mb={4}
         align="center"

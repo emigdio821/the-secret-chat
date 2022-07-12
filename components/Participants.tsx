@@ -4,7 +4,14 @@ import { useSession } from 'next-auth/react'
 import { useGlobalContext } from 'context/global'
 import { Participant as Part } from '@twilio/conversations'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Box, Stack, Heading, useColorModeValue, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Stack,
+  Heading,
+  useColorModeValue,
+  Text,
+  Badge,
+} from '@chakra-ui/react'
 import MotionDiv from './MotionDiv'
 import Participant from './Participant'
 
@@ -70,9 +77,12 @@ export default function Participants() {
         direction={{ base: 'row', sm: 'column' }}
         alignItems={{ base: 'center', sm: 'flex-start' }}
       >
-        <Heading px={4} pt={2} size={{ base: 'xs', sm: 'sm' }}>
-          Participants
-        </Heading>
+        <Stack direction="row" align="center" pt={{ base: 0, sm: 2 }} px={4}>
+          <Heading size={{ base: 'xs', sm: 'sm' }}>Participants</Heading>
+          {participants.length > 1 && (
+            <Badge colorScheme="purple">{participants.length}</Badge>
+          )}
+        </Stack>
         <AnimatePresence initial={false} exitBeforeEnter>
           {partiJoined && (
             <motion.div
@@ -84,8 +94,8 @@ export default function Participants() {
             >
               <Text
                 bg={notifBg}
+                rounded="lg"
                 fontSize="xs"
-                borderRadius="lg"
                 wordBreak="break-all"
                 px={{ base: 2, sm: 4 }}
                 py={{ base: 1, sm: 2 }}
@@ -105,9 +115,9 @@ export default function Participants() {
               exit={{ opacity: 0, y: -10 }}
             >
               <Text
+                rounded="lg"
                 bg={notifBg}
                 fontSize="xs"
-                borderRadius="lg"
                 wordBreak="break-all"
                 px={{ base: 2, sm: 4 }}
                 py={{ base: 1, sm: 2 }}

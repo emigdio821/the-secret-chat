@@ -9,7 +9,7 @@ export default function AppWrapper({ children }: WrapperProps) {
   return (
     <>
       <Navbar />
-      <Container minH="100vh" maxW="4xl" pt={20} pb={4}>
+      <Container minH="calc(100vh-100px)" maxW="4xl" pt={20} pb={4}>
         {children}
       </Container>
     </>

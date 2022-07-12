@@ -12,29 +12,22 @@ import Logo from 'components/Logo'
 import { signIn } from 'next-auth/react'
 import { FaGithub } from 'react-icons/fa'
 import { BiMoon, BiSun } from 'react-icons/bi'
+import useBgGradient from 'hooks/useBgGradient'
 
 export default function Login() {
   const btnColor = '#fafafa'
   const btnHoverColor = '#444'
   const btnActiveColor = '#333'
+  const bgGradient = useBgGradient()
   const { toggleColorMode } = useColorMode()
   const btnBg = useColorModeValue('#333', '#262626')
   const SwitchIcon = useColorModeValue(BiMoon, BiSun)
-  const mainGradient = useColorModeValue(
-    'rgba(255, 255, 255, 0.1)',
-    'rgba(51, 51, 51, 0.6)',
-  )
-  const secondGradient = useColorModeValue(
-    'rgba(255, 255, 255, 1)',
-    'rgba(51, 51, 51, 1)',
-  )
-  const mainBg = `linear-gradient(180deg, ${mainGradient}, ${secondGradient} 85%),radial-gradient(ellipse at top left, rgba(13, 110, 253, 0.5), transparent 50%),radial-gradient(ellipse at top right, rgba(255, 228, 132, 0.5), transparent 50%),radial-gradient(ellipse at center right, rgba(112, 44, 249, 0.5), transparent 50%),radial-gradient(ellipse at center left, rgba(214, 51, 132, 0.5), transparent 50%)`
 
   return (
-    <Center className="lupi" p={6} minH="100vh" bgImage={mainBg}>
+    <Center p={6} minH="100vh" bgImage={bgGradient}>
       <Box
         w="md"
-        rounded="md"
+        rounded="lg"
         boxShadow="xl"
         overflow="hidden"
         bg={useColorModeValue('#EDEDED', '#222222')}
@@ -49,8 +42,8 @@ export default function Login() {
           <Stack justifyContent="center" direction="row">
             <Button
               bg={btnBg}
+              rounded="md"
               color={btnColor}
-              borderRadius="md"
               leftIcon={<FaGithub size={20} />}
               onClick={() =>
                 signIn('github', {
@@ -69,7 +62,7 @@ export default function Login() {
             <IconButton
               bg={btnBg}
               p={[0, 4]}
-              borderRadius="full"
+              rounded="full"
               onClick={toggleColorMode}
               aria-label="Switch theme"
               icon={<SwitchIcon size={20} />}

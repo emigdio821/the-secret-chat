@@ -54,7 +54,7 @@ export default function Participant({ participant }: ChatBubbleProps) {
             name={identity || 'Unknown'}
             src={isAuthor ? userImg : ''}
           />
-          <Stack maxW={20} borderRadius="md">
+          <Stack maxW={20} rounded="md">
             {isAuthor ? <User p="You" /> : <User p={identity} />}
           </Stack>
         </>

@@ -24,7 +24,7 @@ export default function NotFound() {
       <VStack px={{ base: 4, lg: 0 }} justify="center" w="100%">
         <Box
           w="100%"
-          borderRadius="xl"
+          rounded="xl"
           py={{ base: 10, sm: 20 }}
           bg={useColorModeValue('#EDEDED', '#2e2e2e')}
         >

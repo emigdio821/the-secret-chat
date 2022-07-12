@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
-import createClient from 'lib/client'
-import getAccessToken from 'lib/user'
+import { useEffect, useState } from 'react'
+import { initClient } from 'lib/client'
 import Helmet from 'components/Helmet'
 import { Heading, Stack } from '@chakra-ui/react'
 import { ModalCallbackProps, Session } from 'types'
@@ -57,18 +56,13 @@ export default function Index({ session }: { session: Session }) {
     })
   }
 
-  const initClient = useCallback(async () => {
-    try {
-      const accessToken = await getAccessToken()
-      const twilioClient = await createClient(accessToken)
-      dispatch({
-        type: actions.addClient,
-        payload: twilioClient,
-      })
-    } catch {
-      setError('Failed to create twilio client')
-    }
-  }, [dispatch])
+  async function newClient() {
+    const client = await initClient()
+    dispatch({
+      type: actions.addClient,
+      payload: client,
+    })
+  }
 
   const handleJoinChatRoom = async ({
     onClose,
@@ -89,7 +83,7 @@ export default function Index({ session }: { session: Session }) {
       } catch {
         dispatch({
           type: actions.addError,
-          payload: 'Doesn\'t exist or you don\'t have access to it',
+          payload: "Doesn't exist or you don't have access to it",
         })
       }
     }
@@ -100,13 +94,13 @@ export default function Index({ session }: { session: Session }) {
 
   useEffect(() => {
     if (!client) {
-      initClient()
+      newClient()
     }
 
     if (client) {
       client.on('tokenExpired', () => {
         if (session) {
-          initClient()
+          newClient()
         }
       })
     }

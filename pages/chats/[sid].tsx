@@ -29,7 +29,7 @@ export default function ChatPage() {
             px={6}
             bg={bg}
             w="100%"
-            borderRadius="xl"
+            rounded="xl"
             py={{ base: 6, sm: 20 }}
           >
             <Box textAlign="center" w="100%">

@@ -8,13 +8,7 @@ export default function AlertError({ error }: { error: string }) {
       transition={{ duration: 0.2 }}
       initial={{ opacity: 0, y: -10 }}
     >
-      <Alert
-        p={2}
-        size="sm"
-        status="error"
-        borderRadius="md"
-        variant="left-accent"
-      >
+      <Alert p={2} size="sm" rounded="md" status="error" variant="left-accent">
         <AlertIcon boxSize={4} />
         <Box>
           <AlertDescription fontSize="xs">{error}</AlertDescription>

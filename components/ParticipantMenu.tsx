@@ -45,8 +45,8 @@ export default function ParticipantMenu({
           size={{ base: 'sm', sm: 'xs' }}
           maxW={{ base: 140, sm: 120 }}
           as={Button}
+          rounded="full"
           color="#fafafa"
-          borderRadius="full"
           _hover={{
             bg: '#444',
           }}
@@ -76,16 +76,16 @@ export default function ParticipantMenu({
         >
           <MenuGroup title={identity || undefined} fontSize="xs" noOfLines={1}>
             <MenuItem
+              rounded="md"
               fontSize="xs"
-              borderRadius="md"
               onClick={() => handleKickParticipant()}
               icon={<BiUserX size={16} />}
             >
               Kick
             </MenuItem>
             <MenuItem
+              rounded="md"
               fontSize="xs"
-              borderRadius="md"
               icon={<BiCheckShield size={16} />}
             >
               Promote to admin

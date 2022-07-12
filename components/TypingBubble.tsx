@@ -27,8 +27,8 @@ export default function TypingBubble({ participants }: TypingBubbleProps) {
         px={4}
         minW={100}
         maxW={400}
+        rounded="md"
         boxShadow="lg"
-        borderRadius="md"
         bg={useColorModeValue('gray.100', '#202020')}
       >
         <Text fontSize={10}>{text}</Text>

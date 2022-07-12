@@ -23,7 +23,9 @@ import {
   BiLogOut,
   BiHomeSmile,
   BiChevronDown,
+  BiUser,
 } from 'react-icons/bi'
+import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import actions from 'context/globalActions'
 import { useGlobalContext } from 'context/global'
@@ -54,9 +56,9 @@ export default function ProfileMenu() {
           px={2}
           bg="#333"
           as={Button}
+          rounded="full"
           color="#fafafa"
           disabled={!user}
-          borderRadius="full"
           _hover={{
             bg: '#444',
           }}
@@ -93,25 +95,29 @@ export default function ProfileMenu() {
           <MenuGroup title={user?.name || undefined}>
             {router.pathname !== '/' && (
               <MenuItem
+                rounded="md"
                 fontSize="sm"
                 onClick={() => handleHomeClick()}
-                borderRadius="md"
                 icon={<BiHomeSmile size={16} />}
               >
                 <Text>Home</Text>
               </MenuItem>
             )}
-            {/* <MenuItem
-              fontSize="sm"
-              borderRadius="md"
-              icon={<BiChat size={16} />}
-            >
-              My chat rooms
-            </MenuItem> */}
+            {router.pathname !== '/profile' && (
+              <NextLink href="/profile" passHref>
+                <MenuItem
+                  rounded="md"
+                  fontSize="sm"
+                  icon={<BiUser size={16} />}
+                >
+                  My profile
+                </MenuItem>
+              </NextLink>
+            )}
           </MenuGroup>
           <MenuItem
+            rounded="md"
             fontSize="sm"
-            borderRadius="md"
             onClick={toggleColorMode}
             icon={<SwitchIcon size={16} />}
           >
@@ -119,8 +125,8 @@ export default function ProfileMenu() {
           </MenuItem>
           <MenuDivider />
           <MenuItem
+            rounded="md"
             fontSize="sm"
-            borderRadius="md"
             onClick={() =>
               signOut({
                 callbackUrl: '/login',

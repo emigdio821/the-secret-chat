@@ -89,7 +89,7 @@ export default function MyConversations() {
             <AnimatePresence key={sid}>
               <MotionDiv>
                 <GridItem>
-                  <Box p={6} bg={bg} borderRadius="lg">
+                  <Box p={6} bg={bg} rounded="lg">
                     <Stack spacing={6}>
                       <Heading as="h5" size="sm" noOfLines={1}>
                         {friendlyName}
@@ -119,7 +119,7 @@ export default function MyConversations() {
         </Grid>
       ) : (
         <VStack justify="center">
-          <Box w="100%" borderRadius="xl" py={{ base: 10, sm: 20 }} bg={bg}>
+          <Box w="100%" rounded="xl" py={{ base: 10, sm: 20 }} bg={bg}>
             <Box textAlign="center" w="100%">
               <Icon as={BiGhost} fontSize="5rem" />
               <Heading fontSize="3xl">No chats yet...</Heading>
