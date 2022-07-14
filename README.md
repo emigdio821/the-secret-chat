@@ -1,6 +1,6 @@
 ## TheSecretChat
 
-### Create an .env file
+#### Create an .env file
 
 ```
 GITHUB_ID=
@@ -21,9 +21,9 @@ yarn install
 ```
 
 #### Run the dev server
-
 ```bash
 yarn dev
 ```
+<br/>
 The project runs on **localhost:3000** by default
 
