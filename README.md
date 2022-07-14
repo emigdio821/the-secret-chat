@@ -25,5 +25,6 @@ yarn install
 yarn dev
 ```
 <br/>
+
 The project runs on **localhost:3000** by default
 
