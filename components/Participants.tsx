@@ -100,7 +100,7 @@ export default function Participants() {
                 px={{ base: 2, sm: 4 }}
                 py={{ base: 1, sm: 2 }}
               >
-                {partiJoined.identity} joined
+                {partiJoined.identity} added
               </Text>
             </motion.div>
           )}

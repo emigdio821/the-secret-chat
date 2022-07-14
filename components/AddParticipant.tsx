@@ -21,7 +21,7 @@ export default function AddParticipant() {
       } catch {
         dispatch({
           type: actions.addError,
-          payload: 'Failed to add participant',
+          payload: 'Doesn\'t exist or something went wrong',
         })
       }
     }
@@ -35,7 +35,7 @@ export default function AddParticipant() {
       btnLabel="Add"
       mainBtnLbl="Add"
       BtnIcon={BiUserPlus}
-      inputLabel="Participant name"
+      inputLabel="Username"
       action={handleAddParticipant}
       headerTitle="Add participant"
     />

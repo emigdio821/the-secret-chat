@@ -113,7 +113,7 @@ export default function MyConversations() {
         </InputGroup>
       </Stack>
       <Box
-        minH={{ base: 280, md: 600 }}
+        minH={{ base: 280, md: 400 }}
         maxH={{ base: 'calc(100vh - 400px)' }}
         overflowY="auto"
       >

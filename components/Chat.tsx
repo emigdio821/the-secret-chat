@@ -57,9 +57,8 @@ export default function Chat() {
       </Stack>
       <Stack
         mt={6}
-        minH={400}
-        spacing={2}
         position="relative"
+        minH={{ base: 400, sm: 600 }}
         direction={{ base: 'column', sm: 'row' }}
       >
         <Participants />

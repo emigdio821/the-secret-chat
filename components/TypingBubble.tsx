@@ -1,6 +1,9 @@
 import { Stack, Avatar, Text, useColorModeValue } from '@chakra-ui/react'
 import { Participant } from '@twilio/conversations'
+import { useGlobalContext } from 'context/global'
+import { useCallback, useEffect, useState } from 'react'
 import { BiGhost } from 'react-icons/bi'
+import { getAvatar } from 'utils'
 
 interface TypingBubbleProps {
   participants: Participant[]
@@ -9,17 +12,35 @@ interface TypingBubbleProps {
 export default function TypingBubble({ participants }: TypingBubbleProps) {
   const idCondition = participants.length > 0 && participants.length < 2
   const identity = idCondition ? participants[0].identity : ''
+  const [friendlyName, setFriendlyName] = useState<string>(identity || '')
+  const [avatar, setAvatar] = useState<string>('')
   const text =
     participants.length > 1
       ? `${participants.length} participants are typing...`
-      : `${participants[0].identity} is typing...`
+      : `${friendlyName} is typing...`
+  const { client } = useGlobalContext()
+
+  const getFriendlyName = useCallback(async () => {
+    if (identity) {
+      const user = await client.getUser(identity)
+      const avatarUrl = getAvatar(user)
+      if (user.friendlyName) setFriendlyName(user.friendlyName)
+      if (avatarUrl) setAvatar(avatarUrl)
+    }
+  }, [client, identity])
+
+  useEffect(() => {
+    getFriendlyName()
+  }, [getFriendlyName, identity])
 
   return (
     <Stack py={2} alignItems="center" direction="row" opacity={0.9}>
       <Avatar
         size="xs"
         bg="gray.700"
-        name={identity || ''}
+        src={avatar}
+        color="#fafafa"
+        name={friendlyName.charAt(0) || 'Unknown'}
         icon={<BiGhost size={16} color="#fafafa" />}
       />
       <Stack

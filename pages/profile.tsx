@@ -81,6 +81,10 @@ export default function Profile({ session }: { session: Session }) {
     })
     try {
       await client.user.updateFriendlyName(inputName)
+      await client.user.updateAttributes({
+        avatar: user.image,
+        friendlyName: inputName,
+      })
       setInputName('')
       setFName(inputName)
     } catch (err) {

@@ -36,6 +36,9 @@ export default function Index({ session }: { session: Session }) {
         const conver = await client.createConversation({
           uniqueName: inputVal,
           friendlyName: inputVal,
+          attributes: {
+            description: 'Chat to discuss stuff',
+          },
         })
         // await conver.add(session.user.email)
         await conver.join()
@@ -137,6 +140,18 @@ export default function Index({ session }: { session: Session }) {
       }
     }
   }, [client, conversation, dispatch, newClient, session])
+
+  useEffect(() => {
+    async function updateAttrs() {
+      await client.user.updateAttributes({
+        avatar: session.user.image,
+        friendlyName: client.user.friendlyName,
+      })
+    }
+    if (session && client) {
+      updateAttrs()
+    }
+  }, [client, session])
 
   return (
     <AppWrapper>

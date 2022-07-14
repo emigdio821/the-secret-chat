@@ -1,3 +1,5 @@
+import { Participant, User } from '@twilio/conversations'
+
 export function formatDate(d: Date) {
   return new Date(d).toLocaleString([], {
     hour12: false,
@@ -36,4 +38,22 @@ export function sortArray(
     if (xVal > yVal) return 1
     return 0
   })
+}
+
+export function getPartFName(part: Participant) {
+  // @ts-ignore
+  if (part.attributes?.friendlyName) {
+    // @ts-ignore
+    return part.attributes.friendlyName
+  }
+  return part.identity
+}
+
+export function getAvatar(user: User) {
+  // @ts-ignore
+  if (user.attributes?.avatar) {
+    // @ts-ignore
+    return user.attributes.avatar
+  }
+  return ''
 }
