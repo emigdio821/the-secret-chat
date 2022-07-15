@@ -29,6 +29,7 @@ import { useRouter } from 'next/router'
 import actions from 'context/globalActions'
 import { useGlobalContext } from 'context/global'
 import useCleanup from 'hooks/useCleanup'
+import { FaGithub } from 'react-icons/fa'
 import Spinner from './Spinner'
 
 export default function ProfileMenu() {
@@ -89,7 +90,7 @@ export default function ProfileMenu() {
         </MenuButton>
         <MenuList
           px={2}
-          boxShadow="xl"
+          shadow="xl"
           bg={useColorModeValue('#fafafa', '#262626')}
         >
           <MenuGroup title={user?.name || undefined}>
@@ -122,6 +123,18 @@ export default function ProfileMenu() {
             icon={<SwitchIcon size={16} />}
           >
             <Text>{themeMode} theme</Text>
+          </MenuItem>
+          <MenuDivider />
+          <MenuItem
+            as="a"
+            rounded="md"
+            fontSize="sm"
+            target="_blank"
+            rel="noopener noreferrer"
+            icon={<FaGithub size={16} />}
+            href="https://github.com/emigdio821/the-secret-chat"
+          >
+            <Text>Source</Text>
           </MenuItem>
           <MenuDivider />
           <MenuItem

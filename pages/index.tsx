@@ -141,17 +141,17 @@ export default function Index({ session }: { session: Session }) {
     }
   }, [client, conversation, dispatch, newClient, session])
 
-  useEffect(() => {
-    async function updateAttrs() {
-      await client.user.updateAttributes({
-        avatar: session.user.image,
-        friendlyName: client.user.friendlyName,
-      })
-    }
-    if (session && client) {
-      updateAttrs()
-    }
-  }, [client, session])
+  // useEffect(() => {
+  //   async function updateAttrs() {
+  //     await client.user.updateAttributes({
+  //       avatar: session.user.image,
+  //       friendlyName: client.user.friendlyName,
+  //     })
+  //   }
+  //   if (session && client) {
+  //     updateAttrs()
+  //   }
+  // }, [client, session])
 
   return (
     <AppWrapper>

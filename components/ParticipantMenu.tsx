@@ -77,7 +77,7 @@ export default function ParticipantMenu({
         </MenuButton>
         <MenuList
           px={2}
-          boxShadow="xl"
+          shadow="xl"
           bg={useColorModeValue('#fafafa', '#262626')}
         >
           <MenuGroup title={friendlyName} fontSize="xs" noOfLines={1}>

@@ -16,6 +16,7 @@ import NextLink from 'next/link'
 
 export default function ChatPage() {
   const bg = useColorModeValue('#EDEDED', '#2d2d2d')
+  const btnBg = useColorModeValue('#333', '#262626')
   const { client, conversation } = useGlobalContext()
 
   return (
@@ -25,13 +26,7 @@ export default function ChatPage() {
         <Chat />
       ) : (
         <VStack justify="center">
-          <Box
-            px={6}
-            bg={bg}
-            w="100%"
-            rounded="xl"
-            py={{ base: 6, sm: 20 }}
-          >
+          <Box px={6} bg={bg} w="100%" rounded="xl" py={{ base: 6, sm: 20 }}>
             <Box textAlign="center" w="100%">
               <Icon as={BiGhost} fontSize="5rem" />
               <Heading fontSize="3xl">Chat not found</Heading>
@@ -39,7 +34,19 @@ export default function ChatPage() {
                 Seems like you don&apos;t have an active chat, try again.
               </Text>
               <NextLink href="/">
-                <Button mt={10} leftIcon={<BiArrowBack />}>
+                <Button
+                  mt={10}
+                  bg={btnBg}
+                  shadow="xl"
+                  color="#fafafa"
+                  leftIcon={<BiArrowBack />}
+                  _hover={{
+                    bg: '#444',
+                  }}
+                  _active={{
+                    bg: '#262626',
+                  }}
+                >
                   Back to home
                 </Button>
               </NextLink>

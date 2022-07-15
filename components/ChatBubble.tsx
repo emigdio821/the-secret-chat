@@ -42,7 +42,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
     >
       <Avatar
         size="sm"
-        boxShadow="xl"
+        shadow="xl"
         color="#fafafa"
         src={isAuthor ? userImg : avatar}
         name={friendlyName.charAt(0) || ''}
@@ -53,8 +53,8 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
         px={4}
         minW={100}
         maxW={400}
+        shadow="xl"
         rounded="md"
-        boxShadow="xl"
         bg={isAuthor ? mainMsgBg : secondaryMsgBg}
       >
         <Text>{body}</Text>

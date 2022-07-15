@@ -33,6 +33,10 @@ export default function DynamicHead({
       />
       <link rel="manifest" href="/site.webmanifest" />
       <meta name="description" content={description} />
+      <meta
+        name="viewport"
+        content="initial-scale=1.0, width=device-width,  maximum-scale=1.0"
+      />
     </Head>
   )
 }

@@ -19,7 +19,6 @@ import { useEffect, useState } from 'react'
 import { Conversation } from '@twilio/conversations'
 import actions from 'context/globalActions'
 import { useRouter } from 'next/router'
-import { AnimatePresence } from 'framer-motion'
 import { sortArray } from 'utils'
 import MotionDiv from './MotionDiv'
 import Spinner from './Spinner'
@@ -74,7 +73,9 @@ export default function MyConversations() {
   useEffect(() => {
     if (searchValue) {
       const filteredConversations = conversations.filter((conver) =>
-        conver.friendlyName?.toLowerCase().includes(searchValue),
+        conver.friendlyName
+          ?.toLowerCase()
+          .includes(searchValue.toLocaleLowerCase()),
       )
       setFiltered(filteredConversations)
     } else {
@@ -85,9 +86,9 @@ export default function MyConversations() {
   return (
     <Box>
       <Stack
-        mb={2}
-        direction="row"
+        mb={6}
         align="center"
+        direction="row"
         justifyContent="space-between"
       >
         <Heading as="h2" size={{ base: 'md', sm: 'lg' }}>
@@ -98,12 +99,12 @@ export default function MyConversations() {
             </chakra.span>
           )}
         </Heading>
-        <InputGroup w={{ base: '50%', sm: 'auto' }}>
+        <InputGroup w={{ base: '50%', sm: 'auto' }} size="sm">
           <InputLeftElement pointerEvents="none">
             <BiSearch color="gray.300" />
           </InputLeftElement>
           <Input
-            size="md"
+            borderRadius="md"
             value={searchValue}
             disabled={isLoading}
             placeholder="Search"
@@ -113,9 +114,10 @@ export default function MyConversations() {
         </InputGroup>
       </Stack>
       <Box
-        minH={{ base: 280, md: 400 }}
-        maxH={{ base: 'calc(100vh - 400px)' }}
+        rounded="lg"
         overflowY="auto"
+        minH={{ base: 'calc(100vh - 428px)', sm: 500 }}
+        maxH={{ base: 'calc(100vh - 340px)', sm: 'calc(100vh - 300px)' }}
       >
         {filtered.length ? (
           <Grid
@@ -127,49 +129,45 @@ export default function MyConversations() {
             }}
           >
             {filtered.map(({ friendlyName, sid }) => (
-              <AnimatePresence key={sid}>
-                <MotionDiv>
-                  <GridItem>
-                    <Box p={6} bg={bg} rounded="lg">
-                      <Stack spacing={6}>
-                        <Heading as="h5" size="sm" noOfLines={1}>
-                          {friendlyName}
-                        </Heading>
-                        <Button
-                          onClick={() => getConversation(sid)}
-                          boxShadow="xl"
-                          rightIcon={<BiRightArrowAlt />}
-                          disabled={isLoading}
-                          bg={btnBg}
-                          color="#fafafa"
-                          _hover={{
-                            bg: '#444',
-                          }}
-                          _active={{
-                            bg: '#262626',
-                          }}
-                        >
-                          Join
-                        </Button>
-                      </Stack>
-                    </Box>
-                  </GridItem>
-                </MotionDiv>
-              </AnimatePresence>
+              <MotionDiv key={sid}>
+                <GridItem>
+                  <Box p={6} bg={bg} rounded="lg">
+                    <Stack spacing={6}>
+                      <Heading as="h5" size="sm" noOfLines={1}>
+                        {friendlyName}
+                      </Heading>
+                      <Button
+                        bg={btnBg}
+                        shadow="xl"
+                        color="#fafafa"
+                        disabled={isLoading}
+                        rightIcon={<BiRightArrowAlt />}
+                        onClick={() => getConversation(sid)}
+                        _hover={{
+                          bg: '#444',
+                        }}
+                        _active={{
+                          bg: '#262626',
+                        }}
+                      >
+                        Join
+                      </Button>
+                    </Stack>
+                  </Box>
+                </GridItem>
+              </MotionDiv>
             ))}
           </Grid>
         ) : (
           <VStack justify="center">
-            <Box w="100%" rounded="xl" py={{ base: 10, sm: 20 }} bg={bg}>
+            <Box w="100%" rounded="lg" py={{ base: 10, sm: 20 }} bg={bg}>
               <Box textAlign="center" w="100%">
                 <Icon as={BiGhost} fontSize="5rem" />
-                <AnimatePresence>
-                  <MotionDiv>
-                    <Heading fontSize="3xl">
-                      {isLoading ? <Spinner /> : 'No chats found'}
-                    </Heading>
-                  </MotionDiv>
-                </AnimatePresence>
+                <MotionDiv>
+                  <Heading fontSize="3xl">
+                    {isLoading ? <Spinner /> : 'No chats found'}
+                  </Heading>
+                </MotionDiv>
               </Box>
             </Box>
           </VStack>

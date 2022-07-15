@@ -1,7 +1,7 @@
 import {
   Box,
-  Flex,
   Text,
+  Flex,
   Stack,
   Input,
   Image,
@@ -25,15 +25,80 @@ import { BiEraser, BiGhost } from 'react-icons/bi'
 import { getSession, GetSessionParams } from 'next-auth/react'
 import MotionDiv from 'components/MotionDiv'
 import Spinner from 'components/Spinner'
+import { Client } from '@twilio/conversations'
+import ProfilePopInfo from 'components/ProfilePopInfo'
+
+interface CallbackProps {
+  inputName: string
+  setInputName: (val: string) => void
+}
+
+interface ProfileFormProps {
+  client: Client
+  session: Session
+  isLoading: boolean
+  callback: ({ setInputName, inputName }: CallbackProps) => void
+}
+
+function ProfileForm({
+  client,
+  session,
+  callback,
+  isLoading,
+}: ProfileFormProps) {
+  const { user } = session
+  const [inputName, setInputName] = useState<string>('')
+  const sameName =
+    client?.user.friendlyName === inputName || user.email === inputName
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    callback({ setInputName, inputName })
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Stack direction={{ base: 'column', sm: 'row' }}>
+        <FormControl isRequired>
+          <Input
+            value={inputName}
+            disabled={isLoading}
+            focusBorderColor="#B2ABCC"
+            placeholder="Friendly name"
+            isRequired
+            // w={{ base: 'full', sm: 60 }}
+            bg={useColorModeValue('#fafafa', '#272727')}
+            onChange={(e) => setInputName(e.target.value)}
+          />
+        </FormControl>
+        <Button
+          type="submit"
+          color="#fafafa"
+          // w={{ base: 'full', sm: 40 }}
+          disabled={
+            !client || sameName || isLoading || !inputName || !inputName.trim()
+          }
+          bg="#222222"
+          _hover={{
+            bg: '#333',
+          }}
+          _active={{
+            bg: '#222222',
+          }}
+          rightIcon={!isLoading ? <BiEraser /> : <Spinner />}
+        >
+          {isLoading ? <BiGhost size={18} /> : 'Update'}
+        </Button>
+      </Stack>
+    </form>
+  )
+}
 
 export default function Profile({ session }: { session: Session }) {
   const bgGradient = useBgGradient()
   const { client, dispatch, isLoading } = useGlobalContext()
-  const [inputName, setInputName] = useState<string>('')
-  const [fName, setFName] = useState<string>('')
+  const [friendlyName, setFriendlyName] = useState<string>('')
   const { user } = session
-  const sameName =
-    client?.user.friendlyName === inputName || user.email === inputName
 
   const newClient = useCallback(async () => {
     dispatch({
@@ -59,11 +124,11 @@ export default function Profile({ session }: { session: Session }) {
     }
 
     if (client) {
-      if (client.user.friendlyName) setFName(client.user.friendlyName)
+      if (client.user.friendlyName) setFriendlyName(client.user.friendlyName)
       client.on('stateChanged', async (state) => {
         if (state === 'initialized') {
           if (client.user.friendlyName) {
-            setFName(client.user.friendlyName)
+            setFriendlyName(client.user.friendlyName)
           }
         }
       })
@@ -74,26 +139,28 @@ export default function Profile({ session }: { session: Session }) {
     }
   }, [client, newClient])
 
-  async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    dispatch({
-      type: actions.setLoading,
-    })
-    try {
-      await client.user.updateFriendlyName(inputName)
-      await client.user.updateAttributes({
-        avatar: user.image,
-        friendlyName: inputName,
+  const handleFormSubmit = useCallback(
+    async ({ setInputName, inputName }: CallbackProps) => {
+      dispatch({
+        type: actions.setLoading,
       })
-      setInputName('')
-      setFName(inputName)
-    } catch (err) {
-      console.error('Something went wrong ->', err)
-    }
-    dispatch({
-      type: actions.removeLoading,
-    })
-  }
+      try {
+        await client.user.updateFriendlyName(inputName)
+        await client.user.updateAttributes({
+          avatar: user.image,
+          friendlyName: inputName,
+        })
+        setInputName('')
+        setFriendlyName(inputName)
+      } catch (err) {
+        console.error('Something went wrong ->', err)
+      }
+      dispatch({
+        type: actions.removeLoading,
+      })
+    },
+    [client, dispatch, user.image],
+  )
 
   return (
     <AppWrapper>
@@ -103,27 +170,26 @@ export default function Profile({ session }: { session: Session }) {
           w="full"
           maxW="4xl"
           rounded="lg"
-          boxShadow="xl"
           overflow="hidden"
           bg={useColorModeValue('#EDEDED', '#272727')}
         >
           <Box w="full" h="160px" bgImage={bgGradient} />
-          <Flex justify="center" mt={-24}>
+          <Flex align="center" mt={-24} direction="column">
             <Image
-              h={40}
-              w={40}
+              shadow="xl"
               alt="profile"
               bg="gray.700"
               rounded="full"
-              boxShadow="xl"
               src={user.image}
+              h={{ base: 32, sm: 40 }}
+              w={{ base: 32, sm: 40 }}
               fallback={
                 <VStack
                   h={40}
                   w={40}
                   bg="#333"
                   rounded="full"
-                  boxShadow="xl"
+                  shadow="xl"
                   color="#EDEDED"
                   justify="center"
                 >
@@ -131,65 +197,45 @@ export default function Profile({ session }: { session: Session }) {
                 </VStack>
               }
             />
+            <Box mt={-4}>
+              <ProfilePopInfo />
+            </Box>
           </Flex>
           <Stack p={6} maxW="lg" justify="center" m="0 auto">
             <Stack spacing={0} align="center" mb={5} justify="center">
-              <Heading fontSize="3xl" mb={2} textAlign="center">
+              <Heading
+                mb={2}
+                textAlign="center"
+                fontSize={{ base: '2xl', sm: '2xl', md: '3xl' }}
+              >
                 {session.user.name}
               </Heading>
               <Stack direction={{ base: 'column', sm: 'row' }}>
-                <Text fontSize="md" textAlign="center">
+                <Text fontSize={{ base: 'sm', sm: 'md' }} textAlign="center">
                   <chakra.span fontWeight={600}>Username:</chakra.span>{' '}
                   {session.user.email}
                 </Text>
               </Stack>
               <Stack direction={{ base: 'column', sm: 'row' }}>
-                <AnimatePresence key={fName}>
+                <AnimatePresence key={friendlyName}>
                   <MotionDiv>
-                    <Text fontSize="md" textAlign="center">
+                    <Text
+                      textAlign="center"
+                      fontSize={{ base: 'sm', sm: 'md' }}
+                    >
                       <chakra.span fontWeight={600}>Friendly name:</chakra.span>{' '}
-                      {fName || 'Not set'}
+                      {friendlyName || 'Not set'}
                     </Text>
                   </MotionDiv>
                 </AnimatePresence>
               </Stack>
             </Stack>
-            <form onSubmit={handleFormSubmit}>
-              <Stack direction={{ base: 'column', sm: 'row' }}>
-                <FormControl isRequired>
-                  <Input
-                    value={inputName}
-                    disabled={isLoading}
-                    placeholder="Friendly name"
-                    focusBorderColor="#B2ABCC"
-                    bg={useColorModeValue('#fafafa', '#272727')}
-                    onChange={(e) => setInputName(e.target.value)}
-                  />
-                </FormControl>
-                <Button
-                  type="submit"
-                  color="#fafafa"
-                  w={{ base: 'full', sm: 40 }}
-                  disabled={
-                    !client ||
-                    sameName ||
-                    isLoading ||
-                    !inputName ||
-                    !inputName.trim()
-                  }
-                  bg="#222222"
-                  _hover={{
-                    bg: '#333',
-                  }}
-                  _active={{
-                    bg: '#222222',
-                  }}
-                  rightIcon={!isLoading ? <BiEraser /> : <Spinner />}
-                >
-                  {isLoading ? <BiGhost size={18} /> : 'Update'}
-                </Button>
-              </Stack>
-            </form>
+            <ProfileForm
+              client={client}
+              session={session}
+              isLoading={isLoading}
+              callback={handleFormSubmit}
+            />
           </Stack>
         </Box>
       </Stack>

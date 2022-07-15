@@ -1,5 +1,5 @@
 import { Box, Flex, useColorModeValue, Stack } from '@chakra-ui/react'
-import Logo from './Logo'
+import NavLogo from './NavLogo'
 import ProfileMenu from './ProfileMenu'
 
 export default function Navbar() {
@@ -27,7 +27,7 @@ export default function Navbar() {
       >
         <Box>
           <Flex alignItems="center">
-            <Logo fixedDir />
+            <NavLogo />
           </Flex>
         </Box>
         <Stack alignItems="center" direction="row">

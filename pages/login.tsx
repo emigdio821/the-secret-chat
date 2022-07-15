@@ -8,7 +8,7 @@ import {
   useColorMode,
   useColorModeValue,
 } from '@chakra-ui/react'
-import Logo from 'components/Logo'
+import LoginLogo from 'components/LoginLogo'
 import { signIn } from 'next-auth/react'
 import { FaGithub } from 'react-icons/fa'
 import { BiMoon, BiSun } from 'react-icons/bi'
@@ -27,14 +27,14 @@ export default function Login() {
     <Center p={6} minH="100vh" bgImage={bgGradient}>
       <Box
         w="md"
+        shadow="xl"
         rounded="lg"
-        boxShadow="xl"
         overflow="hidden"
-        bg={useColorModeValue('#EDEDED', '#222222')}
+        bg={useColorModeValue('#EDEDED', '#202020')}
       >
         <Box p={6}>
           <Stack spacing={0} align="center" mb={5}>
-            <Logo bigSize />
+            <LoginLogo />
             <Text fontSize="xl" fontWeight={600}>
               Start chatting now
             </Text>
