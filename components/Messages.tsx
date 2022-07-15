@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react'
-import { Stack, Text } from '@chakra-ui/react'
-import { BiGhost } from 'react-icons/bi'
+import { useEffect, useRef, useState } from 'react'
+import { IconButton, Stack, Text } from '@chakra-ui/react'
+import { BiDownArrowAlt, BiGhost } from 'react-icons/bi'
 import { Message } from '@twilio/conversations'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
@@ -11,6 +11,36 @@ import TypingBubble from './TypingBubble'
 
 interface MessagesProps {
   messages: Message[]
+}
+
+function ScrollBottomArrow({
+  container,
+}: {
+  container: HTMLDivElement | null
+}) {
+  function handleClick() {
+    container?.scrollTo({
+      top: container.scrollHeight,
+      behavior: 'smooth',
+    })
+  }
+
+  return (
+    <IconButton
+      size="xs"
+      right={4}
+      bottom={4}
+      zIndex={1}
+      shadow="xl"
+      rounded="full"
+      // opacity={0.8}
+      position="absolute"
+      colorScheme="purple"
+      icon={<BiDownArrowAlt />}
+      aria-label="Scroll bottom"
+      onClick={() => handleClick()}
+    />
+  )
 }
 
 function ScrollBottom({ messages }: MessagesProps) {
@@ -30,11 +60,20 @@ export default function Messages({ messages }: MessagesProps) {
   const { data: session } = useSession()
   const currentUser = session?.user?.email || ''
   const { usersTyping } = useGlobalContext()
+  const [showScrollArrow, setShowScrollArrow] = useState(false)
   let scrollBottom = false
   const elContainer = msgsContainer.current
   if (elContainer) {
     const { scrollHeight, scrollTop, clientHeight } = msgsContainer.current
     scrollBottom = scrollTop + clientHeight === scrollHeight
+  }
+
+  function handleScroll() {
+    if (elContainer) {
+      const { scrollHeight, scrollTop, clientHeight } = elContainer
+      const condition = scrollTop + clientHeight <= scrollHeight / 1.5
+      setShowScrollArrow(condition)
+    }
   }
 
   return (
@@ -47,8 +86,10 @@ export default function Messages({ messages }: MessagesProps) {
       overflowX="hidden"
       ref={msgsContainer}
       bgImage={bgGradient}
+      onScroll={() => handleScroll()}
       justify={msgsPresent ? undefined : 'center'}
     >
+      {showScrollArrow && <ScrollBottomArrow container={elContainer} />}
       {msgsPresent ? (
         <>
           {messages.map((msg: Message) => {

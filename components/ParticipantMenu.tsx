@@ -10,9 +10,10 @@ import {
   MenuButton,
   useColorModeValue,
   MenuGroup,
+  MenuDivider,
 } from '@chakra-ui/react'
 import { Conversation, Participant } from '@twilio/conversations'
-import { BiChevronDown, BiHash, BiUserX } from 'react-icons/bi'
+import { BiChevronDown, BiInfoCircle, BiUserX } from 'react-icons/bi'
 
 interface ParticipantProps {
   avatar: string
@@ -80,29 +81,55 @@ export default function ParticipantMenu({
           shadow="xl"
           bg={useColorModeValue('#fafafa', '#262626')}
         >
-          <MenuGroup title={friendlyName} fontSize="xs" noOfLines={1}>
-            <MenuItem rounded="md" fontSize="xs" icon={<BiHash size={16} />}>
+          {/* <MenuGroup title="User info" fontSize="sm" noOfLines={1}> */}
+          {/* <MenuItem rounded="md" fontSize="xs" icon={<BiHash size={16} />}>
               {identity}
-            </MenuItem>
-            {/* <MenuItem
+            </MenuItem> */}
+          {/* <MenuItem
               rounded="md"
               fontSize="xs"
               icon={<BiCheckShield size={16} />}
             >
               Promote to admin
             </MenuItem> */}
-          </MenuGroup>
+          {/* </MenuGroup> */}
+          <Stack
+            mx={4}
+            mt={2}
+            mb={3}
+            fontSize="md"
+            align="center"
+            direction="row"
+          >
+            <Text fontWeight={700}>User info</Text>
+            <BiInfoCircle />
+          </Stack>
+          <Stack fontSize="xs" mx={4} spacing={1}>
+            <Text fontWeight={600}>Friendly name</Text>
+            <Text m={4} fontSize="xs">
+              {friendlyName}
+            </Text>
+          </Stack>
+          <Stack fontSize="xs" mx={4} my={2} spacing={1}>
+            <Text fontWeight={600}>Username</Text>
+            <Text m={4} fontSize="xs">
+              {identity}
+            </Text>
+          </Stack>
           {isAdmin && (
-            <MenuGroup title="Actions" fontSize="xs" noOfLines={1}>
-              <MenuItem
-                rounded="md"
-                fontSize="xs"
-                onClick={() => handleKickParticipant()}
-                icon={<BiUserX size={16} />}
-              >
-                Kick
-              </MenuItem>
-            </MenuGroup>
+            <>
+              <MenuDivider />
+              <MenuGroup title="Actions" fontSize="xs" noOfLines={1}>
+                <MenuItem
+                  rounded="md"
+                  fontSize="xs"
+                  onClick={() => handleKickParticipant()}
+                  icon={<BiUserX size={16} />}
+                >
+                  Kick
+                </MenuItem>
+              </MenuGroup>
+            </>
           )}
         </MenuList>
       </Menu>
