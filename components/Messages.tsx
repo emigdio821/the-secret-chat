@@ -1,46 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
-import { IconButton, Stack, Text } from '@chakra-ui/react'
-import { BiDownArrowAlt, BiGhost } from 'react-icons/bi'
+import { Stack, Text } from '@chakra-ui/react'
 import { Message } from '@twilio/conversations'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { useGlobalContext } from 'context/global'
 import useBgGradient from 'hooks/useBgGradient'
+import { BiGhost } from 'react-icons/bi'
 import ChatBubble from './ChatBubble'
 import TypingBubble from './TypingBubble'
+import ScrollBottomBtn from './ScrollBottomBtn'
 
 interface MessagesProps {
   messages: Message[]
-}
-
-function ScrollBottomArrow({
-  container,
-}: {
-  container: HTMLDivElement | null
-}) {
-  function handleClick() {
-    container?.scrollTo({
-      top: container.scrollHeight,
-      behavior: 'smooth',
-    })
-  }
-
-  return (
-    <IconButton
-      size="xs"
-      right={4}
-      bottom={4}
-      zIndex={1}
-      shadow="xl"
-      rounded="full"
-      // opacity={0.8}
-      position="absolute"
-      colorScheme="purple"
-      icon={<BiDownArrowAlt />}
-      aria-label="Scroll bottom"
-      onClick={() => handleClick()}
-    />
-  )
 }
 
 function ScrollBottom({ messages }: MessagesProps) {
@@ -71,8 +42,13 @@ export default function Messages({ messages }: MessagesProps) {
   function handleScroll() {
     if (elContainer) {
       const { scrollHeight, scrollTop, clientHeight } = elContainer
-      const condition = scrollTop + clientHeight <= scrollHeight / 1.5
-      setShowScrollArrow(condition)
+      const showScroll = scrollTop + clientHeight <= scrollHeight / 1.5
+      if (showScroll && !showScrollArrow) {
+        setShowScrollArrow(true)
+      }
+      if (!showScroll && showScrollArrow) {
+        setShowScrollArrow(false)
+      }
     }
   }
 
@@ -89,7 +65,7 @@ export default function Messages({ messages }: MessagesProps) {
       onScroll={() => handleScroll()}
       justify={msgsPresent ? undefined : 'center'}
     >
-      {showScrollArrow && <ScrollBottomArrow container={elContainer} />}
+      <ScrollBottomBtn isVisible={showScrollArrow} container={elContainer} />
       {msgsPresent ? (
         <>
           {messages.map((msg: Message) => {

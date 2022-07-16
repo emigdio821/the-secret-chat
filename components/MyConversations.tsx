@@ -9,13 +9,14 @@ import {
   VStack,
   Heading,
   GridItem,
+  IconButton,
   InputGroup,
   InputLeftElement,
   useColorModeValue,
 } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
-import { BiGhost, BiRightArrowAlt, BiSearch } from 'react-icons/bi'
-import { useEffect, useState } from 'react'
+import { BiGhost, BiRefresh, BiRightArrowAlt, BiSearch } from 'react-icons/bi'
+import { useEffect, useState, useCallback } from 'react'
 import { Conversation } from '@twilio/conversations'
 import actions from 'context/globalActions'
 import { useRouter } from 'next/router'
@@ -47,28 +48,29 @@ export default function MyConversations() {
     }
   }
 
-  useEffect(() => {
-    async function getConversations() {
-      if (client) {
-        dispatch({
-          type: actions.setLoading,
-        })
-        try {
-          const convers = await client.getSubscribedConversations()
-          const sortedConvers = sortArray(convers.items as [], 'friendlyName')
-          setConversations(sortedConvers)
-        } catch (err) {
-          console.error('Failed to retreive conversations ->', err)
-        }
-        dispatch({
-          type: actions.removeLoading,
-        })
+  const getConversations = useCallback(async () => {
+    if (client) {
+      dispatch({
+        type: actions.setLoading,
+      })
+      try {
+        const convers = await client.getSubscribedConversations()
+        const sortedConvers = sortArray(convers.items as [], 'friendlyName')
+        setConversations(sortedConvers)
+      } catch (err) {
+        console.error('Failed to retreive conversations ->', err)
       }
+      dispatch({
+        type: actions.removeLoading,
+      })
     }
+  }, [client, dispatch])
+
+  useEffect(() => {
     if (client) {
       getConversations()
     }
-  }, [client, dispatch, conversation])
+  }, [client, dispatch, conversation, getConversations])
 
   useEffect(() => {
     if (searchValue) {
@@ -99,19 +101,36 @@ export default function MyConversations() {
             </chakra.span>
           )}
         </Heading>
-        <InputGroup w={{ base: '50%', sm: 'auto' }} size="sm">
-          <InputLeftElement pointerEvents="none">
-            <BiSearch color="gray.300" />
-          </InputLeftElement>
-          <Input
-            borderRadius="md"
-            value={searchValue}
+        <Stack direction="row" w={{ base: '50%', sm: 'auto' }}>
+          <IconButton
+            size="sm"
+            bg={btnBg}
+            color="#fafafa"
             disabled={isLoading}
-            placeholder="Search"
-            focusBorderColor="#B2ABCC"
-            onChange={(e) => setSearchValue(e.target.value)}
+            icon={<BiRefresh size={20} />}
+            aria-label="Refresh conversations"
+            onClick={() => getConversations()}
+            _hover={{
+              bg: '#444',
+            }}
+            _active={{
+              bg: '#262626',
+            }}
           />
-        </InputGroup>
+          <InputGroup size="sm">
+            <InputLeftElement pointerEvents="none">
+              <BiSearch color="gray.300" />
+            </InputLeftElement>
+            <Input
+              borderRadius="md"
+              value={searchValue}
+              disabled={isLoading}
+              placeholder="Search"
+              focusBorderColor="#B2ABCC"
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+          </InputGroup>
+        </Stack>
       </Stack>
       <Box
         rounded="lg"

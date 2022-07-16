@@ -224,7 +224,7 @@ export default function Profile({ session }: { session: Session }) {
                       fontSize={{ base: 'sm', sm: 'md' }}
                     >
                       <chakra.span fontWeight={600}>Friendly name:</chakra.span>{' '}
-                      {friendlyName || 'Not set'}
+                      {friendlyName || user.email}
                     </Text>
                   </MotionDiv>
                 </AnimatePresence>

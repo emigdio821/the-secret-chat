@@ -23,9 +23,9 @@ interface CtxInterface {
 }
 
 const GlobalContext = createContext<CtxInterface>(null as any)
-const useGlobalContext = () => useContext(GlobalContext)
+export const useGlobalContext = () => useContext(GlobalContext)
 
-function GlobalProvider({ children }: Provider) {
+export function GlobalProvider({ children }: Provider) {
   const [state, dispatch] = useReducer<React.Reducer<StateType, ActionPayload>>(
     reducer,
     initialState,
@@ -51,5 +51,3 @@ function GlobalProvider({ children }: Provider) {
     </GlobalContext.Provider>
   )
 }
-
-export { GlobalProvider, useGlobalContext }
