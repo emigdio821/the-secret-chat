@@ -2,6 +2,7 @@ import {
   Box,
   Icon,
   Grid,
+  Text,
   Stack,
   Input,
   Button,
@@ -33,21 +34,6 @@ export default function MyConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const { client, dispatch, isLoading, conversation } = useGlobalContext()
 
-  async function getConversation(sid: string) {
-    if (client && sid) {
-      try {
-        const conver = await client.getConversationBySid(sid)
-        dispatch({
-          type: actions.addConversation,
-          payload: conver,
-        })
-        router.push(`/chats/${conver.sid}`)
-      } catch (err) {
-        console.error('Something went wrong ->', err)
-      }
-    }
-  }
-
   const getConversations = useCallback(async () => {
     if (client) {
       dispatch({
@@ -65,6 +51,22 @@ export default function MyConversations() {
       })
     }
   }, [client, dispatch])
+
+  async function getConversation(uniqueName: string) {
+    if (client && uniqueName) {
+      try {
+        const conver = await client.getConversationByUniqueName(uniqueName)
+        dispatch({
+          type: actions.addConversation,
+          payload: conver,
+        })
+        router.push(`/chats/${conver.sid}`)
+      } catch (err) {
+        getConversations()
+        console.error('Something went wrong ->', err)
+      }
+    }
+  }
 
   useEffect(() => {
     if (client) {
@@ -147,35 +149,45 @@ export default function MyConversations() {
               base: 'repeat(1, 1fr)',
             }}
           >
-            {filtered.map(({ friendlyName, sid }) => (
-              <MotionDiv key={sid}>
-                <GridItem>
-                  <Box p={6} bg={bg} rounded="lg">
-                    <Stack spacing={6}>
-                      <Heading as="h5" size="sm" noOfLines={1}>
-                        {friendlyName}
-                      </Heading>
-                      <Button
-                        bg={btnBg}
-                        shadow="xl"
-                        color="#fafafa"
-                        disabled={isLoading}
-                        rightIcon={<BiRightArrowAlt />}
-                        onClick={() => getConversation(sid)}
-                        _hover={{
-                          bg: '#444',
-                        }}
-                        _active={{
-                          bg: '#262626',
-                        }}
-                      >
-                        Join
-                      </Button>
-                    </Stack>
-                  </Box>
-                </GridItem>
-              </MotionDiv>
-            ))}
+            {filtered.map(({ friendlyName, uniqueName, attributes }) => {
+              // @ts-ignore
+              const { description } = attributes
+
+              return (
+                <MotionDiv key={uniqueName}>
+                  <GridItem>
+                    <Box p={6} bg={bg} rounded="lg">
+                      <Stack spacing={6}>
+                        <Stack spacing={1}>
+                          <Heading as="h5" size="sm" noOfLines={1}>
+                            {friendlyName}
+                          </Heading>
+                          <Text fontSize="sm">
+                            {description || 'No chat description'}
+                          </Text>
+                        </Stack>
+                        <Button
+                          bg={btnBg}
+                          shadow="xl"
+                          color="#fafafa"
+                          disabled={isLoading}
+                          rightIcon={<BiRightArrowAlt />}
+                          onClick={() => getConversation(uniqueName as string)}
+                          _hover={{
+                            bg: '#444',
+                          }}
+                          _active={{
+                            bg: '#262626',
+                          }}
+                        >
+                          Join
+                        </Button>
+                      </Stack>
+                    </Box>
+                  </GridItem>
+                </MotionDiv>
+              )
+            })}
           </Grid>
         ) : (
           <VStack justify="center">

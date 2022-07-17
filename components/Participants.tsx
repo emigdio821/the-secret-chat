@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { sortArray } from 'utils'
+import { sortArray, isAdmin, getFriendlyName } from 'utils'
 import { useSession } from 'next-auth/react'
 import { useGlobalContext } from 'context/global'
 import { Participant as Part } from '@twilio/conversations'
@@ -12,6 +12,7 @@ import {
   Text,
   Badge,
 } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 import MotionDiv from './MotionDiv'
 import Participant from './Participant'
 
@@ -21,26 +22,33 @@ export default function Participants() {
   const mainBg = useColorModeValue('#EDEDED', '#272727')
   const [partiJoined, setPartiJoined] = useState<Part>()
   const [partiLeft, setPartiLeft] = useState<Part>()
+  const [adminPart, setAdminPart] = useState<Part>()
   const [participants, setParticipants] = useState<Part[]>([])
   const { data: session } = useSession()
+  const router = useRouter()
 
   useEffect(() => {
     async function getParticipants() {
       try {
         const parts = await conversation.getParticipants()
         sortArray(parts as [], 'identity', session?.user?.email || '')
+        const admin = parts.find((p) => isAdmin(p))
+        setAdminPart(admin)
         setParticipants(parts)
       } catch (err) {
         console.error('Failed to get participants ->', err)
       }
     }
 
-    client.on('participantJoined', (participant) => {
+    conversation.on('participantJoined', (participant) => {
       getParticipants()
       setPartiJoined(participant)
     })
 
-    client.on('participantLeft', (participant) => {
+    conversation.on('participantLeft', (participant) => {
+      if (participant.identity === session?.user?.email) {
+        router.push('/')
+      }
       getParticipants()
       setPartiLeft(participant)
     })
@@ -61,11 +69,15 @@ export default function Participants() {
       if (timeOut) {
         clearTimeout(timeOut)
       }
+      if (conversation) {
+        conversation.removeListener('participantLeft', () => {})
+        conversation.removeListener('participantJoined', () => {})
+      }
       if (client) {
         client.removeAllListeners()
       }
     }
-  }, [conversation, client, partiJoined, partiLeft, session?.user?.email])
+  }, [client, router, session, partiLeft, partiJoined, conversation])
 
   return (
     <Stack spacing={0} w={{ base: '100%', sm: 200 }}>
@@ -100,7 +112,7 @@ export default function Participants() {
                 px={{ base: 2, sm: 4 }}
                 py={{ base: 1, sm: 2 }}
               >
-                {partiJoined.identity} added
+                {getFriendlyName(partiJoined)} added
               </Text>
             </motion.div>
           )}
@@ -122,7 +134,7 @@ export default function Participants() {
                 px={{ base: 2, sm: 4 }}
                 py={{ base: 1, sm: 2 }}
               >
-                {partiLeft.identity} left
+                {getFriendlyName(partiLeft)} left
               </Text>
             </motion.div>
           )}
@@ -145,7 +157,11 @@ export default function Participants() {
               align={{ base: 'center', sm: 'flex-start' }}
             >
               {participants.map((part: Part) => (
-                <Participant key={part.sid} participant={part} />
+                <Participant
+                  key={part.sid}
+                  admin={adminPart}
+                  participant={part}
+                />
               ))}
             </Stack>
           </MotionDiv>

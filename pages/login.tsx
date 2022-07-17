@@ -13,6 +13,7 @@ import { signIn } from 'next-auth/react'
 import { FaGithub } from 'react-icons/fa'
 import { BiMoon, BiSun } from 'react-icons/bi'
 import useBgGradient from 'hooks/useBgGradient'
+import Helmet from 'components/Helmet'
 
 export default function Login() {
   const btnColor = '#fafafa'
@@ -25,6 +26,7 @@ export default function Login() {
 
   return (
     <Center p={6} minH="100vh" bgImage={bgGradient}>
+      <Helmet title="Login" />
       <Box
         w="md"
         shadow="xl"

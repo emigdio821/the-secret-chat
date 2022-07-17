@@ -16,6 +16,7 @@ export interface Session {
 export interface ModalCallbackProps {
   inputVal: string
   onClose: () => void
+  additionalInputVal?: string
   // setInputVal: (val: string) => void
 }
 

@@ -40,7 +40,7 @@ export function sortArray(
   })
 }
 
-export function getPartFName(part: Participant) {
+export function getFriendlyName(part: Participant) {
   // @ts-ignore
   if (part.attributes?.friendlyName) {
     // @ts-ignore
@@ -56,4 +56,8 @@ export function getAvatar(user: User) {
     return user.attributes.avatar
   }
   return ''
+}
+
+export function isAdmin(part: Participant) {
+  return part.roleSid === (process.env.TWILIO_CHANNEL_ADMIN as string)
 }

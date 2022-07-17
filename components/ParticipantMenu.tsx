@@ -123,8 +123,8 @@ export default function ParticipantMenu({
                 <MenuItem
                   rounded="md"
                   fontSize="xs"
-                  onClick={() => handleKickParticipant()}
                   icon={<BiUserX size={16} />}
+                  onClick={() => handleKickParticipant()}
                 >
                   Kick
                 </MenuItem>

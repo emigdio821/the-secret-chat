@@ -16,12 +16,15 @@ export default function AddParticipant() {
     const inputVal = inVal.trim()
     if (inputVal && client) {
       try {
-        await conversation.add(inputVal.trim())
+        const user = await client.getUser(inputVal)
+        await conversation.add(inputVal, {
+          friendlyName: user.friendlyName,
+        })
         onClose()
       } catch {
         dispatch({
           type: actions.addError,
-          payload: 'Doesn\'t exist or something went wrong',
+          payload: 'Doesn\'t exist or user is already here',
         })
       }
     }

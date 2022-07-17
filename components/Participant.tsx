@@ -6,7 +6,8 @@ import { useEffect, useState, useCallback } from 'react'
 import { getAvatar } from 'utils'
 import ParticipantMenu from './ParticipantMenu'
 
-interface ChatBubbleProps {
+interface PartProps {
+  admin: Part | undefined
   participant: Part
 }
 
@@ -22,7 +23,7 @@ function User({ p }: UserProps) {
   )
 }
 
-export default function Participant({ participant }: ChatBubbleProps) {
+export default function Participant({ participant, admin }: PartProps) {
   const { identity } = participant
   const { data: session } = useSession()
   const currentUser = session?.user?.email || ''
@@ -32,7 +33,7 @@ export default function Participant({ participant }: ChatBubbleProps) {
   const { client } = useGlobalContext()
   const [friendlyName, setFriendlyName] = useState<string>(identity || '')
   const [avatar, setAvatar] = useState<string>('')
-  const isAdmin = false
+  const isAdmin = admin?.identity === currentUser
 
   const getFriendlyName = useCallback(async () => {
     if (identity) {
@@ -58,12 +59,12 @@ export default function Participant({ participant }: ChatBubbleProps) {
         <ParticipantMenu
           avatar={avatar}
           userImg={userImg}
-          isAdmin={isAdmin}
           identity={identity}
           isAuthor={isAuthor}
           participant={participant}
           friendlyName={friendlyName}
           conversation={conversation}
+          isAdmin={isAdmin}
         />
       ) : (
         <>

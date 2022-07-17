@@ -26,6 +26,7 @@ export default function Index({ session }: { session: Session }) {
   const handleCreateChatRoom = async ({
     onClose,
     inputVal: inVal,
+    additionalInputVal: descriptionVal,
   }: ModalCallbackProps) => {
     dispatch({
       type: actions.setLoading,
@@ -37,7 +38,7 @@ export default function Index({ session }: { session: Session }) {
           uniqueName: inputVal,
           friendlyName: inputVal,
           attributes: {
-            description: 'Chat to discuss stuff',
+            description: descriptionVal || '',
           },
         })
         // await conver.add(session.user.email)
@@ -110,6 +111,9 @@ export default function Index({ session }: { session: Session }) {
           newClient()
         }
       })
+      client.on('participantUpdated', (event) => {
+        console.log(event)
+      })
     }
 
     if (conversation) {
@@ -169,10 +173,12 @@ export default function Index({ session }: { session: Session }) {
           <>
             <Stack direction={{ base: 'column', sm: 'row' }} mb={12}>
               <ActionModal
+                additionalInput
                 btnLabel={createLbl}
                 BtnIcon={BiMessageAltAdd}
                 action={handleCreateChatRoom}
                 headerTitle="Create chat room"
+                additionalInputLabel="Description"
               />
               <ActionModal
                 btnLabel={joinLbl}

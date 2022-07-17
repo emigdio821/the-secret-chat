@@ -24,7 +24,9 @@ interface ActionModalProps {
   headerTitle: string
   inputLabel?: string
   mainBtnLbl?: string
+  additionalInput?: boolean
   BtnIcon?: React.ElementType
+  additionalInputLabel?: string
   action: ({ inputVal, onClose }: ModalCallbackProps) => void
 }
 
@@ -37,15 +39,29 @@ export default function ActionModal({
   BtnIcon,
   btnLabel,
   headerTitle,
+  additionalInput = false,
   mainBtnLbl = headerTitle,
   inputLabel = 'Room name',
+  additionalInputLabel = 'Description',
 }: ActionModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { dispatch, error, isLoading, client } = useGlobalContext()
   const [inputVal, setInputVal] = useState<string>('')
+  const [additionalInputVal, setAdditionalInputVal] = useState<string>('')
+
+  function isBtnDisabled() {
+    const inputCondition = !inputVal || !inputVal.trim() || isLoading
+    if (additionalInput) {
+      return inputCondition || !additionalInputVal || !additionalInputVal.trim()
+    }
+    return inputCondition
+  }
 
   function handleOpenModal() {
     setInputVal('')
+    if (additionalInput) {
+      setAdditionalInputVal('')
+    }
     if (error) {
       dispatch({
         type: actions.removeError,
@@ -66,7 +82,11 @@ export default function ActionModal({
 
   function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault()
-    action({ inputVal, onClose })
+    if (additionalInput) {
+      action({ inputVal, additionalInputVal, onClose })
+    } else {
+      action({ inputVal, onClose })
+    }
   }
 
   return (
@@ -86,18 +106,33 @@ export default function ActionModal({
                 <Input
                   mb={4}
                   size="md"
+                  maxLength={30}
                   value={inputVal}
                   disabled={isLoading}
                   placeholder={inputLabel}
                   focusBorderColor="#B2ABCC"
                   onChange={(e: OnChangeType) => setInputVal(e.target.value)}
                 />
+                {additionalInput && (
+                  <Input
+                    mb={4}
+                    size="md"
+                    maxLength={50}
+                    disabled={isLoading}
+                    value={additionalInputVal}
+                    focusBorderColor="#B2ABCC"
+                    placeholder={additionalInputLabel}
+                    onChange={(e: OnChangeType) =>
+                      setAdditionalInputVal(e.target.value)
+                    }
+                  />
+                )}
                 {error && <AlertError error={error} />}
               </FormControl>
               <Stack direction="row-reverse" mb={2} mt={4}>
                 <Button
                   type="submit"
-                  disabled={!inputVal || !inputVal.trim() || isLoading}
+                  disabled={isBtnDisabled()}
                   rightIcon={!isLoading ? <BiRightArrowAlt /> : <Spinner />}
                 >
                   {!isLoading ? btnLabel : <BiGhost size={18} />}
