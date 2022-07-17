@@ -6,6 +6,7 @@ import { useGlobalContext } from 'context/global'
 import {
   Box,
   Button,
+  MenuItem,
   AlertDialog,
   useDisclosure,
   AlertDialogBody,
@@ -17,7 +18,7 @@ import {
 } from '@chakra-ui/react'
 import useCleanup from 'hooks/useCleanup'
 import { useRouter } from 'next/router'
-import AlertError from './AlertError'
+import AlertError from 'components/AlertError'
 
 export default function LeaveRoom() {
   const router = useRouter()
@@ -91,20 +92,13 @@ export default function LeaveRoom() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-      <Button
-        bg={useColorModeValue('#333', '#262626')}
-        color="#fafafa"
-        _hover={{
-          bg: '#444',
-        }}
-        _active={{
-          bg: '#262626',
-        }}
-        leftIcon={<BiLogOut />}
+      <MenuItem
+        rounded="md"
+        icon={<BiLogOut size={16} />}
         onClick={() => handleOpenModal()}
       >
-        Leave
-      </Button>
+        Leave room
+      </MenuItem>
     </>
   )
 }

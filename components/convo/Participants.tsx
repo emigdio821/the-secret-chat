@@ -13,7 +13,7 @@ import {
   Badge,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import MotionDiv from './MotionDiv'
+import MotionDiv from 'components/MotionDiv'
 import Participant from './Participant'
 
 export default function Participants() {

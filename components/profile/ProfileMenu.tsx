@@ -30,7 +30,7 @@ import actions from 'context/globalActions'
 import { useGlobalContext } from 'context/global'
 import useCleanup from 'hooks/useCleanup'
 import { FaGithub } from 'react-icons/fa'
-import Spinner from './Spinner'
+import Spinner from 'components/Spinner'
 
 export default function ProfileMenu() {
   const router = useRouter()
@@ -41,6 +41,9 @@ export default function ProfileMenu() {
   const SwitchIcon = useColorModeValue(BiMoon, BiSun)
   const themeMode = useColorModeValue('Dark', 'Light')
   const cleanUp = useCleanup()
+  const btnHover = useColorModeValue('#fff', '#222')
+  const btnBg = useColorModeValue('#fafafa', '#262626')
+  const btnColor = useColorModeValue('#333', '#fafafa')
 
   function handleHomeClick() {
     cleanUp()
@@ -55,16 +58,16 @@ export default function ProfileMenu() {
       <Menu>
         <MenuButton
           px={2}
-          bg="#333"
+          bg={btnBg}
           as={Button}
           rounded="full"
-          color="#fafafa"
+          color={btnColor}
           disabled={!user}
           _hover={{
-            bg: '#444',
+            bg: btnHover,
           }}
           _active={{
-            bg: '#333',
+            bg: btnHover,
           }}
           rightIcon={<BiChevronDown size={20} />}
         >

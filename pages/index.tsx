@@ -5,18 +5,15 @@ import { Heading, Stack } from '@chakra-ui/react'
 import { ModalCallbackProps, Session } from 'types'
 import actions from 'context/globalActions'
 import AppWrapper from 'components/AppWrapper'
-import ActionModal from 'components/ActionModal'
 import { useGlobalContext } from 'context/global'
-import { BiMessageAltAdd, BiMessageAltDots } from 'react-icons/bi'
 import { getSession, GetSessionParams } from 'next-auth/react'
 import { Message } from '@twilio/conversations'
 import { getFirstName } from 'utils'
-import Reconnect from 'components/Reconnect'
-import MyConversations from 'components/MyConversations'
+import Reconnect from 'components/home/Reconnect'
+import MyConversations from 'components/home/MyConversations'
 import { useRouter } from 'next/router'
-
-const joinLbl = 'Join'
-const createLbl = 'Create'
+import CreateRoom from 'components/home/CreateRoom'
+import JoinRoom from 'components/home/JoinRoom'
 
 export default function Index({ session }: { session: Session }) {
   const { dispatch, client, conversation } = useGlobalContext()
@@ -24,7 +21,7 @@ export default function Index({ session }: { session: Session }) {
   const router = useRouter()
 
   const handleCreateChatRoom = async ({
-    onClose,
+    closeModal,
     inputVal: inVal,
     additionalInputVal: descriptionVal,
   }: ModalCallbackProps) => {
@@ -47,7 +44,7 @@ export default function Index({ session }: { session: Session }) {
           type: actions.addConversation,
           payload: conver,
         })
-        onClose()
+        closeModal()
       } catch {
         dispatch({
           type: actions.addError,
@@ -68,17 +65,18 @@ export default function Index({ session }: { session: Session }) {
         payload: twilioClient,
       })
     } catch {
-      setError('Something went wrong, try again')
+      setError('Failed to create client, try again')
     }
   }, [dispatch])
 
   const handleJoinChatRoom = async ({
-    onClose,
-    inputVal,
+    closeModal,
+    inputVal: inVal,
   }: ModalCallbackProps) => {
     dispatch({
       type: actions.setLoading,
     })
+    const inputVal = inVal.trim()
     if (inputVal && client) {
       try {
         const conver = await client.getConversationByUniqueName(inputVal)
@@ -86,7 +84,7 @@ export default function Index({ session }: { session: Session }) {
           type: actions.addConversation,
           payload: conver,
         })
-        onClose()
+        closeModal()
         router.push(`/chats/${conver.sid}`)
       } catch {
         dispatch({
@@ -172,20 +170,8 @@ export default function Index({ session }: { session: Session }) {
         ) : (
           <>
             <Stack direction={{ base: 'column', sm: 'row' }} mb={12}>
-              <ActionModal
-                additionalInput
-                btnLabel={createLbl}
-                BtnIcon={BiMessageAltAdd}
-                action={handleCreateChatRoom}
-                headerTitle="Create chat room"
-                additionalInputLabel="Description"
-              />
-              <ActionModal
-                btnLabel={joinLbl}
-                BtnIcon={BiMessageAltDots}
-                action={handleJoinChatRoom}
-                headerTitle="Join to a chat room"
-              />
+              <CreateRoom action={handleCreateChatRoom} />
+              <JoinRoom action={handleJoinChatRoom} />
             </Stack>
             {client && <MyConversations />}
           </>

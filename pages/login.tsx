@@ -2,7 +2,6 @@ import {
   Box,
   Text,
   Stack,
-  Button,
   Center,
   IconButton,
   useColorMode,
@@ -14,9 +13,9 @@ import { FaGithub } from 'react-icons/fa'
 import { BiMoon, BiSun } from 'react-icons/bi'
 import useBgGradient from 'hooks/useBgGradient'
 import Helmet from 'components/Helmet'
+import CommonBtn from 'components/CommonBtn'
 
 export default function Login() {
-  const btnColor = '#fafafa'
   const btnHoverColor = '#444'
   const btnActiveColor = '#333'
   const bgGradient = useBgGradient()
@@ -42,25 +41,15 @@ export default function Login() {
             </Text>
           </Stack>
           <Stack justifyContent="center" direction="row">
-            <Button
-              bg={btnBg}
-              rounded="md"
-              color={btnColor}
-              leftIcon={<FaGithub size={20} />}
+            <CommonBtn
+              btnLabel="Log in with Github"
               onClick={() =>
                 signIn('github', {
                   callbackUrl: '/',
                 })
               }
-              _hover={{
-                bg: btnHoverColor,
-              }}
-              _active={{
-                bg: btnActiveColor,
-              }}
-            >
-              Log in with Github
-            </Button>
+              leftIcon={<FaGithub size={20} />}
+            />
             <IconButton
               bg={btnBg}
               p={[0, 4]}

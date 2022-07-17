@@ -5,7 +5,6 @@ import {
   Text,
   Stack,
   Input,
-  Button,
   chakra,
   VStack,
   Heading,
@@ -22,13 +21,15 @@ import { Conversation } from '@twilio/conversations'
 import actions from 'context/globalActions'
 import { useRouter } from 'next/router'
 import { sortArray } from 'utils'
-import MotionDiv from './MotionDiv'
-import Spinner from './Spinner'
+import MotionDiv from 'components/MotionDiv'
+import Spinner from 'components/Spinner'
+import CommonBtn from 'components/CommonBtn'
 
 export default function MyConversations() {
   const router = useRouter()
   const bg = useColorModeValue('#EDEDED', '#2d2d2d')
-  const btnBg = useColorModeValue('#333', '#262626')
+  const btnBg = useColorModeValue('#444', '#262626')
+  const btnHover = useColorModeValue('#333', '#222')
   const [searchValue, setSearchValue] = useState<string>('')
   const [filtered, setFiltered] = useState<Conversation[]>([])
   const [conversations, setConversations] = useState<Conversation[]>([])
@@ -63,7 +64,7 @@ export default function MyConversations() {
         router.push(`/chats/${conver.sid}`)
       } catch (err) {
         getConversations()
-        console.error('Something went wrong ->', err)
+        console.error('Failed to get convo ->', err)
       }
     }
   }
@@ -113,10 +114,10 @@ export default function MyConversations() {
             aria-label="Refresh conversations"
             onClick={() => getConversations()}
             _hover={{
-              bg: '#444',
+              bg: btnHover,
             }}
             _active={{
-              bg: '#262626',
+              bg: btnBg,
             }}
           />
           <InputGroup size="sm">
@@ -166,22 +167,12 @@ export default function MyConversations() {
                             {description || 'No chat description'}
                           </Text>
                         </Stack>
-                        <Button
-                          bg={btnBg}
-                          shadow="xl"
-                          color="#fafafa"
-                          disabled={isLoading}
+                        <CommonBtn
+                          btnLabel="Join"
+                          isDisabled={isLoading}
                           rightIcon={<BiRightArrowAlt />}
                           onClick={() => getConversation(uniqueName as string)}
-                          _hover={{
-                            bg: '#444',
-                          }}
-                          _active={{
-                            bg: '#262626',
-                          }}
-                        >
-                          Join
-                        </Button>
+                        />
                       </Stack>
                     </Box>
                   </GridItem>

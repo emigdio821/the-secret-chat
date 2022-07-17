@@ -1,6 +1,6 @@
 import { Box, Flex, useColorModeValue, Stack } from '@chakra-ui/react'
+import ProfileMenu from 'components/profile/ProfileMenu'
 import NavLogo from './NavLogo'
-import ProfileMenu from './ProfileMenu'
 
 export default function Navbar() {
   return (

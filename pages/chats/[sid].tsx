@@ -7,8 +7,8 @@ import {
   Heading,
   useColorModeValue,
 } from '@chakra-ui/react'
-import Chat from 'components/Chat'
 import Helmet from 'components/Helmet'
+import Chat from 'components/convo/Chat'
 import { BiArrowBack, BiGhost } from 'react-icons/bi'
 import AppWrapper from 'components/AppWrapper'
 import { useGlobalContext } from 'context/global'

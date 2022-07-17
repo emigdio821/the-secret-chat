@@ -6,7 +6,6 @@ import {
   Input,
   Image,
   chakra,
-  Button,
   VStack,
   Heading,
   FormControl,
@@ -26,7 +25,8 @@ import { getSession, GetSessionParams } from 'next-auth/react'
 import MotionDiv from 'components/MotionDiv'
 import Spinner from 'components/Spinner'
 import { Client } from '@twilio/conversations'
-import ProfilePopInfo from 'components/ProfilePopInfo'
+import ProfilePopInfo from 'components/profile/ProfilePopInfo'
+import CommonBtn from 'components/CommonBtn'
 
 interface CallbackProps {
   inputName: string
@@ -71,24 +71,14 @@ function ProfileForm({
             onChange={(e) => setInputName(e.target.value)}
           />
         </FormControl>
-        <Button
+        <CommonBtn
           type="submit"
-          color="#fafafa"
-          // w={{ base: 'full', sm: 40 }}
-          disabled={
+          isDisabled={
             !client || sameName || isLoading || !inputName || !inputName.trim()
           }
-          bg="#222222"
-          _hover={{
-            bg: '#333',
-          }}
-          _active={{
-            bg: '#222222',
-          }}
           rightIcon={!isLoading ? <BiEraser /> : <Spinner />}
-        >
-          {isLoading ? <BiGhost size={18} /> : 'Update'}
-        </Button>
+          btnLabel={isLoading ? <BiGhost size={24} /> : 'Update'}
+        />
       </Stack>
     </form>
   )
@@ -153,7 +143,7 @@ export default function Profile({ session }: { session: Session }) {
         setInputName('')
         setFriendlyName(inputName)
       } catch (err) {
-        console.error('Something went wrong ->', err)
+        console.error('Failed to update profile ->', err)
       }
       dispatch({
         type: actions.removeLoading,

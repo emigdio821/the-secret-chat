@@ -20,7 +20,7 @@ export default function ChatInput() {
     try {
       await conversation.sendMessage(message)
     } catch (err) {
-      console.error('Something went wrong ->', err)
+      console.error('The message could not be sent ->', err)
     }
   }
 
@@ -33,7 +33,7 @@ export default function ChatInput() {
       try {
         await conversation.typing()
       } catch (err) {
-        console.error('Something went wrong ->', err)
+        console.error('Typing error ->', err)
       }
     },
     [conversation],

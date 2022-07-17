@@ -8,7 +8,6 @@ import {
   FormControl,
   ModalContent,
   ModalOverlay,
-  useDisclosure,
   useColorModeValue,
 } from '@chakra-ui/react'
 import { SetStateAction, useState } from 'react'
@@ -20,14 +19,15 @@ import AlertError from './AlertError'
 import Spinner from './Spinner'
 
 interface ActionModalProps {
+  isOpen: boolean
   btnLabel: string
+  onOpen: () => void
+  onClose: () => void
   headerTitle: string
   inputLabel?: string
-  mainBtnLbl?: string
   additionalInput?: boolean
-  BtnIcon?: React.ElementType
   additionalInputLabel?: string
-  action: ({ inputVal, onClose }: ModalCallbackProps) => void
+  action: ({ inputVal, closeModal }: ModalCallbackProps) => void
 }
 
 interface OnChangeType {
@@ -36,17 +36,16 @@ interface OnChangeType {
 
 export default function ActionModal({
   action,
-  BtnIcon,
   btnLabel,
+  isOpen,
+  onClose,
   headerTitle,
   additionalInput = false,
-  mainBtnLbl = headerTitle,
   inputLabel = 'Room name',
   additionalInputLabel = 'Description',
 }: ActionModalProps) {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const { dispatch, error, isLoading, client } = useGlobalContext()
   const [inputVal, setInputVal] = useState<string>('')
+  const { dispatch, error, isLoading } = useGlobalContext()
   const [additionalInputVal, setAdditionalInputVal] = useState<string>('')
 
   function isBtnDisabled() {
@@ -57,21 +56,12 @@ export default function ActionModal({
     return inputCondition
   }
 
-  function handleOpenModal() {
-    setInputVal('')
-    if (additionalInput) {
+  function handleCloseModal() {
+    if (inputVal || additionalInputVal) {
+      setInputVal('')
       setAdditionalInputVal('')
     }
-    if (error) {
-      dispatch({
-        type: actions.removeError,
-      })
-    }
-    onOpen()
-  }
 
-  function handleCloseModal() {
-    setInputVal('')
     if (error) {
       dispatch({
         type: actions.removeError,
@@ -83,83 +73,66 @@ export default function ActionModal({
   function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (additionalInput) {
-      action({ inputVal, additionalInputVal, onClose })
+      action({ inputVal, additionalInputVal, closeModal: handleCloseModal })
     } else {
-      action({ inputVal, onClose })
+      action({ inputVal, closeModal: handleCloseModal })
     }
   }
 
   return (
-    <>
-      <Modal
-        isOpen={isOpen}
-        onClose={() => handleCloseModal()}
-        closeOnOverlayClick={false}
-        motionPreset="slideInBottom"
-      >
-        <ModalOverlay backdropFilter="blur(10px)" />
-        <ModalContent bg={useColorModeValue('#fafafa', '#333')}>
-          <ModalHeader>{headerTitle}</ModalHeader>
-          <ModalBody>
-            <form onSubmit={handleFormSubmit}>
-              <FormControl isRequired>
+    <Modal
+      isOpen={isOpen}
+      closeOnOverlayClick={false}
+      motionPreset="slideInBottom"
+      onClose={() => handleCloseModal()}
+    >
+      <ModalOverlay backdropFilter="blur(10px)" />
+      <ModalContent bg={useColorModeValue('#fafafa', '#333')}>
+        <ModalHeader>{headerTitle}</ModalHeader>
+        <ModalBody>
+          <form onSubmit={handleFormSubmit}>
+            <FormControl isRequired>
+              <Input
+                mb={4}
+                size="md"
+                maxLength={30}
+                value={inputVal}
+                disabled={isLoading}
+                placeholder={inputLabel}
+                focusBorderColor="#B2ABCC"
+                onChange={(e: OnChangeType) => setInputVal(e.target.value)}
+              />
+              {additionalInput && (
                 <Input
                   mb={4}
                   size="md"
-                  maxLength={30}
-                  value={inputVal}
+                  maxLength={50}
                   disabled={isLoading}
-                  placeholder={inputLabel}
+                  value={additionalInputVal}
                   focusBorderColor="#B2ABCC"
-                  onChange={(e: OnChangeType) => setInputVal(e.target.value)}
+                  placeholder={additionalInputLabel}
+                  onChange={(e: OnChangeType) =>
+                    setAdditionalInputVal(e.target.value)
+                  }
                 />
-                {additionalInput && (
-                  <Input
-                    mb={4}
-                    size="md"
-                    maxLength={50}
-                    disabled={isLoading}
-                    value={additionalInputVal}
-                    focusBorderColor="#B2ABCC"
-                    placeholder={additionalInputLabel}
-                    onChange={(e: OnChangeType) =>
-                      setAdditionalInputVal(e.target.value)
-                    }
-                  />
-                )}
-                {error && <AlertError error={error} />}
-              </FormControl>
-              <Stack direction="row-reverse" mb={2} mt={4}>
-                <Button
-                  type="submit"
-                  disabled={isBtnDisabled()}
-                  rightIcon={!isLoading ? <BiRightArrowAlt /> : <Spinner />}
-                >
-                  {!isLoading ? btnLabel : <BiGhost size={18} />}
-                </Button>
-                <Button colorScheme="gray" onClick={() => handleCloseModal()}>
-                  Close
-                </Button>
-              </Stack>
-            </form>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-      <Button
-        color="#fafafa"
-        disabled={!client}
-        bg={useColorModeValue('#333', '#262626')}
-        _hover={{
-          bg: '#444',
-        }}
-        _active={{
-          bg: '#262626',
-        }}
-        onClick={() => handleOpenModal()}
-        leftIcon={BtnIcon ? <BtnIcon /> : undefined}
-      >
-        {mainBtnLbl}
-      </Button>
-    </>
+              )}
+              {error && <AlertError error={error} />}
+            </FormControl>
+            <Stack direction="row-reverse" mb={2} mt={4}>
+              <Button
+                type="submit"
+                disabled={isBtnDisabled()}
+                rightIcon={!isLoading ? <BiRightArrowAlt /> : <Spinner />}
+              >
+                {!isLoading ? btnLabel : <BiGhost size={18} />}
+              </Button>
+              <Button colorScheme="gray" onClick={() => handleCloseModal()}>
+                Close
+              </Button>
+            </Stack>
+          </form>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   )
 }

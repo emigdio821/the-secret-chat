@@ -9,7 +9,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react'
 import { BiGhost, BiArrowBack } from 'react-icons/bi'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import Helmet from 'components/Helmet'
 
 export default function NotFound() {
@@ -32,11 +32,11 @@ export default function NotFound() {
             <Icon as={BiGhost} fontSize="5rem" />
             <Heading fontSize="3xl">Not found</Heading>
             <Text fontSize="xl">Page does not exist.</Text>
-            <Link href="/">
+            <NextLink href="/">
               <Button mt={10} leftIcon={<BiArrowBack />}>
                 Back to home
               </Button>
-            </Link>
+            </NextLink>
           </Box>
         </Box>
       </VStack>

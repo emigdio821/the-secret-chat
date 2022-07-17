@@ -6,9 +6,9 @@ import { useSession } from 'next-auth/react'
 import { useGlobalContext } from 'context/global'
 import useBgGradient from 'hooks/useBgGradient'
 import { BiGhost } from 'react-icons/bi'
+import ScrollBottomBtn from 'components/ScrollBottomBtn'
 import ChatBubble from './ChatBubble'
 import TypingBubble from './TypingBubble'
-import ScrollBottomBtn from './ScrollBottomBtn'
 
 interface MessagesProps {
   messages: Message[]
