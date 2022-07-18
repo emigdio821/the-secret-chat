@@ -63,6 +63,7 @@ export default function Messages({ messages }: MessagesProps) {
       ref={msgsContainer}
       bgImage={bgGradient}
       onScroll={() => handleScroll()}
+      minH={{ base: 'calc(100vh - 320px)', sm: '100%' }}
       justify={msgsPresent ? undefined : 'center'}
     >
       <ScrollBottomBtn isVisible={showScrollArrow} container={elContainer} />

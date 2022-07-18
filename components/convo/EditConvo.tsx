@@ -37,7 +37,7 @@ export default function EditConvo({ convo }: EditComboProps) {
   const { onOpen, onClose, isOpen } = useDisclosure()
   // @ts-ignore
   const description = attributes.description || 'Description'
-  const isSubmitDisabled = !nameVal.trim() || !descVal.trim() || isLoading
+  const isSubmitDisabled = isLoading
   const btnHover = useColorModeValue('#fff', '#222')
   const btnBg = useColorModeValue('#fafafa', '#262626')
   const btnColor = useColorModeValue('#333', '#fafafa')
@@ -58,11 +58,11 @@ export default function EditConvo({ convo }: EditComboProps) {
   async function handleSubmitForm(e: React.FormEvent) {
     e.preventDefault()
     dispatch({ type: actions.setLoading })
-    if (!isSubmitDisabled) {
+    if (!isLoading) {
       try {
-        await convo.updateUniqueName(nameVal)
-        await convo.updateFriendlyName(nameVal)
-        await convo.updateAttributes({ description: descVal })
+        await convo.updateUniqueName(nameVal.trim() || uniqueName)
+        await convo.updateFriendlyName(nameVal.trim() || uniqueName || '')
+        await convo.updateAttributes({ description: descVal || description })
         onClose()
         formCleanup()
       } catch (err) {
@@ -98,13 +98,13 @@ export default function EditConvo({ convo }: EditComboProps) {
             aria-label="Edit Convo"
           />
         </PopoverTrigger>
-        <PopoverContent bg={bg} shadow="xl" maxW={380}>
+        <PopoverContent bg={bg} shadow="xl" maxW={{ base: 220, sm: 380 }}>
           <PopoverArrow bg={bg} />
           <PopoverCloseButton />
           <PopoverHeader fontWeight={600}>Edit room</PopoverHeader>
           <PopoverBody>
             <form onSubmit={(e) => handleSubmitForm(e)}>
-              <FormControl isRequired my={2}>
+              <FormControl my={2}>
                 <Input
                   mb={2}
                   size="sm"

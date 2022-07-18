@@ -1,45 +1,48 @@
-import { useEffect, useState } from 'react'
-import { sortArray, isAdmin, getFriendlyName } from 'utils'
+import {
+  Box,
+  Text,
+  Stack,
+  Badge,
+  Heading,
+  Tooltip,
+  useColorModeValue,
+} from '@chakra-ui/react'
+import { useEffect, useState, useCallback } from 'react'
+import { sortArray, getFriendlyName } from 'utils'
 import { useSession } from 'next-auth/react'
 import { useGlobalContext } from 'context/global'
 import { Participant as Part } from '@twilio/conversations'
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  Box,
-  Stack,
-  Heading,
-  useColorModeValue,
-  Text,
-  Badge,
-} from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import MotionDiv from 'components/MotionDiv'
 import Participant from './Participant'
 
-export default function Participants() {
+interface ParticipantsProps {
+  adminPart: Part | undefined
+}
+
+export default function Participants({ adminPart }: ParticipantsProps) {
   const notifBg = useColorModeValue('gray.300', '#141414')
   const { conversation, client } = useGlobalContext()
   const mainBg = useColorModeValue('#EDEDED', '#272727')
   const [partiJoined, setPartiJoined] = useState<Part>()
   const [partiLeft, setPartiLeft] = useState<Part>()
-  const [adminPart, setAdminPart] = useState<Part>()
   const [participants, setParticipants] = useState<Part[]>([])
   const { data: session } = useSession()
   const router = useRouter()
 
-  useEffect(() => {
-    async function getParticipants() {
-      try {
-        const parts = await conversation.getParticipants()
-        sortArray(parts as [], 'identity', session?.user?.email || '')
-        const admin = parts.find((p) => isAdmin(p))
-        setAdminPart(admin)
-        setParticipants(parts)
-      } catch (err) {
-        console.error('Failed to get participants ->', err)
-      }
+  const getParticipants = useCallback(async () => {
+    try {
+      setParticipants([])
+      const parts = await conversation.getParticipants()
+      sortArray(parts as [], 'identity', session?.user?.email || '')
+      setParticipants(parts)
+    } catch (err) {
+      console.error('Failed to get participants ->', err)
     }
+  }, [conversation, session])
 
+  useEffect(() => {
     conversation.on('participantJoined', (participant) => {
       getParticipants()
       setPartiJoined(participant)
@@ -77,7 +80,15 @@ export default function Participants() {
         client.removeAllListeners()
       }
     }
-  }, [client, router, session, partiLeft, partiJoined, conversation])
+  }, [
+    client,
+    router,
+    session,
+    partiLeft,
+    partiJoined,
+    conversation,
+    getParticipants,
+  ])
 
   return (
     <Stack spacing={0} w={{ base: '100%', sm: 200 }}>
@@ -90,7 +101,15 @@ export default function Participants() {
         alignItems={{ base: 'center', sm: 'flex-start' }}
       >
         <Stack direction="row" align="center" pt={{ base: 0, sm: 2 }} px={4}>
-          <Heading size={{ base: 'xs', sm: 'sm' }}>Participants</Heading>
+          <Tooltip label="Click to refresh" fontSize="xs" rounded="lg">
+            <Heading
+              cursor="pointer"
+              size={{ base: 'xs', sm: 'sm' }}
+              onClick={() => getParticipants()}
+            >
+              Participants
+            </Heading>
+          </Tooltip>
           {participants.length > 1 && (
             <Badge colorScheme="purple">{participants.length}</Badge>
           )}

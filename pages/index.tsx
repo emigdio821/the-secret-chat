@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
-import { initClient } from 'lib/client'
+import { useEffect } from 'react'
 import Helmet from 'components/Helmet'
 import { Heading, Stack } from '@chakra-ui/react'
 import { ModalCallbackProps, Session } from 'types'
@@ -9,16 +8,17 @@ import { useGlobalContext } from 'context/global'
 import { getSession, GetSessionParams } from 'next-auth/react'
 import { Message } from '@twilio/conversations'
 import { getFirstName } from 'utils'
-import Reconnect from 'components/home/Reconnect'
+import Reconnect from 'components/Reconnect'
 import MyConversations from 'components/home/MyConversations'
 import { useRouter } from 'next/router'
 import CreateRoom from 'components/home/CreateRoom'
 import JoinRoom from 'components/home/JoinRoom'
+import useInitClient from 'hooks/useInitClient'
 
 export default function Index({ session }: { session: Session }) {
   const { dispatch, client, conversation } = useGlobalContext()
-  const [error, setError] = useState<string>('')
   const router = useRouter()
+  const { newClient, error: clientErr } = useInitClient()
 
   const handleCreateChatRoom = async ({
     closeModal,
@@ -56,18 +56,6 @@ export default function Index({ session }: { session: Session }) {
       type: actions.removeLoading,
     })
   }
-
-  const newClient = useCallback(async () => {
-    try {
-      const twilioClient = await initClient()
-      dispatch({
-        type: actions.addClient,
-        payload: twilioClient,
-      })
-    } catch {
-      setError('Failed to create client, try again')
-    }
-  }, [dispatch])
 
   const handleJoinChatRoom = async ({
     closeModal,
@@ -108,9 +96,6 @@ export default function Index({ session }: { session: Session }) {
         if (session) {
           newClient()
         }
-      })
-      client.on('participantUpdated', (event) => {
-        console.log(event)
       })
     }
 
@@ -162,11 +147,8 @@ export default function Index({ session }: { session: Session }) {
         <Heading as="h2" size={{ base: 'md', sm: 'lg' }} mb={6}>
           Welcome, {getFirstName(session.user.name)}
         </Heading>
-        {error ? (
-          <Reconnect
-            error="Failed to create twilio client"
-            initClient={initClient}
-          />
+        {clientErr ? (
+          <Reconnect error={clientErr} initClient={newClient} />
         ) : (
           <>
             <Stack direction={{ base: 'column', sm: 'row' }} mb={12}>

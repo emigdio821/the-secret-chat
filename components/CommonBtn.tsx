@@ -23,15 +23,14 @@ export default function CommonBtn({
 }: CommonBtnProps) {
   const btnBg = useColorModeValue('#444', '#262626')
   const btnHover = useColorModeValue('#333', '#222')
-  const btnColor = useColorModeValue('#fafafa', '#fafafa')
 
   return (
     <Button
       bg={btnBg}
       size={size}
       type={type}
+      color="#fafafa"
       shadow={shadow}
-      color={btnColor}
       onClick={onClick}
       leftIcon={leftIcon}
       rightIcon={rightIcon}

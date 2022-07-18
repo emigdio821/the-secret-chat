@@ -13,8 +13,10 @@ import { BiArrowBack, BiGhost } from 'react-icons/bi'
 import AppWrapper from 'components/AppWrapper'
 import { useGlobalContext } from 'context/global'
 import NextLink from 'next/link'
+import { getSession, GetSessionParams } from 'next-auth/react'
+import { Session } from 'types'
 
-export default function ChatPage() {
+export default function ChatPage({ session }: { session: Session }) {
   const bg = useColorModeValue('#EDEDED', '#2d2d2d')
   const btnBg = useColorModeValue('#333', '#262626')
   const { client, conversation } = useGlobalContext()
@@ -23,7 +25,7 @@ export default function ChatPage() {
     <AppWrapper>
       <Helmet title={conversation?.friendlyName || undefined} />
       {conversation && client ? (
-        <Chat />
+        <Chat session={session} />
       ) : (
         <VStack justify="center">
           <Box px={6} bg={bg} w="100%" rounded="xl" py={{ base: 6, sm: 20 }}>
@@ -56,4 +58,14 @@ export default function ChatPage() {
       )}
     </AppWrapper>
   )
+}
+
+export async function getServerSideProps(ctx: GetSessionParams) {
+  const session = await getSession(ctx)
+
+  return {
+    props: {
+      session,
+    },
+  }
 }

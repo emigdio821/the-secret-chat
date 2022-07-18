@@ -35,6 +35,7 @@ export default async function handler(
     TWILIO_API_SECRET as string,
     {
       identity: token.email as string,
+      ttl: 86400,
     },
   )
 

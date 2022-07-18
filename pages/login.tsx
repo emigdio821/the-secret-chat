@@ -16,11 +16,10 @@ import Helmet from 'components/Helmet'
 import CommonBtn from 'components/CommonBtn'
 
 export default function Login() {
-  const btnHoverColor = '#444'
-  const btnActiveColor = '#333'
   const bgGradient = useBgGradient()
   const { toggleColorMode } = useColorMode()
-  const btnBg = useColorModeValue('#333', '#262626')
+  const btnBg = useColorModeValue('#444', '#262626')
+  const btnHover = useColorModeValue('#333', '#222')
   const SwitchIcon = useColorModeValue(BiMoon, BiSun)
 
   return (
@@ -59,10 +58,10 @@ export default function Login() {
               icon={<SwitchIcon size={20} />}
               color={useColorModeValue('yellow.400', 'purple.200')}
               _hover={{
-                bg: btnHoverColor,
+                bg: btnHover,
               }}
               _active={{
-                bg: btnActiveColor,
+                bg: btnHover,
               }}
             />
           </Stack>
