@@ -11,8 +11,6 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
-import { getMessages } from 'lib/chat'
-import actions from 'context/globalActions'
 import { BiChevronDown } from 'react-icons/bi'
 import useInitClient from 'hooks/useInitClient'
 import { Session } from 'types'
@@ -32,7 +30,7 @@ interface ChatProps {
 }
 
 export default function Chat({ session }: ChatProps) {
-  const { dispatch, conversation, messages, client } = useGlobalContext()
+  const { dispatch, conversation, client } = useGlobalContext()
   const btnHover = useColorModeValue('#fff', '#222')
   const btnBg = useColorModeValue('#fafafa', '#262626')
   const { newClient } = useInitClient()
@@ -53,27 +51,6 @@ export default function Chat({ session }: ChatProps) {
 
     if (conversation) {
       getAdminPart()
-    }
-
-    async function getMsgs() {
-      try {
-        const msgs = await getMessages(conversation)
-        if (msgs.items.length > 0) {
-          dispatch({
-            type: actions.addMessages,
-            payload: msgs.items,
-          })
-        }
-      } catch {
-        dispatch({
-          type: actions.addError,
-          payload: 'Failed to get messages',
-        })
-      }
-    }
-
-    if (conversation.status === 'joined') {
-      getMsgs()
     }
 
     if (client) {
@@ -155,7 +132,7 @@ export default function Chat({ session }: ChatProps) {
         direction={{ base: 'column', sm: 'row' }}
       >
         <Participants adminPart={adminPart} />
-        <Messages messages={messages} />
+        <Messages />
       </Stack>
       <ChatInput />
     </Stack>

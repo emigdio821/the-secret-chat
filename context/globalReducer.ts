@@ -44,7 +44,6 @@ const reducer = (state: StateType, action: ActionPayload): StateType => {
         ...state,
         messages: action.payload as Message[],
       }
-
     case actions.setLoading:
       return {
         ...state,

@@ -79,20 +79,8 @@ export default function ParticipantMenu({
         <MenuList
           px={2}
           shadow="xl"
-          bg={useColorModeValue('#fafafa', '#262626')}
+          bg={useColorModeValue('rgba(250, 250, 250, 0.1)', '#262626')}
         >
-          {/* <MenuGroup title="User info" fontSize="sm" noOfLines={1}> */}
-          {/* <MenuItem rounded="md" fontSize="xs" icon={<BiHash size={16} />}>
-              {identity}
-            </MenuItem> */}
-          {/* <MenuItem
-              rounded="md"
-              fontSize="xs"
-              icon={<BiCheckShield size={16} />}
-            >
-              Promote to admin
-            </MenuItem> */}
-          {/* </MenuGroup> */}
           <Stack
             mx={4}
             mt={2}
@@ -128,6 +116,14 @@ export default function ParticipantMenu({
                 >
                   Kick
                 </MenuItem>
+                {/* WIP */}
+                {/* <MenuItem
+                  rounded="md"
+                  fontSize="xs"
+                  icon={<BiCheckShield size={16} />}
+                >
+                  Promote to admin
+                </MenuItem> */}
               </MenuGroup>
             </>
           )}

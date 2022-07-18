@@ -127,11 +127,10 @@ export default function Participants({ adminPart }: ParticipantsProps) {
                 bg={notifBg}
                 rounded="lg"
                 fontSize="xs"
-                wordBreak="break-all"
                 px={{ base: 2, sm: 4 }}
                 py={{ base: 1, sm: 2 }}
               >
-                {getFriendlyName(partiJoined)} added
+                {getFriendlyName(partiJoined)} was added
               </Text>
             </motion.div>
           )}
@@ -146,10 +145,9 @@ export default function Participants({ adminPart }: ParticipantsProps) {
               key={partiLeft ? 'animate' : 'exit'}
             >
               <Text
-                rounded="lg"
                 bg={notifBg}
+                rounded="lg"
                 fontSize="xs"
-                wordBreak="break-all"
                 px={{ base: 2, sm: 4 }}
                 py={{ base: 1, sm: 2 }}
               >

@@ -1,20 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { Stack, Text } from '@chakra-ui/react'
-import { Message } from '@twilio/conversations'
+import { Message, Paginator } from '@twilio/conversations'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { useGlobalContext } from 'context/global'
 import useBgGradient from 'hooks/useBgGradient'
 import { BiGhost } from 'react-icons/bi'
 import ScrollBottomBtn from 'components/ScrollBottomBtn'
+import actions from 'context/globalActions'
+import { getMessages } from 'lib/chat'
 import ChatBubble from './ChatBubble'
 import TypingBubble from './TypingBubble'
 
-interface MessagesProps {
-  messages: Message[]
-}
-
-function ScrollBottom({ messages }: MessagesProps) {
+function ScrollBottom({ messages }: { messages: Message[] }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     scrollRef?.current?.scrollIntoView({
@@ -24,20 +22,55 @@ function ScrollBottom({ messages }: MessagesProps) {
   return <div ref={scrollRef} />
 }
 
-export default function Messages({ messages }: MessagesProps) {
+export default function Messages() {
   const bgGradient = useBgGradient()
-  const msgsContainer = useRef<HTMLDivElement>(null)
-  const msgsPresent = messages.length > 0
   const { data: session } = useSession()
   const currentUser = session?.user?.email || ''
-  const { usersTyping } = useGlobalContext()
+  const msgsContainer = useRef<HTMLDivElement>(null)
+  const { usersTyping, dispatch, conversation, messages } = useGlobalContext()
   const [showScrollArrow, setShowScrollArrow] = useState(false)
+  const [paginator, setPaginator] = useState<Paginator<Message>>()
+  const msgsPresent = messages.length > 0
   let scrollBottom = false
   const elContainer = msgsContainer.current
   if (elContainer) {
     const { scrollHeight, scrollTop, clientHeight } = msgsContainer.current
     scrollBottom = scrollTop + clientHeight === scrollHeight
   }
+
+  async function getPrevMsgs() {
+    if (paginator) {
+      const prevMsgs = await paginator.prevPage()
+      setPaginator(prevMsgs)
+      dispatch({
+        type: actions.addMessages,
+        payload: [...prevMsgs.items, ...messages],
+      })
+    }
+  }
+
+  useEffect(() => {
+    async function getMsgs() {
+      try {
+        const msgs = await getMessages(conversation)
+        setPaginator(msgs)
+        if (msgs.items.length > 0) {
+          dispatch({
+            type: actions.addMessages,
+            payload: msgs.items,
+          })
+        }
+      } catch {
+        dispatch({
+          type: actions.addError,
+          payload: 'Failed to get messages',
+        })
+      }
+    }
+    if (conversation.status === 'joined') {
+      getMsgs()
+    }
+  }, [conversation, dispatch])
 
   function handleScroll() {
     if (elContainer) {
@@ -48,6 +81,9 @@ export default function Messages({ messages }: MessagesProps) {
       }
       if (!showScroll && showScrollArrow) {
         setShowScrollArrow(false)
+      }
+      if (scrollTop === 0 && paginator?.hasPrevPage) {
+        getPrevMsgs()
       }
     }
   }
@@ -63,8 +99,8 @@ export default function Messages({ messages }: MessagesProps) {
       ref={msgsContainer}
       bgImage={bgGradient}
       onScroll={() => handleScroll()}
-      minH={{ base: 'calc(100vh - 320px)', sm: '100%' }}
       justify={msgsPresent ? undefined : 'center'}
+      minH={{ base: 'calc(100vh - 320px)', sm: '100%' }}
     >
       <ScrollBottomBtn isVisible={showScrollArrow} container={elContainer} />
       {msgsPresent ? (
