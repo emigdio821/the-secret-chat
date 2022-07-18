@@ -29,3 +29,4 @@ yarn dev
 
 The project runs on **localhost:3000** by default
 
+This project is a challenge from **[#miduConf](https://miduconf.com/)**
