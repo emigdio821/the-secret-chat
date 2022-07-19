@@ -50,7 +50,7 @@ export default function ParticipantMenu({
         <MenuButton
           bg="#333"
           size={{ base: 'sm', sm: 'xs' }}
-          maxW={{ base: 140, sm: 120 }}
+          maxW={{ base: 140, sm: 126 }}
           as={Button}
           rounded="full"
           color="#fafafa"
