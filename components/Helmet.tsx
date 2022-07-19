@@ -8,7 +8,7 @@ interface DynamicHeadProps {
 
 export default function DynamicHead({
   title = 'TheSecretChat',
-  description = 'TheSecretChat is a simple secret chat app',
+  description = 'TheSecretChat is a simple chat app',
 }: DynamicHeadProps) {
   return (
     <Head>
@@ -37,6 +37,7 @@ export default function DynamicHead({
         name="viewport"
         content="initial-scale=1.0, width=device-width,  maximum-scale=1.0"
       />
+      <meta property="og:image" content="/apple-touch-icon.png" />
     </Head>
   )
 }
