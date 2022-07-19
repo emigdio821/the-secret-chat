@@ -38,18 +38,18 @@ export default function TypingBubble({ participants }: TypingBubbleProps) {
       <Avatar
         size="xs"
         bg="gray.700"
-        src={avatar}
         color="#fafafa"
-        name={friendlyName.charAt(0) || 'Unknown'}
+        src={participants.length > 1 ? '' : avatar}
         icon={<BiGhost size={16} color="#fafafa" />}
+        name={participants.length > 1 ? '' : friendlyName.charAt(0)}
       />
       <Stack
         p={2}
         px={4}
         minW={100}
         maxW={400}
-        rounded="md"
         shadow="lg"
+        rounded="md"
         bg={useColorModeValue('gray.100', '#202020')}
       >
         <Text fontSize={10}>{text}</Text>
