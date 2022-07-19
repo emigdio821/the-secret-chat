@@ -49,7 +49,7 @@ export default function EditConvo({ convo }: EditComboProps) {
   }
 
   function openPopover() {
-    if (nameVal || descVal) {
+    if (nameVal || descVal || error) {
       formCleanup()
     }
     onOpen()

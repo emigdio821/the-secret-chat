@@ -62,7 +62,7 @@ export default function ParticipantMenu({
           }}
           rightIcon={<BiChevronDown />}
         >
-          <Stack alignItems="center" direction="row">
+          <Stack align="center" direction="row">
             <Avatar
               h={4}
               w={4}
@@ -79,8 +79,17 @@ export default function ParticipantMenu({
         <MenuList
           px={2}
           shadow="xl"
-          bg={useColorModeValue('rgba(250, 250, 250, 0.1)', '#262626')}
+          bg={useColorModeValue('#fafafa', '#262626')}
         >
+          <Stack mx={4} mt={2}>
+            <Avatar
+              size="lg"
+              shadow="xl"
+              bg="gray.700"
+              name={identity || 'Unknown'}
+              src={isAuthor ? userImg : avatar}
+            />
+          </Stack>
           <Stack
             mx={4}
             mt={2}

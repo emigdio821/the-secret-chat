@@ -127,9 +127,9 @@ export default function MyConversations() {
             <Input
               borderRadius="md"
               value={searchValue}
-              disabled={isLoading}
               placeholder="Search"
               focusBorderColor="#B2ABCC"
+              disabled={isLoading || !conversations.length}
               onChange={(e) => setSearchValue(e.target.value)}
             />
           </InputGroup>

@@ -3,12 +3,10 @@ import {
   Text,
   Flex,
   Stack,
-  Input,
   Image,
   chakra,
   VStack,
   Heading,
-  FormControl,
   useColorModeValue,
 } from '@chakra-ui/react'
 import { Session } from 'types'
@@ -19,70 +17,18 @@ import AppWrapper from 'components/AppWrapper'
 import { AnimatePresence } from 'framer-motion'
 import useBgGradient from 'hooks/useBgGradient'
 import { useGlobalContext } from 'context/global'
-import { BiEraser, BiGhost } from 'react-icons/bi'
+import { BiGhost } from 'react-icons/bi'
 import { getSession, GetSessionParams } from 'next-auth/react'
 import MotionDiv from 'components/MotionDiv'
-import Spinner from 'components/Spinner'
-import { Client } from '@twilio/conversations'
 import ProfilePopInfo from 'components/profile/ProfilePopInfo'
-import CommonBtn from 'components/CommonBtn'
 import useInitClient from 'hooks/useInitClient'
 import Reconnect from 'components/Reconnect'
+import ProfileForm from 'components/profile/ProfileForm'
 
 interface CallbackProps {
   inputName: string
+  onClose: () => void
   setInputName: (val: string) => void
-}
-
-interface ProfileFormProps {
-  client: Client
-  session: Session
-  isLoading: boolean
-  callback: ({ setInputName, inputName }: CallbackProps) => void
-}
-
-function ProfileForm({
-  client,
-  session,
-  callback,
-  isLoading,
-}: ProfileFormProps) {
-  const { user } = session
-  const [inputName, setInputName] = useState<string>('')
-  const sameName =
-    client?.user.friendlyName === inputName || user.email === inputName
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    callback({ setInputName, inputName })
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <Stack direction={{ base: 'column', sm: 'row' }}>
-        <FormControl isRequired>
-          <Input
-            value={inputName}
-            disabled={isLoading}
-            focusBorderColor="#B2ABCC"
-            placeholder="Friendly name"
-            isRequired
-            // w={{ base: 'full', sm: 60 }}
-            bg={useColorModeValue('#fafafa', '#272727')}
-            onChange={(e) => setInputName(e.target.value)}
-          />
-        </FormControl>
-        <CommonBtn
-          type="submit"
-          isDisabled={
-            !client || sameName || isLoading || !inputName || !inputName.trim()
-          }
-          rightIcon={!isLoading ? <BiEraser /> : <Spinner />}
-          btnLabel={isLoading ? <BiGhost size={24} /> : 'Update'}
-        />
-      </Stack>
-    </form>
-  )
 }
 
 export default function Profile({ session }: { session: Session }) {
@@ -92,6 +38,7 @@ export default function Profile({ session }: { session: Session }) {
   const { user } = session
   const cardBg = useColorModeValue('#EDEDED', '#272727')
   const { newClient, error: clientErr } = useInitClient()
+  const [error, setError] = useState<string>('')
 
   useEffect(() => {
     if (!client) {
@@ -120,7 +67,7 @@ export default function Profile({ session }: { session: Session }) {
   }, [client, newClient, session])
 
   const handleFormSubmit = useCallback(
-    async ({ setInputName, inputName }: CallbackProps) => {
+    async ({ setInputName, inputName, onClose }: CallbackProps) => {
       dispatch({
         type: actions.setLoading,
       })
@@ -132,7 +79,9 @@ export default function Profile({ session }: { session: Session }) {
         })
         setInputName('')
         setFriendlyName(inputName)
+        onClose()
       } catch (err) {
+        setError('Failed to update friendly name')
         console.error('Failed to update profile ->', err)
       }
       dispatch({
@@ -178,8 +127,8 @@ export default function Profile({ session }: { session: Session }) {
                 <ProfilePopInfo />
               </Box>
             </Flex>
-            <Stack p={6} maxW="lg" justify="center" m="0 auto">
-              <Stack spacing={0} align="center" mb={5} justify="center">
+            <Stack p={6} maxW="lg" justify="center" m="0 auto" align="center">
+              <Stack spacing={0} align="center" mb={2} justify="center">
                 <Heading
                   mb={2}
                   textAlign="center"
@@ -210,8 +159,10 @@ export default function Profile({ session }: { session: Session }) {
                 </Stack>
               </Stack>
               <ProfileForm
+                error={error}
                 client={client}
                 session={session}
+                setError={setError}
                 isLoading={isLoading}
                 callback={handleFormSubmit}
               />
