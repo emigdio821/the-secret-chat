@@ -1,3 +1,5 @@
+<img src="https://user-images.githubusercontent.com/6751108/180099788-a12f3788-4b23-4acb-82bb-d24596acc12c.png" width="64" height="64">
+
 ## TheSecretChat
 
 #### Create an .env file
