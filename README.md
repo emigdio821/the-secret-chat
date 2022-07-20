@@ -2,6 +2,9 @@
 
 ## TheSecretChat
 
+TheSecretChat is just a chat app using Nextjs, Chakra UI and Twilio API. <br />
+Follow below instructions if you want to run the project locally 🐒.
+
 #### Create an .env file
 
 ```
