@@ -25,7 +25,7 @@ import MotionDiv from 'components/MotionDiv'
 import Spinner from 'components/Spinner'
 import CommonBtn from 'components/CommonBtn'
 
-export default function MyConversations() {
+export default function MyChats() {
   const router = useRouter()
   const bg = useColorModeValue('#EDEDED', '#2d2d2d')
   const btnBg = useColorModeValue('#444', '#262626')
@@ -163,7 +163,7 @@ export default function MyConversations() {
                           <Heading as="h5" size="sm" noOfLines={1}>
                             {friendlyName}
                           </Heading>
-                          <Text fontSize="sm">
+                          <Text fontSize="sm" opacity={0.8}>
                             {description || 'No chat description'}
                           </Text>
                         </Stack>

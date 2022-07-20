@@ -148,7 +148,7 @@ export default function ProfileMenu() {
                 callbackUrl: '/login',
               })
             }
-            icon={<BiLogOut size={16} color="#ff6961 " />}
+            icon={<BiLogOut size={16} color="#ff6961" />}
           >
             <Text color="#ff6961">Log out</Text>
           </MenuItem>

@@ -17,13 +17,14 @@ import { Session } from 'types'
 import { isAdmin } from 'utils'
 import { Participant } from '@twilio/conversations'
 import { AnimatePresence } from 'framer-motion'
+import MotionDiv from 'components/MotionDiv'
 import Messages from './Messages'
 import Participants from './Participants'
 import LeaveRoom from './LeaveRoom'
 import ChatInput from './ChatInput'
 import AddParticipant from './AddParticipant'
 import EditConvo from './EditConvo'
-import MotionDiv from '../MotionDiv'
+import DeleteConvo from './DeleteConvo'
 
 interface ChatProps {
   session: Session
@@ -37,6 +38,7 @@ export default function Chat({ session }: ChatProps) {
   const [adminPart, setAdminPart] = useState<Participant>()
   // @ts-ignore
   const convoDescription = conversation.attributes.description
+  const isAdminPart = session.user.email === adminPart?.identity
 
   useEffect(() => {
     async function getAdminPart() {
@@ -93,9 +95,7 @@ export default function Chat({ session }: ChatProps) {
           spacing={{ base: 1, sm: 2 }}
           direction={{ base: 'row', sm: 'row' }}
         >
-          {session.user.email === adminPart?.identity && (
-            <EditConvo convo={conversation} />
-          )}
+          {isAdminPart && <EditConvo convo={conversation} />}
           <Box>
             <Menu>
               <MenuButton
@@ -120,6 +120,7 @@ export default function Chat({ session }: ChatProps) {
               >
                 <AddParticipant />
                 <LeaveRoom />
+                {isAdminPart && <DeleteConvo />}
               </MenuList>
             </Menu>
           </Box>

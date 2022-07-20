@@ -6,14 +6,14 @@ import {
   Button,
   Avatar,
   MenuList,
-  MenuItem,
   MenuButton,
   useColorModeValue,
   MenuGroup,
   MenuDivider,
 } from '@chakra-ui/react'
 import { Conversation, Participant } from '@twilio/conversations'
-import { BiChevronDown, BiInfoCircle, BiUserX } from 'react-icons/bi'
+import { BiChevronDown, BiInfoCircle } from 'react-icons/bi'
+import DeleteParticipant from './DeleteParticipant'
 
 interface ParticipantProps {
   avatar: string
@@ -36,14 +36,6 @@ export default function ParticipantMenu({
   conversation,
   friendlyName,
 }: ParticipantProps) {
-  async function handleKickParticipant() {
-    try {
-      await conversation.removeParticipant(participant)
-    } catch (err) {
-      console.error('Failed to kick participant ->', err)
-    }
-  }
-
   return (
     <Box>
       <Menu>
@@ -117,14 +109,11 @@ export default function ParticipantMenu({
             <>
               <MenuDivider />
               <MenuGroup title="Actions" fontSize="xs" noOfLines={1}>
-                <MenuItem
-                  rounded="md"
-                  fontSize="xs"
-                  icon={<BiUserX size={16} />}
-                  onClick={() => handleKickParticipant()}
-                >
-                  Kick
-                </MenuItem>
+                <DeleteParticipant
+                  convo={conversation}
+                  participant={participant}
+                  friendlyName={friendlyName}
+                />
                 {/* WIP */}
                 {/* <MenuItem
                   rounded="md"

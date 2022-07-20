@@ -9,16 +9,18 @@ import { getSession, GetSessionParams } from 'next-auth/react'
 import { Message } from '@twilio/conversations'
 import { getFirstName } from 'utils'
 import Reconnect from 'components/Reconnect'
-import MyConversations from 'components/home/MyConversations'
+import MyChats from 'components/home/MyChats'
 import { useRouter } from 'next/router'
 import CreateRoom from 'components/home/CreateRoom'
 import JoinRoom from 'components/home/JoinRoom'
 import useInitClient from 'hooks/useInitClient'
+import useCleanup from 'hooks/useCleanup'
 
 export default function Index({ session }: { session: Session }) {
-  const { dispatch, client, conversation } = useGlobalContext()
   const router = useRouter()
+  const cleanUp = useCleanup()
   const { newClient, error: clientErr } = useInitClient()
+  const { dispatch, client, conversation } = useGlobalContext()
 
   const handleCreateChatRoom = async ({
     closeModal,
@@ -119,6 +121,10 @@ export default function Index({ session }: { session: Session }) {
           payload: participant,
         })
       })
+      conversation.on('removed', () => {
+        cleanUp()
+        router.push('/')
+      })
     }
 
     return () => {
@@ -126,7 +132,7 @@ export default function Index({ session }: { session: Session }) {
         client.removeAllListeners()
       }
     }
-  }, [client, conversation, dispatch, newClient, session])
+  }, [cleanUp, client, conversation, dispatch, newClient, router, session])
 
   useEffect(() => {
     async function updateAttrs() {
@@ -155,7 +161,7 @@ export default function Index({ session }: { session: Session }) {
               <CreateRoom action={handleCreateChatRoom} />
               <JoinRoom action={handleJoinChatRoom} />
             </Stack>
-            {client && <MyConversations />}
+            {client && <MyChats />}
           </>
         )}
       </>

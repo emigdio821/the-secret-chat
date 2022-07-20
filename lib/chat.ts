@@ -24,3 +24,12 @@ export async function getMessages(conversation: Conversation) {
     return Promise.reject(err)
   }
 }
+
+export async function deleteConvo(conversation: Conversation) {
+  try {
+    const result = await conversation.delete()
+    return result
+  } catch (err) {
+    return Promise.reject(err)
+  }
+}
