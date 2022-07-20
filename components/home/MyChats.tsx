@@ -2,20 +2,18 @@ import {
   Box,
   Icon,
   Grid,
-  Text,
   Stack,
   Input,
   chakra,
   VStack,
   Heading,
-  GridItem,
   IconButton,
   InputGroup,
   InputLeftElement,
   useColorModeValue,
 } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
-import { BiGhost, BiRefresh, BiRightArrowAlt, BiSearch } from 'react-icons/bi'
+import { BiGhost, BiRefresh, BiSearch } from 'react-icons/bi'
 import { useEffect, useState, useCallback } from 'react'
 import { Conversation } from '@twilio/conversations'
 import actions from 'context/globalActions'
@@ -23,7 +21,7 @@ import { useRouter } from 'next/router'
 import { sortArray } from 'utils'
 import MotionDiv from 'components/MotionDiv'
 import Spinner from 'components/Spinner'
-import CommonBtn from 'components/CommonBtn'
+import ConvoCard from './ConvoCard'
 
 export default function MyChats() {
   const router = useRouter()
@@ -150,35 +148,14 @@ export default function MyChats() {
               base: 'repeat(1, 1fr)',
             }}
           >
-            {filtered.map(({ friendlyName, uniqueName, attributes }) => {
-              // @ts-ignore
-              const { description } = attributes
-
-              return (
-                <MotionDiv key={uniqueName}>
-                  <GridItem>
-                    <Box p={6} bg={bg} rounded="lg">
-                      <Stack spacing={6}>
-                        <Stack spacing={1}>
-                          <Heading as="h5" size="sm" noOfLines={1}>
-                            {friendlyName}
-                          </Heading>
-                          <Text fontSize="sm" opacity={0.8}>
-                            {description || 'No chat description'}
-                          </Text>
-                        </Stack>
-                        <CommonBtn
-                          btnLabel="Join"
-                          isDisabled={isLoading}
-                          rightIcon={<BiRightArrowAlt />}
-                          onClick={() => getConversation(uniqueName as string)}
-                        />
-                      </Stack>
-                    </Box>
-                  </GridItem>
-                </MotionDiv>
-              )
-            })}
+            {filtered.map((convo) => (
+              <ConvoCard
+                convo={convo}
+                key={convo.sid}
+                isLoading={isLoading}
+                btnCallback={() => getConversation(convo.uniqueName as string)}
+              />
+            ))}
           </Grid>
         ) : (
           <VStack justify="center">

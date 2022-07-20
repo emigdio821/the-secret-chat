@@ -88,6 +88,16 @@ export default function Index({ session }: { session: Session }) {
     })
   }
 
+  async function updateMessagesIdx(msgIndex: number) {
+    if (conversation) {
+      try {
+        await conversation.updateLastReadMessageIndex(msgIndex)
+      } catch (err) {
+        console.error('Failed to update messages count ->', err)
+      }
+    }
+  }
+
   useEffect(() => {
     if (!client) {
       newClient()
@@ -103,6 +113,7 @@ export default function Index({ session }: { session: Session }) {
 
     if (conversation) {
       conversation.on('messageAdded', (msg: Message) => {
+        updateMessagesIdx(msg.index)
         dispatch({
           type: actions.addMessage,
           payload: msg,
