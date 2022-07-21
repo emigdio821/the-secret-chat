@@ -54,9 +54,9 @@ export default function Messages() {
       try {
         const msgs = await getMessages(conversation)
         const { items } = msgs
-        conversation.updateLastReadMessageIndex(items[items.length - 1].index)
         setPaginator(msgs)
         if (msgs.items.length > 0) {
+          conversation.updateLastReadMessageIndex(items[items.length - 1].index)
           dispatch({
             type: actions.addMessages,
             payload: msgs.items,

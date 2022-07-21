@@ -59,12 +59,13 @@ export default function Participant({ participant, admin }: PartProps) {
         <ParticipantMenu
           avatar={avatar}
           userImg={userImg}
+          isAdmin={isAdmin}
           identity={identity}
           isAuthor={isAuthor}
           participant={participant}
           friendlyName={friendlyName}
           conversation={conversation}
-          isAdmin={isAdmin}
+          adminId={admin?.identity || ''}
         />
       ) : (
         <>

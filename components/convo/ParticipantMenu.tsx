@@ -10,14 +10,16 @@ import {
   useColorModeValue,
   MenuGroup,
   MenuDivider,
+  Badge,
 } from '@chakra-ui/react'
 import { Conversation, Participant } from '@twilio/conversations'
-import { BiChevronDown, BiInfoCircle } from 'react-icons/bi'
+import { BiCheckShield, BiChevronDown, BiInfoCircle } from 'react-icons/bi'
 import DeleteParticipant from './DeleteParticipant'
 
 interface ParticipantProps {
   avatar: string
   userImg: string
+  adminId: string
   isAdmin: boolean
   isAuthor: boolean
   friendlyName: string
@@ -30,6 +32,7 @@ export default function ParticipantMenu({
   avatar,
   userImg,
   isAdmin,
+  adminId,
   identity,
   isAuthor,
   participant,
@@ -73,7 +76,7 @@ export default function ParticipantMenu({
           shadow="xl"
           bg={useColorModeValue('#fafafa', '#262626')}
         >
-          <Stack mx={4} mt={2}>
+          <Stack mx={4} mt={2} align="flex-start">
             <Avatar
               size="lg"
               shadow="xl"
@@ -81,6 +84,20 @@ export default function ParticipantMenu({
               name={identity || 'Unknown'}
               src={isAuthor ? userImg : avatar}
             />
+            {adminId === identity && (
+              <Badge
+                px={2}
+                fontSize="xs"
+                rounded="full"
+                colorScheme="purple"
+                textTransform="capitalize"
+              >
+                <Stack direction="row" align="center" spacing={1}>
+                  <Text>Admin</Text>
+                  <BiCheckShield />
+                </Stack>
+              </Badge>
+            )}
           </Stack>
           <Stack
             mx={4}
