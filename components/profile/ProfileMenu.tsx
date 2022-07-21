@@ -26,8 +26,6 @@ import {
 } from 'react-icons/bi'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import actions from 'context/globalActions'
-import { useGlobalContext } from 'context/global'
 import useCleanup from 'hooks/useCleanup'
 import { FaGithub } from 'react-icons/fa'
 import Spinner from 'components/Spinner'
@@ -37,7 +35,6 @@ export default function ProfileMenu() {
   const { data } = useSession()
   const { user } = data || {}
   const { toggleColorMode } = useColorMode()
-  const { dispatch } = useGlobalContext()
   const SwitchIcon = useColorModeValue(BiMoon, BiSun)
   const themeMode = useColorModeValue('Dark', 'Light')
   const cleanUp = useCleanup()
@@ -47,9 +44,6 @@ export default function ProfileMenu() {
 
   function handleHomeClick() {
     cleanUp()
-    dispatch({
-      type: actions.removeConversation,
-    })
     router.push('/')
   }
 
