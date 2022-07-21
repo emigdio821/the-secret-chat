@@ -15,9 +15,7 @@ import TypingBubble from './TypingBubble'
 function ScrollBottom({ messages }: { messages: Message[] }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    scrollRef?.current?.scrollIntoView({
-      behavior: 'smooth',
-    })
+    scrollRef?.current?.scrollIntoView()
   }, [messages])
   return <div ref={scrollRef} />
 }
@@ -77,7 +75,7 @@ export default function Messages() {
   function handleScroll() {
     if (elContainer) {
       const { scrollHeight, scrollTop, clientHeight } = elContainer
-      const showScroll = scrollTop + clientHeight <= scrollHeight / 1.5
+      const showScroll = scrollTop + clientHeight <= scrollHeight / 1.2
       if (showScroll && !showScrollArrow) {
         setShowScrollArrow(true)
       }

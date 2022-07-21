@@ -39,6 +39,13 @@ const reducer = (state: StateType, action: ActionPayload): StateType => {
         messages: [],
       }
     }
+    case actions.removeMessage: {
+      const msg = action.payload as Message
+      return {
+        ...state,
+        messages: state.messages.filter((m) => m.sid !== msg.sid),
+      }
+    }
     case actions.addMessages:
       return {
         ...state,

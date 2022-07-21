@@ -7,6 +7,7 @@ const actions = {
   removeError: 'REMOVE_ERROR',
   removeClient: 'REMOVE_CLIENT',
   removeLoading: 'REMOVE_LOADING',
+  removeMessage: 'REMOVE_MESSAGE',
   removeMessages: 'REMOVE_MESSAGES',
   addUsersTyping: 'ADD_USERS_TYPING',
   addConversation: 'ADD_CONVERSATION',

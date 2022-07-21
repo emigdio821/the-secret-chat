@@ -1,9 +1,10 @@
 import { formatDate, getAvatar } from 'utils'
 import { useSession } from 'next-auth/react'
 import { Message } from '@twilio/conversations'
-import { Avatar, Stack, useColorModeValue, Text, Box } from '@chakra-ui/react'
+import { Box, Text, Stack, Avatar, useColorModeValue } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
 import { useCallback, useEffect, useState } from 'react'
+import DeleteMsgMenu from './DeleteMsgMenu'
 
 interface ChatBubbleProps {
   message: Message
@@ -11,7 +12,7 @@ interface ChatBubbleProps {
 
 export default function ChatBubble({ message }: ChatBubbleProps) {
   const { author, body, dateCreated } = message
-  const mainMsgBg = useColorModeValue('gray.300', '#141414')
+  const mainMsgBg = useColorModeValue('#fafafa', '#141414')
   const secondaryMsgBg = useColorModeValue('gray.100', '#202020')
   const { data: session } = useSession()
   const currentUser = session?.user?.email || ''
@@ -57,7 +58,10 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
         rounded="md"
         bg={isAuthor ? mainMsgBg : secondaryMsgBg}
       >
-        <Text>{body}</Text>
+        <Stack direction="row" justifyContent="space-between">
+          <Text wordBreak="break-word">{body}</Text>
+          {isAuthor && <DeleteMsgMenu message={message} />}
+        </Stack>
         <Box>
           {dateCreated && (
             <Text fontSize={10} opacity={0.35}>

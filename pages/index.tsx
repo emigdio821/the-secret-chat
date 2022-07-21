@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import Helmet from 'components/Helmet'
 import { Heading, Stack } from '@chakra-ui/react'
 import { ModalCallbackProps, Session } from 'types'
@@ -88,15 +88,18 @@ export default function Index({ session }: { session: Session }) {
     })
   }
 
-  async function updateMessagesIdx(msgIndex: number) {
-    if (conversation) {
-      try {
-        await conversation.updateLastReadMessageIndex(msgIndex)
-      } catch (err) {
-        console.error('Failed to update messages count ->', err)
+  const updateMessagesIdx = useCallback(
+    async (msgIndex: number) => {
+      if (conversation) {
+        try {
+          await conversation.updateLastReadMessageIndex(msgIndex)
+        } catch (err) {
+          console.error('Failed to update messages count ->', err)
+        }
       }
-    }
-  }
+    },
+    [conversation],
+  )
 
   useEffect(() => {
     if (!client) {
@@ -116,6 +119,12 @@ export default function Index({ session }: { session: Session }) {
         updateMessagesIdx(msg.index)
         dispatch({
           type: actions.addMessage,
+          payload: msg,
+        })
+      })
+      conversation.on('messageRemoved', (msg: Message) => {
+        dispatch({
+          type: actions.removeMessage,
           payload: msg,
         })
       })
@@ -143,7 +152,16 @@ export default function Index({ session }: { session: Session }) {
         client.removeAllListeners()
       }
     }
-  }, [cleanUp, client, conversation, dispatch, newClient, router, session])
+  }, [
+    client,
+    router,
+    cleanUp,
+    session,
+    dispatch,
+    newClient,
+    conversation,
+    updateMessagesIdx,
+  ])
 
   useEffect(() => {
     async function updateAttrs() {
