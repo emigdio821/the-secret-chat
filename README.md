@@ -1,4 +1,9 @@
+<img src="https://user-images.githubusercontent.com/6751108/180099788-a12f3788-4b23-4acb-82bb-d24596acc12c.png" width="64" height="64">
+
 ## TheSecretChat
+
+TheSecretChat is just a simple chat app using Nextjs, Chakra UI and Twilio API. <br />
+Follow below instructions if you want to run the project locally 🐒.
 
 #### Create an .env file
 
