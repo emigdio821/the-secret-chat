@@ -3,6 +3,7 @@ import {
   Stack,
   Input,
   Button,
+  Spinner,
   ModalBody,
   ModalHeader,
   FormControl,
@@ -16,7 +17,6 @@ import { useGlobalContext } from 'context/global'
 import actions from 'context/globalActions'
 import { ModalCallbackProps } from 'types'
 import AlertError from './AlertError'
-import Spinner from './Spinner'
 
 interface ActionModalProps {
   isOpen: boolean

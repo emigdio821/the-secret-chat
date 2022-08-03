@@ -1,4 +1,4 @@
-import { extendTheme, type ThemeConfig } from '@chakra-ui/react'
+import { extendTheme, type ThemeConfig, Spinner } from '@chakra-ui/react'
 import { mode, StyleFunctionProps } from '@chakra-ui/theme-tools'
 
 const styles = {
@@ -18,5 +18,26 @@ const config: ThemeConfig = {
   useSystemColorMode: true,
 }
 
-const theme = extendTheme({ config, styles, shadows })
+const components = {
+  Alert: {
+    variants: {
+      minimal: {
+        container: {
+          color: '#fafafa',
+          bg: '#242424',
+        },
+      },
+    },
+  },
+}
+
+Spinner.defaultProps = {
+  ...Spinner.defaultProps,
+  size: 'sm',
+  speed: '0.6s',
+  thickness: '4px',
+  color: '#B2ABCC',
+}
+
+const theme = extendTheme({ config, styles, shadows, components })
 export default theme

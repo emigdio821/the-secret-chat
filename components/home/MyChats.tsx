@@ -6,6 +6,7 @@ import {
   Input,
   chakra,
   VStack,
+  Spinner,
   Heading,
   IconButton,
   InputGroup,
@@ -20,7 +21,6 @@ import actions from 'context/globalActions'
 import { useRouter } from 'next/router'
 import { sortArray } from 'utils'
 import MotionDiv from 'components/MotionDiv'
-import Spinner from 'components/Spinner'
 import ConvoCard from './ConvoCard'
 
 export default function MyChats() {

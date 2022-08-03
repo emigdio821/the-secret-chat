@@ -5,14 +5,14 @@ import {
   Box,
   Text,
   Stack,
-  Avatar,
-  useColorModeValue,
   Image,
+  Avatar,
   Center,
+  Spinner,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
 import { useCallback, useEffect, useState } from 'react'
-import Spinner from 'components/Spinner'
 import DeleteMsgMenu from './DeleteMsgMenu'
 
 interface ChatBubbleProps {
@@ -30,8 +30,10 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
   const { client } = useGlobalContext()
   const [friendlyName, setFriendlyName] = useState<string>(author || '')
   const [avatar, setAvatar] = useState<string>('')
+  const [mediaUrl, setMediaUrl] = useState<string>('')
   // @ts-ignore
   const isGif = attributes?.gif
+  const hasMedia = message.type === 'media'
 
   const getFriendlyName = useCallback(async () => {
     if (author) {
@@ -41,6 +43,14 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
       if (av) setAvatar(av)
     }
   }, [client, author])
+
+  useEffect(() => {
+    if (hasMedia) {
+      message.attachedMedia?.[0]?.getContentTemporaryUrl().then((url) => {
+        setMediaUrl(url || '')
+      })
+    }
+  }, [hasMedia, message])
 
   useEffect(() => {
     getFriendlyName()
@@ -70,13 +80,14 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
         bg={isAuthor ? mainMsgBg : secondaryMsgBg}
       >
         <Stack direction="row" justifyContent="space-between">
-          {isGif ? (
+          {isGif || hasMedia ? (
             <Image
               h={130}
               w="100%"
               alt="gif"
               rounded="lg"
-              src={body || ''}
+              objectFit="cover"
+              src={hasMedia ? mediaUrl : (body as string)}
               fallback={
                 <Center w={120} h={130} rounded="lg" bg="#242424">
                   <Spinner />
@@ -94,6 +105,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
             <Text fontSize={10} opacity={0.35}>
               {formatDate(dateCreated)}
               {isGif && ' (via GIPHY)'}
+              {hasMedia && ` (${message.attachedMedia?.[0]?.contentType})`}
             </Text>
           )}
           {!isAuthor && (

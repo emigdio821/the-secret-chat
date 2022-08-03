@@ -7,6 +7,7 @@ import {
   Image,
   Button,
   Center,
+  Spinner,
   GridItem,
   ModalBody,
   IconButton,
@@ -19,7 +20,6 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react'
 import useGiphy from 'hooks/useGiphy'
-import Spinner from 'components/Spinner'
 import { BiSearch } from 'react-icons/bi'
 import type { IGif } from '@giphy/js-types'
 import actions from 'context/globalActions'

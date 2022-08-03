@@ -4,16 +4,17 @@ import {
   Stack,
   Button,
   Popover,
+  Spinner,
   IconButton,
   FormControl,
   PopoverBody,
   PopoverArrow,
   PopoverHeader,
+  useDisclosure,
   PopoverContent,
   PopoverTrigger,
   useColorModeValue,
   PopoverCloseButton,
-  useDisclosure,
 } from '@chakra-ui/react'
 import { Conversation } from '@twilio/conversations'
 import { useGlobalContext } from 'context/global'
@@ -21,7 +22,6 @@ import { useState } from 'react'
 import { BiEditAlt, BiGhost, BiCheck } from 'react-icons/bi'
 import actions from 'context/globalActions'
 import AlertError from 'components/AlertError'
-import Spinner from 'components/Spinner'
 
 interface EditComboProps {
   convo: Conversation

@@ -4,6 +4,7 @@ import {
   Stack,
   Button,
   Popover,
+  Spinner,
   IconButton,
   FormControl,
   PopoverBody,
@@ -18,7 +19,6 @@ import {
 import { useState } from 'react'
 import { BiEditAlt, BiGhost, BiCheck } from 'react-icons/bi'
 import AlertError from 'components/AlertError'
-import Spinner from 'components/Spinner'
 import { Client } from '@twilio/conversations'
 import { Session } from 'types'
 

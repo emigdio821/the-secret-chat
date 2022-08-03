@@ -6,6 +6,7 @@ import {
   Avatar,
   VStack,
   Button,
+  Spinner,
   MenuList,
   MenuItem,
   MenuGroup,
@@ -19,16 +20,15 @@ import { signOut, useSession } from 'next-auth/react'
 import {
   BiSun,
   BiMoon,
+  BiUser,
   BiLogOut,
   BiHomeSmile,
   BiChevronDown,
-  BiUser,
 } from 'react-icons/bi'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import useCleanup from 'hooks/useCleanup'
 import { FaGithub } from 'react-icons/fa'
-import Spinner from 'components/Spinner'
 
 export default function ProfileMenu() {
   const router = useRouter()
