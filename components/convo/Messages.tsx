@@ -33,7 +33,9 @@ export default function Messages() {
   const elContainer = msgsContainer.current
   if (elContainer) {
     const { scrollHeight, scrollTop, clientHeight } = msgsContainer.current
-    scrollBottom = scrollTop + clientHeight === scrollHeight
+    scrollBottom =
+      scrollTop + clientHeight === scrollHeight ||
+      messages[messages.length - 1].author === currentUser
   }
 
   async function getPrevMsgs() {
