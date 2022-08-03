@@ -7,8 +7,11 @@ import {
   FormControl,
   IconButton,
   useColorModeValue,
+  InputRightElement,
+  InputGroup,
 } from '@chakra-ui/react'
 import { BiSend } from 'react-icons/bi'
+import Media from './Media'
 
 export default function ChatInput() {
   const [message, setMessage] = useState('')
@@ -44,14 +47,19 @@ export default function ChatInput() {
       <form onSubmit={handleSendMessage}>
         <Stack direction="row">
           <FormControl isRequired>
-            <Input
-              value={message}
-              bg={useColorModeValue('#fafafa', '#272727')}
-              placeholder="Message"
-              focusBorderColor="#B2ABCC"
-              onKeyDown={(e) => handleTypingState(e)}
-              onChange={(e) => setMessage(e.target.value)}
-            />
+            <InputGroup>
+              <Input
+                value={message}
+                placeholder="Message"
+                focusBorderColor="#B2ABCC"
+                onKeyDown={(e) => handleTypingState(e)}
+                bg={useColorModeValue('#fafafa', '#272727')}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+              <InputRightElement>
+                <Media />
+              </InputRightElement>
+            </InputGroup>
           </FormControl>
           <IconButton
             type="submit"
@@ -59,9 +67,7 @@ export default function ChatInput() {
             aria-label="Send"
             colorScheme="purple"
             disabled={!message.trim()}
-          >
-            Send
-          </IconButton>
+          />
         </Stack>
       </form>
     </Box>

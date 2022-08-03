@@ -1,9 +1,18 @@
 import { formatDate, getAvatar } from 'utils'
 import { useSession } from 'next-auth/react'
 import { Message } from '@twilio/conversations'
-import { Box, Text, Stack, Avatar, useColorModeValue } from '@chakra-ui/react'
+import {
+  Box,
+  Text,
+  Stack,
+  Avatar,
+  useColorModeValue,
+  Image,
+  Center,
+} from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
 import { useCallback, useEffect, useState } from 'react'
+import Spinner from 'components/Spinner'
 import DeleteMsgMenu from './DeleteMsgMenu'
 
 interface ChatBubbleProps {
@@ -11,7 +20,7 @@ interface ChatBubbleProps {
 }
 
 export default function ChatBubble({ message }: ChatBubbleProps) {
-  const { author, body, dateCreated } = message
+  const { author, body, dateCreated, attributes } = message
   const mainMsgBg = useColorModeValue('#fafafa', '#141414')
   const secondaryMsgBg = useColorModeValue('gray.100', '#202020')
   const { data: session } = useSession()
@@ -21,6 +30,8 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
   const { client } = useGlobalContext()
   const [friendlyName, setFriendlyName] = useState<string>(author || '')
   const [avatar, setAvatar] = useState<string>('')
+  // @ts-ignore
+  const isGif = attributes?.gif
 
   const getFriendlyName = useCallback(async () => {
     if (author) {
@@ -55,17 +66,34 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
         minW={100}
         maxW={400}
         shadow="xl"
-        rounded="md"
+        rounded="lg"
         bg={isAuthor ? mainMsgBg : secondaryMsgBg}
       >
         <Stack direction="row" justifyContent="space-between">
-          <Text wordBreak="break-word">{body}</Text>
+          {isGif ? (
+            <Image
+              h={130}
+              w="100%"
+              alt="gif"
+              rounded="lg"
+              src={body || ''}
+              fallback={
+                <Center w={120} h={130} rounded="lg" bg="#242424">
+                  <Spinner />
+                </Center>
+              }
+            />
+          ) : (
+            <Text wordBreak="break-word">{body}</Text>
+          )}
+
           {isAuthor && <DeleteMsgMenu message={message} />}
         </Stack>
         <Box>
           {dateCreated && (
             <Text fontSize={10} opacity={0.35}>
               {formatDate(dateCreated)}
+              {isGif && ' (via GIPHY)'}
             </Text>
           )}
           {!isAuthor && (
