@@ -31,9 +31,12 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
   const [friendlyName, setFriendlyName] = useState<string>(author || '')
   const [avatar, setAvatar] = useState<string>('')
   const [mediaUrl, setMediaUrl] = useState<string>('')
+  const rawMedia = message.attachedMedia?.[0]
   // @ts-ignore
   const isGif = attributes?.gif
   const hasMedia = message.type === 'media'
+  const isAudio = hasMedia && rawMedia?.contentType.startsWith('audio')
+  const isImage = hasMedia && rawMedia?.contentType.startsWith('image')
 
   const getFriendlyName = useCallback(async () => {
     if (author) {
@@ -46,11 +49,19 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
 
   useEffect(() => {
     if (hasMedia) {
-      message.attachedMedia?.[0]?.getContentTemporaryUrl().then((url) => {
-        setMediaUrl(url || '')
-      })
+      console.log('here')
+      rawMedia
+        ?.getCachedTemporaryUrl()
+        .then((url) => {
+          setMediaUrl(url as string)
+        })
+        .catch(() => {
+          rawMedia?.getContentTemporaryUrl().then((url) => {
+            setMediaUrl(url as string)
+          })
+        })
     }
-  }, [hasMedia, message])
+  }, [hasMedia, message, rawMedia])
 
   useEffect(() => {
     getFriendlyName()
@@ -80,14 +91,14 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
         bg={isAuthor ? mainMsgBg : secondaryMsgBg}
       >
         <Stack direction="row" justifyContent="space-between">
-          {isGif || hasMedia ? (
+          {isGif || isImage ? (
             <Image
               h={130}
               w="100%"
               alt="gif"
               rounded="lg"
               objectFit="cover"
-              src={hasMedia ? mediaUrl : (body as string)}
+              src={isImage ? mediaUrl : (body as string)}
               fallback={
                 <Center w={120} h={130} rounded="lg" bg="#242424">
                   <Spinner />
@@ -95,7 +106,24 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
               }
             />
           ) : (
-            <Text wordBreak="break-word">{body}</Text>
+            <>
+              {!isAudio && <Text wordBreak="break-word">{body}</Text>}
+              {isAudio && (
+                <Box>
+                  {mediaUrl ? (
+                    // eslint-disable-next-line jsx-a11y/media-has-caption
+                    <audio controls>
+                      <source src={mediaUrl} type="audio/wav" />
+                      Your browser does not support the audio element.
+                    </audio>
+                  ) : (
+                    <Center w={140} h={6} rounded="lg" bg="#242424">
+                      <Spinner />
+                    </Center>
+                  )}
+                </Box>
+              )}
+            </>
           )}
 
           {isAuthor && <DeleteMsgMenu message={message} />}
@@ -105,7 +133,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
             <Text fontSize={10} opacity={0.35}>
               {formatDate(dateCreated)}
               {isGif && ' (via GIPHY)'}
-              {hasMedia && ` (${message.attachedMedia?.[0]?.contentType})`}
+              {hasMedia && ` (${rawMedia?.contentType})`}
             </Text>
           )}
           {!isAuthor && (
