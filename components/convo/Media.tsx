@@ -9,8 +9,6 @@ import {
   useDisclosure,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { useState } from 'react'
-import { useGlobalContext } from 'context/global'
 import {
   BiStop,
   BiImage,
@@ -18,20 +16,21 @@ import {
   BiMicrophone,
   BiPaperclip,
 } from 'react-icons/bi'
+import { useState } from 'react'
+import { useGlobalContext } from 'context/global'
 import GifPicker from './GifPicker'
 
 export default function Media() {
   const toast = useToast()
-  const bg = useColorModeValue('#fafafa', '#262626')
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const btnHover = useColorModeValue('#fff', '#222')
-  const btnBg = useColorModeValue('#fafafa', '#262626')
   const { conversation } = useGlobalContext()
-
-  const [audioRecorder, setAudioRecorder] = useState<MediaRecorder>()
-  const [isRecording, setIsRecording] = useState<boolean>(false)
+  const bg = useColorModeValue('#fafafa', '#262626')
+  const btnHover = useColorModeValue('#fff', '#222')
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const btnBg = useColorModeValue('#fafafa', '#262626')
   const [audioBlobs, setAudioBlobs] = useState<Blob[]>([])
+  const [isRecording, setIsRecording] = useState<boolean>(false)
   const [audioStream, setAudioStream] = useState<MediaStream>()
+  const [audioRecorder, setAudioRecorder] = useState<MediaRecorder>()
 
   function handleUploadImage() {
     const fileInput = document.getElementById('file-input') as HTMLInputElement
@@ -53,19 +52,40 @@ export default function Media() {
     }
   }
 
-  function handleAudioRecord() {
+  async function handleAudioRecord() {
     if (isRecording) return
-    setIsRecording(true)
     const { mediaDevices } = navigator
-    mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-      const recorder = new MediaRecorder(stream)
-      setAudioRecorder(recorder)
-      setAudioStream(stream)
-      recorder.start(1000)
-      recorder.ondataavailable = (e) => {
-        setAudioBlobs((prevBlobs) => [...prevBlobs, e.data])
+
+    if (!mediaDevices) {
+      toast({
+        position: 'top',
+        status: 'error',
+        isClosable: true,
+        title: 'No audio input',
+        description: 'Check your browser settings',
+      })
+    } else {
+      setIsRecording(true)
+      try {
+        const stream = await mediaDevices.getUserMedia({ audio: true })
+        const recorder = new MediaRecorder(stream)
+        setAudioRecorder(recorder)
+        setAudioStream(stream)
+        recorder.start(1000)
+        recorder.ondataavailable = (e) => {
+          setAudioBlobs((prevBlobs) => [...prevBlobs, e.data])
+        }
+      } catch {
+        toast({
+          position: 'top',
+          status: 'error',
+          isClosable: true,
+          title: 'Permission denied',
+          description: 'Check your mic permission and try again',
+        })
+        setIsRecording(false)
       }
-    })
+    }
   }
 
   async function handleUploadImg(e: React.ChangeEvent<HTMLInputElement>) {

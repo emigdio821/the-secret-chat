@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react'
 import { useGlobalContext } from 'context/global'
 import { useCallback, useEffect, useState } from 'react'
+import AudioPlayer from 'components/AudioPlayer'
 import DeleteMsgMenu from './DeleteMsgMenu'
 
 interface ChatBubbleProps {
@@ -47,23 +48,18 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
     }
   }, [client, author])
 
+  const getMediaUrl = useCallback(async () => {
+    if (rawMedia) {
+      const url = await rawMedia.getContentTemporaryUrl()
+      setMediaUrl(url as string)
+    }
+  }, [rawMedia])
+
   useEffect(() => {
     if (hasMedia) {
-      // rawMedia
-      //   ?.getCachedTemporaryUrl()
-      //   .then((url) => {
-      //     setMediaUrl(url as string)
-      //   })
-      //   .catch(() => {
-      //     rawMedia?.getContentTemporaryUrl().then((url) => {
-      //       setMediaUrl(url as string)
-      //     })
-      //   })
-      rawMedia?.getContentTemporaryUrl().then((url) => {
-        setMediaUrl(url as string)
-      })
+      getMediaUrl()
     }
-  }, [hasMedia, message, rawMedia])
+  }, [getMediaUrl, hasMedia])
 
   useEffect(() => {
     getFriendlyName()
@@ -113,11 +109,11 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
               {isAudio && (
                 <Box>
                   {mediaUrl ? (
-                    // eslint-disable-next-line jsx-a11y/media-has-caption
-                    <audio controls>
-                      <source src={mediaUrl} type="audio/wav" />
-                      Your browser does not support the audio element.
-                    </audio>
+                    // <audio controls>
+                    //   <source src={mediaUrl} type="audio/wav" />
+                    //   Your browser does not support the audio element.
+                    // </audio>
+                    <AudioPlayer audioUrl={mediaUrl} />
                   ) : (
                     <Center w={140} h={6} rounded="lg" bg="#242424">
                       <Spinner />
