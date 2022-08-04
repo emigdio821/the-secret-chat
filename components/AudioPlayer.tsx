@@ -51,6 +51,12 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
     if (audioPlayer.current && !player) {
       setPlayer(audioPlayer.current)
     }
+
+    return () => {
+      if (player) {
+        setPlayer(null)
+      }
+    }
   }, [player])
 
   function formatAudioTime(time?: number) {

@@ -8,6 +8,10 @@
   animation: ghost 2s alternate infinite;
 }
 
+.recording-animation {
+  animation: recording 0.6s alternate infinite;
+}
+
 @keyframes blinking {
   from {
     opacity: 0;
@@ -26,5 +30,15 @@
   30%,
   100% {
     transform: rotate(0);
+  }
+}
+
+@keyframes recording {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.15);
   }
 }

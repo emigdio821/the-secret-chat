@@ -1,6 +1,7 @@
 import {
   Box,
   Menu,
+  Text,
   useToast,
   MenuItem,
   MenuList,
@@ -10,14 +11,17 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react'
 import {
-  BiStop,
+  BiTrash,
   BiImage,
+  BiRocket,
   BiImages,
-  BiMicrophone,
   BiPaperclip,
+  BiMicrophone,
 } from 'react-icons/bi'
-import { useState } from 'react'
+import { useState, useEffect, useCallback, ReactElement } from 'react'
 import { useGlobalContext } from 'context/global'
+import styles from 'styles/common.module.css'
+import MotionDiv from 'components/MotionDiv'
 import GifPicker from './GifPicker'
 
 export default function Media() {
@@ -32,16 +36,51 @@ export default function Media() {
   const [audioStream, setAudioStream] = useState<MediaStream>()
   const [audioRecorder, setAudioRecorder] = useState<MediaRecorder>()
 
+  function processingToast(
+    title?: string,
+    description?: string,
+    icon?: ReactElement,
+  ) {
+    return toast({
+      icon,
+      description,
+      duration: null,
+      position: 'top',
+      status: 'loading',
+      variant: 'minimal',
+      title: title || 'Processing...',
+    })
+  }
+
+  function errorToast(title?: string, description?: string) {
+    return toast({
+      description,
+      status: 'error',
+      position: 'top',
+      isClosable: true,
+      title: title || 'Error',
+    })
+  }
+
   function handleUploadImage() {
     const fileInput = document.getElementById('file-input') as HTMLInputElement
     fileInput.click()
   }
 
+  const handleStopRecorder = useCallback(() => {
+    if (audioRecorder && audioStream && audioStream.active) {
+      toast.closeAll()
+      audioRecorder.stop()
+      audioStream.getTracks().forEach((track) => track.stop())
+      setIsRecording(false)
+    }
+  }, [audioRecorder, audioStream, toast])
+
   async function handleStopRecording() {
     if (audioRecorder) {
-      audioRecorder.stop()
-      audioStream?.getTracks().forEach((track) => track.stop())
+      handleStopRecorder()
       setIsRecording(false)
+      const audioToast = processingToast('Processing audio...')
       const audioBlob = new Blob(audioBlobs, {
         type: 'audio/wav',
       })
@@ -49,6 +88,7 @@ export default function Media() {
       formData.append('file', audioBlob as Blob, 'audio.wav')
       await conversation.sendMessage(formData)
       setAudioBlobs([])
+      toast.close(audioToast)
     }
   }
 
@@ -57,14 +97,17 @@ export default function Media() {
     const { mediaDevices } = navigator
 
     if (!mediaDevices) {
-      toast({
-        position: 'top',
-        status: 'error',
-        isClosable: true,
-        title: 'No audio input',
-        description: 'Check your browser settings',
-      })
+      errorToast('No audio input', 'Check your browser settings')
     } else {
+      processingToast(
+        'Recording audio...',
+        undefined,
+        <BiMicrophone
+          size={24}
+          color="#ff6961"
+          className={styles['recording-animation']}
+        />,
+      )
       setIsRecording(true)
       try {
         const stream = await mediaDevices.getUserMedia({ audio: true })
@@ -73,16 +116,17 @@ export default function Media() {
         setAudioStream(stream)
         recorder.start(1000)
         recorder.ondataavailable = (e) => {
-          setAudioBlobs((prevBlobs) => [...prevBlobs, e.data])
+          if (recorder.state === 'inactive') {
+            setAudioBlobs([])
+          } else {
+            setAudioBlobs((prevBlobs) => [...prevBlobs, e.data])
+          }
         }
       } catch {
-        toast({
-          position: 'top',
-          status: 'error',
-          isClosable: true,
-          title: 'Permission denied',
-          description: 'Check your mic permission and try again',
-        })
+        errorToast(
+          'Permission denied',
+          'Check your mic permission and try again',
+        )
         setIsRecording(false)
       }
     }
@@ -95,32 +139,30 @@ export default function Media() {
     const ext = file?.name.split('.').pop()
     const validExt = ['jpg', 'jpeg', 'png', 'gif']
     if (file && validExt.includes(ext as string)) {
-      const fileToast = toast({
-        duration: null,
-        position: 'top',
-        status: 'loading',
-        variant: 'minimal',
-        title: 'Uploading image...',
-      })
+      const fileToast = processingToast('Processing image...')
       formData.append('file', file)
       await conversation.sendMessage(formData)
       toast.close(fileToast)
       e.target.value = ''
     } else {
-      toast({
-        status: 'error',
-        position: 'top',
-        isClosable: true,
-        title: 'Invalid file type',
-        description: 'Only jpg, jpeg, png, and gif are supported',
-      })
+      errorToast(
+        'Invalid file type',
+        'Only jpg, jpeg, png, and gif are supported',
+      )
     }
   }
+
+  useEffect(
+    () => () => {
+      handleStopRecorder()
+    },
+    [handleStopRecorder],
+  )
 
   return (
     <Box>
       <GifPicker isOpen={isOpen} onClose={onClose} />
-      <Menu>
+      <Menu isOpen={isRecording || undefined}>
         {({ isOpen: isMenuOpen }) => (
           <Box>
             <MenuButton
@@ -143,45 +185,55 @@ export default function Media() {
               fontSize="sm"
               display={!isMenuOpen ? 'none' : undefined}
             >
-              <MenuItem
-                rounded="md"
-                onClick={onOpen}
-                icon={<BiImages size={16} />}
-              >
-                GIF
-              </MenuItem>
-
               {isRecording ? (
-                <MenuItem
-                  rounded="md"
-                  icon={<BiStop size={16} />}
-                  onClick={() => handleStopRecording()}
-                >
-                  Stop recording
-                </MenuItem>
+                <MotionDiv>
+                  <MenuItem
+                    rounded="md"
+                    icon={<BiRocket size={16} />}
+                    onClick={() => handleStopRecording()}
+                  >
+                    Send audio
+                  </MenuItem>
+                  <MenuItem
+                    rounded="md"
+                    onClick={() => handleStopRecorder()}
+                    icon={<BiTrash size={16} color="#ff6961" />}
+                  >
+                    <Text color="#ff6961">Cancel recording</Text>
+                  </MenuItem>
+                </MotionDiv>
               ) : (
-                <MenuItem
-                  rounded="md"
-                  icon={<BiMicrophone size={16} />}
-                  onClick={() => handleAudioRecord()}
-                >
-                  Record audio
-                </MenuItem>
+                <>
+                  <MenuItem
+                    rounded="md"
+                    onClick={onOpen}
+                    icon={<BiImages size={16} />}
+                  >
+                    GIF
+                  </MenuItem>
+                  <MenuItem
+                    rounded="md"
+                    icon={<BiImage size={16} />}
+                    onClick={() => handleUploadImage()}
+                  >
+                    Upload image
+                  </MenuItem>
+                  <MenuItem
+                    rounded="md"
+                    icon={<BiMicrophone size={16} />}
+                    onClick={() => handleAudioRecord()}
+                  >
+                    Record audio
+                  </MenuItem>
+                  <input
+                    type="file"
+                    id="file-input"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleUploadImg(e)}
+                  />
+                </>
               )}
-              <MenuItem
-                rounded="md"
-                icon={<BiImage size={16} />}
-                onClick={() => handleUploadImage()}
-              >
-                Upload image
-              </MenuItem>
-              <input
-                type="file"
-                id="file-input"
-                accept="image/*"
-                style={{ display: 'none' }}
-                onChange={(e) => handleUploadImg(e)}
-              />
             </MenuList>
           </Box>
         )}
