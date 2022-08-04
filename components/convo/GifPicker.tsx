@@ -130,7 +130,7 @@ export default function GifPicker({ isOpen, onClose }: GifPickerProps) {
                     rounded="lg"
                     src={gif.images.fixed_height.url}
                     fallback={
-                      <Center w={120} h={130} rounded="lg" bg="#242424">
+                      <Center w="100%" h={130} rounded="lg" bg="#242424">
                         <Spinner />
                       </Center>
                     }

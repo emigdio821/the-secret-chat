@@ -107,15 +107,17 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
             <>
               {!isAudio && <Text wordBreak="break-word">{body}</Text>}
               {isAudio && (
-                <Box>
+                <Box py={2}>
                   {mediaUrl ? (
                     // <audio controls>
                     //   <source src={mediaUrl} type="audio/wav" />
                     //   Your browser does not support the audio element.
                     // </audio>
-                    <AudioPlayer audioUrl={mediaUrl} />
+                    <Center w={120} h={75}>
+                      <AudioPlayer audioUrl={mediaUrl} />
+                    </Center>
                   ) : (
-                    <Center w={140} h={6} rounded="lg" bg="#242424">
+                    <Center w={120} h={75} rounded="lg" bg="#242424">
                       <Spinner />
                     </Center>
                   )}

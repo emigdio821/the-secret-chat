@@ -1,16 +1,15 @@
-import React, { useRef, useState, useEffect } from 'react'
 import {
-  Box,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  ButtonGroup,
-  IconButton,
-  Stack,
   Text,
+  Stack,
+  Slider,
+  IconButton,
+  SliderTrack,
+  SliderThumb,
+  SliderFilledTrack,
   useColorModeValue,
 } from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import { useRef, useState, useEffect } from 'react'
 import { BiPlay, BiPause, BiStop } from 'react-icons/bi'
 
 export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
@@ -49,10 +48,10 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
   // }
 
   useEffect(() => {
-    if (audioPlayer.current) {
+    if (audioPlayer.current && !player) {
       setPlayer(audioPlayer.current)
     }
-  }, [])
+  }, [player])
 
   function formatAudioTime(time?: number) {
     if (player) {
@@ -80,23 +79,34 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
     }
   }
 
+  function handleLoadedMetadata() {
+    if (player) {
+      player.currentTime = 1e101
+      if (player.duration === Infinity) {
+        player.currentTime = 1e101
+        player.ontimeupdate = () => {
+          if (player) {
+            player.ontimeupdate = () => {
+              onPlaying()
+            }
+            player.currentTime = 0
+          }
+        }
+      }
+    }
+  }
+
   return (
-    <Box>
+    <motion.div
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0, x: 10 }}
+    >
       <audio
         ref={audioPlayer}
-        onTimeUpdate={onPlaying}
+        // onTimeUpdate={onPlaying}
         onLoadedMetadata={() => {
-          if (player) {
-            if (player.duration === Infinity) {
-              player.currentTime = 1e101
-              player.ontimeupdate = () => {
-                if (player) {
-                  player.ontimeupdate = () => {}
-                  player.currentTime = 0
-                }
-              }
-            }
-          }
+          handleLoadedMetadata()
         }}
       >
         <track kind="captions" />
@@ -130,26 +140,21 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
           </SliderTrack>
           <SliderThumb shadow="xl" bg={useColorModeValue('#333', '#fafafa')} />
         </Slider>
-        <ButtonGroup size="sm">
+        <Stack direction="row" align="center">
           <IconButton
-            onClick={play}
-            aria-label="Play"
-            disabled={isPlaying}
-            icon={<BiPlay size={20} />}
+            rounded="full"
+            aria-label="Play or Pause"
+            onClick={isPlaying ? pause : play}
+            icon={isPlaying ? <BiPause size={22} /> : <BiPlay size={22} />}
           />
           <IconButton
-            onClick={pause}
-            aria-label="Pause"
-            icon={<BiPause size={20} />}
-            disabled={!isPlaying}
-          />
-          <IconButton
+            size="sm"
             onClick={stop}
             aria-label="Stop"
-            icon={<BiStop size={20} />}
             disabled={!isPlaying}
+            icon={<BiStop size={18} />}
           />
-        </ButtonGroup>
+        </Stack>
       </Stack>
       {/* <Box>
           <ButtonGroup size="xs">
@@ -159,6 +164,6 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
             <Button onClick={() => setSpeed(2)}>2x</Button>
           </ButtonGroup>
         </Box> */}
-    </Box>
+    </motion.div>
   )
 }
