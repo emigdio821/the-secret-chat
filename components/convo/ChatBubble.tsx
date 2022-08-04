@@ -49,17 +49,19 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
 
   useEffect(() => {
     if (hasMedia) {
-      console.log('here')
-      rawMedia
-        ?.getCachedTemporaryUrl()
-        .then((url) => {
-          setMediaUrl(url as string)
-        })
-        .catch(() => {
-          rawMedia?.getContentTemporaryUrl().then((url) => {
-            setMediaUrl(url as string)
-          })
-        })
+      // rawMedia
+      //   ?.getCachedTemporaryUrl()
+      //   .then((url) => {
+      //     setMediaUrl(url as string)
+      //   })
+      //   .catch(() => {
+      //     rawMedia?.getContentTemporaryUrl().then((url) => {
+      //       setMediaUrl(url as string)
+      //     })
+      //   })
+      rawMedia?.getContentTemporaryUrl().then((url) => {
+        setMediaUrl(url as string)
+      })
     }
   }, [hasMedia, message, rawMedia])
 
