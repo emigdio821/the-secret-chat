@@ -87,14 +87,11 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
 
   function handleLoadedMetadata() {
     if (player) {
-      player.currentTime = 1e101
       if (player.duration === Infinity) {
         player.currentTime = 1e101
         player.ontimeupdate = () => {
           if (player) {
-            player.ontimeupdate = () => {
-              onPlaying()
-            }
+            player.ontimeupdate = () => {}
             player.currentTime = 0
           }
         }
