@@ -127,6 +127,7 @@ export default function Media() {
           'Permission denied',
           'Check your mic permission and try again',
         )
+        toast.closeAll()
         setIsRecording(false)
       }
     }

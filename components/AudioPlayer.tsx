@@ -110,7 +110,7 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
     >
       <audio
         ref={audioPlayer}
-        // onTimeUpdate={onPlaying}
+        onTimeUpdate={onPlaying}
         onLoadedMetadata={() => {
           handleLoadedMetadata()
         }}
