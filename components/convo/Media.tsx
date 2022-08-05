@@ -99,19 +99,19 @@ export default function Media() {
     if (!mediaDevices) {
       errorToast('No audio input', 'Check your browser settings')
     } else {
-      processingToast(
-        'Recording audio...',
-        undefined,
-        <BiMicrophone
-          size={24}
-          color="#ff6961"
-          className={styles['recording-animation']}
-        />,
-      )
-      setIsRecording(true)
       try {
         const stream = await mediaDevices.getUserMedia({ audio: true })
         const recorder = new MediaRecorder(stream)
+        setIsRecording(true)
+        processingToast(
+          'Recording audio...',
+          undefined,
+          <BiMicrophone
+            size={24}
+            color="#ff6961"
+            className={styles['recording-animation']}
+          />,
+        )
         setAudioRecorder(recorder)
         setAudioStream(stream)
         recorder.start(1000)
@@ -127,7 +127,6 @@ export default function Media() {
           'Permission denied',
           'Check your mic permission and try again',
         )
-        toast.closeAll()
         setIsRecording(false)
       }
     }
