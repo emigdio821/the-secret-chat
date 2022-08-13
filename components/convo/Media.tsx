@@ -106,7 +106,10 @@ export default function Media() {
         const recordAudio = new Audio('/sounds/record_sound.mp3')
         if (recordAudio.paused) recordAudio.play()
         const recorder = new MediaRecorder(stream)
-        recordAudio.onended = () => {
+        // not working on Safari iOS
+        // recordAudio.onended = () => { }
+
+        setTimeout(() => {
           setIsRecording(true)
           processingToast(
             'Recording audio...',
@@ -127,7 +130,7 @@ export default function Media() {
               setAudioBlobs((prevBlobs) => [...prevBlobs, e.data])
             }
           }
-        }
+        }, 400)
       } catch {
         errorToast(
           'Permission denied',
