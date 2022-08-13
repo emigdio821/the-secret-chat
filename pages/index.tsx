@@ -121,6 +121,7 @@ export default function Index({ session }: { session: Session }) {
 
         if (author !== session.user.email) {
           const notifAudio = new Audio('/sounds/notif_sound.mp3')
+          notifAudio.volume = 0.3
           if (notifAudio.paused) notifAudio.play()
         }
 
