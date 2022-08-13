@@ -116,7 +116,14 @@ export default function Index({ session }: { session: Session }) {
 
     if (conversation) {
       conversation.on('messageAdded', (msg: Message) => {
+        const { author } = msg
         updateMessagesIdx(msg.index)
+
+        if (author !== session.user.email) {
+          const notifAudio = new Audio('/sounds/notif_sound.mp3')
+          if (notifAudio.paused) notifAudio.play()
+        }
+
         dispatch({
           type: actions.addMessage,
           payload: msg,

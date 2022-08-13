@@ -7,7 +7,7 @@ export default function Navbar() {
     <Box
       as="nav"
       w="100%"
-      zIndex={1}
+      zIndex={10}
       position="fixed"
       css={{
         backdropFilter: 'blur(10px)',

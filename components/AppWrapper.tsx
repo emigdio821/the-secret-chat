@@ -1,4 +1,4 @@
-import { Container } from '@chakra-ui/react'
+import { Container, Flex } from '@chakra-ui/react'
 import Navbar from './Navbar'
 
 interface WrapperProps {
@@ -7,11 +7,11 @@ interface WrapperProps {
 
 export default function AppWrapper({ children }: WrapperProps) {
   return (
-    <>
+    <Flex direction="column" justify="space-between" h="100vh">
       <Navbar />
-      <Container pt={20} maxW="4xl" h="100vh" minH={{ base: 600, sm: 800 }}>
+      <Container pt={20} maxW="4xl">
         {children}
       </Container>
-    </>
+    </Flex>
   )
 }
