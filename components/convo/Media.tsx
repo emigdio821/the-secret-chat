@@ -5,6 +5,7 @@ import {
   useToast,
   MenuItem,
   MenuList,
+  MenuGroup,
   MenuButton,
   IconButton,
   useDisclosure,
@@ -22,6 +23,7 @@ import { useState, useEffect, useCallback, ReactElement } from 'react'
 import { useGlobalContext } from 'context/global'
 import styles from 'styles/common.module.css'
 import MotionDiv from 'components/MotionDiv'
+import { secsToTime } from 'utils'
 import GifPicker from './GifPicker'
 
 export default function Media() {
@@ -101,25 +103,29 @@ export default function Media() {
     } else {
       try {
         const stream = await mediaDevices.getUserMedia({ audio: true })
+        const recordAudio = new Audio('/sounds/record_sound.mp3')
+        if (recordAudio.paused) recordAudio.play()
         const recorder = new MediaRecorder(stream)
-        setIsRecording(true)
-        processingToast(
-          'Recording audio...',
-          undefined,
-          <BiMicrophone
-            size={24}
-            color="#ff6961"
-            className={styles['recording-animation']}
-          />,
-        )
-        setAudioRecorder(recorder)
-        setAudioStream(stream)
-        recorder.start(1000)
-        recorder.ondataavailable = (e) => {
-          if (recorder.state === 'inactive') {
-            setAudioBlobs([])
-          } else {
-            setAudioBlobs((prevBlobs) => [...prevBlobs, e.data])
+        recordAudio.onended = () => {
+          setIsRecording(true)
+          processingToast(
+            'Recording audio...',
+            undefined,
+            <BiMicrophone
+              size={24}
+              color="#ff6961"
+              className={styles['recording-animation']}
+            />,
+          )
+          setAudioRecorder(recorder)
+          setAudioStream(stream)
+          recorder.start(1000)
+          recorder.ondataavailable = (e) => {
+            if (recorder.state === 'inactive') {
+              setAudioBlobs([])
+            } else {
+              setAudioBlobs((prevBlobs) => [...prevBlobs, e.data])
+            }
           }
         }
       } catch {
@@ -187,20 +193,22 @@ export default function Media() {
             >
               {isRecording ? (
                 <MotionDiv>
-                  <MenuItem
-                    rounded="md"
-                    icon={<BiRocket size={16} />}
-                    onClick={() => handleStopRecording()}
-                  >
-                    Send audio
-                  </MenuItem>
-                  <MenuItem
-                    rounded="md"
-                    onClick={() => handleStopRecorder()}
-                    icon={<BiTrash size={16} color="#ff6961" />}
-                  >
-                    <Text color="#ff6961">Cancel recording</Text>
-                  </MenuItem>
+                  <MenuGroup title={secsToTime(audioBlobs.length)}>
+                    <MenuItem
+                      rounded="md"
+                      icon={<BiRocket size={16} />}
+                      onClick={() => handleStopRecording()}
+                    >
+                      Send audio
+                    </MenuItem>
+                    <MenuItem
+                      rounded="md"
+                      onClick={() => handleStopRecorder()}
+                      icon={<BiTrash size={16} color="#ff6961" />}
+                    >
+                      <Text color="#ff6961">Cancel recording</Text>
+                    </MenuItem>
+                  </MenuGroup>
                 </MotionDiv>
               ) : (
                 <>

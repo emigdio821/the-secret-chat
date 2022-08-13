@@ -73,3 +73,16 @@ export function byteFormatter(bytes: number, decimals: number = 0) {
 
   return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`
 }
+
+export function secsToTime(nTime?: number) {
+  if (!nTime) return '0:00'
+  const theTime = nTime
+  const mins = Math.floor(theTime / 60)
+  const secs = Math.floor(theTime % 60)
+  let formattedSecs
+  if (secs < 10) {
+    formattedSecs = `0${String(secs)}`
+    return `${mins}:${formattedSecs}`
+  }
+  return `${mins}:${secs}`
+}

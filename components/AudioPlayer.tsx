@@ -8,6 +8,7 @@ import {
   SliderFilledTrack,
   useColorModeValue,
 } from '@chakra-ui/react'
+import { secsToTime } from 'utils'
 import { motion } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import { BiPlay, BiPause, BiStop } from 'react-icons/bi'
@@ -59,24 +60,9 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
     }
   }, [player])
 
-  function formatAudioTime(time?: number) {
-    if (player) {
-      const theTime = time || player.currentTime
-      const mins = Math.floor(theTime / 60)
-      const secs = Math.floor(theTime % 60)
-      let formattedSecs
-      if (secs < 10) {
-        formattedSecs = `0${String(secs)}`
-        return `${mins}:${formattedSecs}`
-      }
-      return `${mins}:${secs}`
-    }
-    return '0:00'
-  }
-
   const onPlaying = () => {
     if (player) {
-      setCurrentTime(formatAudioTime())
+      setCurrentTime(secsToTime(player.currentTime))
       setSeekValue((player.currentTime / player.duration) * 100)
       if (player.currentTime === player.duration) {
         stop()
@@ -120,7 +106,7 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
       <Stack>
         <Stack direction="row" justifyContent="space-between">
           <Text fontSize="0.6875rem">{currentTime}</Text>
-          <Text fontSize="0.6875rem">{formatAudioTime(player?.duration)}</Text>
+          <Text fontSize="0.6875rem">{secsToTime(player?.duration)}</Text>
         </Stack>
         <Slider
           min={0}
