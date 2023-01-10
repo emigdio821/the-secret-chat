@@ -13,14 +13,15 @@ import {
   InputLeftElement,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { useGlobalContext } from 'context/global'
-import { BiGhost, BiRefresh, BiSearch } from 'react-icons/bi'
-import { useEffect, useState, useCallback } from 'react'
-import { Conversation } from '@twilio/conversations'
-import actions from 'context/globalActions'
-import { useRouter } from 'next/router'
 import { sortArray } from 'utils'
+import useStore from 'store/global'
+import { useRouter } from 'next/router'
+import actions from 'context/globalActions'
 import MotionDiv from 'components/MotionDiv'
+import { useGlobalContext } from 'context/global'
+import { Conversation } from '@twilio/conversations'
+import { useEffect, useState, useCallback } from 'react'
+import { BiGhost, BiRefresh, BiSearch } from 'react-icons/bi'
 import ConvoCard from './ConvoCard'
 
 export default function MyChats() {
@@ -29,15 +30,14 @@ export default function MyChats() {
   const btnBg = useColorModeValue('#444', '#262626')
   const btnHover = useColorModeValue('#333', '#222')
   const [searchValue, setSearchValue] = useState<string>('')
+  const { addLoading, removeLoading, isLoading, client } = useStore()
   const [filtered, setFiltered] = useState<Conversation[]>([])
   const [conversations, setConversations] = useState<Conversation[]>([])
-  const { client, dispatch, isLoading, conversation } = useGlobalContext()
+  const { dispatch, conversation } = useGlobalContext()
 
   const getConversations = useCallback(async () => {
     if (client) {
-      dispatch({
-        type: actions.setLoading,
-      })
+      addLoading()
       try {
         const convers = await client.getSubscribedConversations()
         const sortedConvers = sortArray(convers.items as [], 'friendlyName')
@@ -45,11 +45,9 @@ export default function MyChats() {
       } catch (err) {
         console.error('Failed to retreive conversations ->', err)
       }
-      dispatch({
-        type: actions.removeLoading,
-      })
+      removeLoading()
     }
-  }, [client, dispatch])
+  }, [addLoading, client, removeLoading])
 
   async function getConversation(uniqueName: string) {
     if (client && uniqueName) {

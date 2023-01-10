@@ -7,14 +7,15 @@ import {
   Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { useEffect, useState, useCallback } from 'react'
-import { sortArray, getFriendlyName } from 'utils'
-import { useSession } from 'next-auth/react'
-import { useGlobalContext } from 'context/global'
-import { Participant as Part } from '@twilio/conversations'
-import { AnimatePresence, motion } from 'framer-motion'
+import useStore from 'store/global'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import MotionDiv from 'components/MotionDiv'
+import { useGlobalContext } from 'context/global'
+import { sortArray, getFriendlyName } from 'utils'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useState, useCallback } from 'react'
+import { Participant as Part } from '@twilio/conversations'
 import Participant from './Participant'
 
 interface ParticipantsProps {
@@ -22,8 +23,9 @@ interface ParticipantsProps {
 }
 
 export default function Participants({ adminPart }: ParticipantsProps) {
+  const { client } = useStore()
+  const { conversation } = useGlobalContext()
   const notifBg = useColorModeValue('gray.300', '#141414')
-  const { conversation, client } = useGlobalContext()
   const mainBg = useColorModeValue('#EDEDED', '#272727')
   const [partiJoined, setPartiJoined] = useState<Part>()
   const [partiLeft, setPartiLeft] = useState<Part>()

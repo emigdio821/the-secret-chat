@@ -8,12 +8,12 @@ import {
   Button,
   Spinner,
   MenuList,
-  MenuItem,
   MenuGroup,
   MenuButton,
   MenuDivider,
   useColorMode,
   useColorModeValue,
+  MenuItem as ChakraMenuItem,
 } from '@chakra-ui/react'
 import { getFirstName } from 'utils'
 import { signOut, useSession } from 'next-auth/react'
@@ -29,12 +29,15 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import useCleanup from 'hooks/useCleanup'
 import { FaGithub } from 'react-icons/fa'
+import MenuItem from 'components/MenuItem'
 
 export default function ProfileMenu() {
   const router = useRouter()
   const { data } = useSession()
   const { user } = data || {}
   const { toggleColorMode } = useColorMode()
+  const bg = useColorModeValue('#fafafa', '#262626')
+  const bgHover = useColorModeValue('#f5f5f5', '#222')
   const SwitchIcon = useColorModeValue(BiMoon, BiSun)
   const themeMode = useColorModeValue('Dark', 'Light')
   const cleanUp = useCleanup()
@@ -93,7 +96,6 @@ export default function ProfileMenu() {
           <MenuGroup title={user?.name || undefined}>
             {router.pathname !== '/' && (
               <MenuItem
-                rounded="md"
                 fontSize="sm"
                 onClick={() => handleHomeClick()}
                 icon={<BiHomeSmile size={16} />}
@@ -103,18 +105,13 @@ export default function ProfileMenu() {
             )}
             {router.pathname !== '/profile' && (
               <NextLink href="/profile" passHref>
-                <MenuItem
-                  rounded="md"
-                  fontSize="sm"
-                  icon={<BiUser size={16} />}
-                >
+                <MenuItem fontSize="sm" icon={<BiUser size={16} />}>
                   My profile
                 </MenuItem>
               </NextLink>
             )}
           </MenuGroup>
           <MenuItem
-            rounded="md"
             fontSize="sm"
             onClick={toggleColorMode}
             icon={<SwitchIcon size={16} />}
@@ -122,20 +119,23 @@ export default function ProfileMenu() {
             <Text>{themeMode} theme</Text>
           </MenuItem>
           <MenuDivider />
-          <MenuItem
+          <ChakraMenuItem
             as="a"
-            rounded="md"
             fontSize="sm"
             target="_blank"
+            _hover={{
+              bg: bgHover,
+            }}
+            bg={bg}
+            rounded="md"
             rel="noopener noreferrer"
             icon={<FaGithub size={16} />}
             href="https://github.com/emigdio821/the-secret-chat"
           >
             <Text>Source</Text>
-          </MenuItem>
+          </ChakraMenuItem>
           <MenuDivider />
           <MenuItem
-            rounded="md"
             fontSize="sm"
             onClick={() =>
               signOut({

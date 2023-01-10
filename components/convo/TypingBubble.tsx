@@ -1,15 +1,16 @@
-import { Stack, Avatar, Text, useColorModeValue } from '@chakra-ui/react'
-import { Participant } from '@twilio/conversations'
-import { useGlobalContext } from 'context/global'
-import { useCallback, useEffect, useState } from 'react'
-import { BiGhost } from 'react-icons/bi'
 import { getAvatar } from 'utils'
+import useStore from 'store/global'
+import { BiGhost } from 'react-icons/bi'
+import { Participant } from '@twilio/conversations'
+import { useCallback, useEffect, useState } from 'react'
+import { Stack, Avatar, Text, useColorModeValue } from '@chakra-ui/react'
 
 interface TypingBubbleProps {
   participants: Participant[]
 }
 
 export default function TypingBubble({ participants }: TypingBubbleProps) {
+  const { client } = useStore()
   const idCondition = participants.length > 0 && participants.length < 2
   const identity = idCondition ? participants[0].identity : ''
   const [friendlyName, setFriendlyName] = useState<string>(identity || '')
@@ -18,14 +19,14 @@ export default function TypingBubble({ participants }: TypingBubbleProps) {
     participants.length > 1
       ? `${participants.length} participants are typing...`
       : `${friendlyName} is typing...`
-  const { client } = useGlobalContext()
-
   const getFriendlyName = useCallback(async () => {
     if (identity) {
-      const user = await client.getUser(identity)
-      const avatarUrl = getAvatar(user)
-      if (user.friendlyName) setFriendlyName(user.friendlyName)
-      if (avatarUrl) setAvatar(avatarUrl)
+      const user = await client?.getUser(identity)
+      if (user) {
+        const avatarUrl = getAvatar(user)
+        if (user.friendlyName) setFriendlyName(user.friendlyName)
+        if (avatarUrl) setAvatar(avatarUrl)
+      }
     }
   }, [client, identity])
 

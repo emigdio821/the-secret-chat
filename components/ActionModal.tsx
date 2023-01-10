@@ -11,10 +11,9 @@ import {
   ModalOverlay,
   useColorModeValue,
 } from '@chakra-ui/react'
+import useStore from 'store/global'
 import { SetStateAction, useState } from 'react'
 import { BiGhost, BiRightArrowAlt } from 'react-icons/bi'
-import { useGlobalContext } from 'context/global'
-import actions from 'context/globalActions'
 import { ModalCallbackProps } from 'types'
 import AlertError from './AlertError'
 
@@ -45,7 +44,7 @@ export default function ActionModal({
   additionalInputLabel = 'Description',
 }: ActionModalProps) {
   const [inputVal, setInputVal] = useState<string>('')
-  const { dispatch, error, isLoading } = useGlobalContext()
+  const { error, isLoading, removeError } = useStore()
   const [additionalInputVal, setAdditionalInputVal] = useState<string>('')
 
   function isBtnDisabled() {
@@ -62,11 +61,7 @@ export default function ActionModal({
       setAdditionalInputVal('')
     }
 
-    if (error) {
-      dispatch({
-        type: actions.removeError,
-      })
-    }
+    if (error) removeError()
     onClose()
   }
 

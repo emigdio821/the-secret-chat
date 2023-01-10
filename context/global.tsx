@@ -30,19 +30,17 @@ export function GlobalProvider({ children }: Provider) {
     reducer,
     initialState,
   )
-  const { client, conversation, error, isLoading, messages, usersTyping } =
-    state
+  const { conversation, error, isLoading, messages, usersTyping } = state
   const providerValue = useMemo(
     () => ({
       error,
-      client,
       messages,
       dispatch,
       isLoading,
       usersTyping,
       conversation,
     }),
-    [client, conversation, error, isLoading, messages, usersTyping],
+    [conversation, error, isLoading, messages, usersTyping],
   )
 
   return (

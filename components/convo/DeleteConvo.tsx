@@ -7,7 +7,6 @@ import {
   Box,
   Text,
   Button,
-  MenuItem,
   MenuDivider,
   AlertDialog,
   useDisclosure,
@@ -20,6 +19,7 @@ import {
 } from '@chakra-ui/react'
 import useCleanup from 'hooks/useCleanup'
 import { useRouter } from 'next/router'
+import MenuItem from 'components/MenuItem'
 import AlertError from 'components/AlertError'
 
 export default function DeleteConvo() {
@@ -96,7 +96,6 @@ export default function DeleteConvo() {
       </AlertDialog>
       <MenuDivider />
       <MenuItem
-        rounded="md"
         icon={<BiTrash size={16} color="#ff6961" />}
         onClick={() => handleOpenModal()}
       >

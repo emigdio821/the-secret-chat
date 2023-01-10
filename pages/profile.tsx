@@ -10,20 +10,19 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react'
 import { Session } from 'types'
+import useStore from 'store/global'
 import Helmet from 'components/Helmet'
-import actions from 'context/globalActions'
-import { useCallback, useEffect, useState } from 'react'
+import { BiGhost } from 'react-icons/bi'
+import Reconnect from 'components/Reconnect'
+import MotionDiv from 'components/MotionDiv'
 import AppWrapper from 'components/AppWrapper'
+import useInitClient from 'hooks/useInitClient'
 import { AnimatePresence } from 'framer-motion'
 import useBgGradient from 'hooks/useBgGradient'
-import { useGlobalContext } from 'context/global'
-import { BiGhost } from 'react-icons/bi'
-import { getSession, GetSessionParams } from 'next-auth/react'
-import MotionDiv from 'components/MotionDiv'
-import ProfilePopInfo from 'components/profile/ProfilePopInfo'
-import useInitClient from 'hooks/useInitClient'
-import Reconnect from 'components/Reconnect'
 import ProfileForm from 'components/profile/ProfileForm'
+import { useCallback, useEffect, useState } from 'react'
+import { getSession, GetSessionParams } from 'next-auth/react'
+import ProfilePopInfo from 'components/profile/ProfilePopInfo'
 
 interface CallbackProps {
   inputName: string
@@ -32,13 +31,13 @@ interface CallbackProps {
 }
 
 export default function Profile({ session }: { session: Session }) {
-  const bgGradient = useBgGradient()
-  const { client, dispatch, isLoading } = useGlobalContext()
-  const [friendlyName, setFriendlyName] = useState<string>('')
   const { user } = session
+  const bgGradient = useBgGradient()
+  const [error, setError] = useState<string>('')
   const cardBg = useColorModeValue('#EDEDED', '#272727')
   const { newClient, error: clientErr } = useInitClient()
-  const [error, setError] = useState<string>('')
+  const { removeLoading, addLoading, isLoading, client } = useStore()
+  const [friendlyName, setFriendlyName] = useState<string>('')
 
   useEffect(() => {
     if (!client) {
@@ -68,12 +67,10 @@ export default function Profile({ session }: { session: Session }) {
 
   const handleFormSubmit = useCallback(
     async ({ setInputName, inputName, onClose }: CallbackProps) => {
-      dispatch({
-        type: actions.setLoading,
-      })
+      addLoading()
       try {
-        await client.user.updateFriendlyName(inputName)
-        await client.user.updateAttributes({
+        await client?.user.updateFriendlyName(inputName)
+        await client?.user.updateAttributes({
           avatar: user.image,
           friendlyName: inputName,
         })
@@ -84,11 +81,9 @@ export default function Profile({ session }: { session: Session }) {
         setError('Failed to update friendly name')
         console.error('Failed to update profile ->', err)
       }
-      dispatch({
-        type: actions.removeLoading,
-      })
+      removeLoading()
     },
-    [client, dispatch, user.image],
+    [addLoading, client?.user, removeLoading, user.image],
   )
 
   return (
@@ -158,14 +153,16 @@ export default function Profile({ session }: { session: Session }) {
                   </AnimatePresence>
                 </Stack>
               </Stack>
-              <ProfileForm
-                error={error}
-                client={client}
-                session={session}
-                setError={setError}
-                isLoading={isLoading}
-                callback={handleFormSubmit}
-              />
+              {client && (
+                <ProfileForm
+                  error={error}
+                  client={client}
+                  session={session}
+                  setError={setError}
+                  isLoading={isLoading}
+                  callback={handleFormSubmit}
+                />
+              )}
             </Stack>
           </Box>
         </Stack>

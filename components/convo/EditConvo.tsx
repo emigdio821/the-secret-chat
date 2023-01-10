@@ -16,12 +16,11 @@ import {
   useColorModeValue,
   PopoverCloseButton,
 } from '@chakra-ui/react'
-import { Conversation } from '@twilio/conversations'
-import { useGlobalContext } from 'context/global'
 import { useState } from 'react'
-import { BiEditAlt, BiGhost, BiCheck } from 'react-icons/bi'
-import actions from 'context/globalActions'
+import useStore from 'store/global'
 import AlertError from 'components/AlertError'
+import { Conversation } from '@twilio/conversations'
+import { BiEditAlt, BiGhost, BiCheck } from 'react-icons/bi'
 
 interface EditComboProps {
   convo: Conversation
@@ -33,10 +32,10 @@ export default function EditConvo({ convo }: EditComboProps) {
   const bg = useColorModeValue('#fafafa', '#262626')
   const [nameVal, setNameVal] = useState<string>('')
   const [descVal, setDescVal] = useState<string>('')
-  const { isLoading, dispatch } = useGlobalContext()
   const { onOpen, onClose, isOpen } = useDisclosure()
   // @ts-ignore
   const description = attributes.description || 'Description'
+  const { addLoading, removeLoading, isLoading } = useStore()
   const isSubmitDisabled = isLoading
   const btnHover = useColorModeValue('#fff', '#222')
   const btnBg = useColorModeValue('#fafafa', '#262626')
@@ -49,15 +48,13 @@ export default function EditConvo({ convo }: EditComboProps) {
   }
 
   function openPopover() {
-    if (nameVal || descVal || error) {
-      formCleanup()
-    }
+    if (nameVal || descVal || error) formCleanup()
     onOpen()
   }
 
   async function handleSubmitForm(e: React.FormEvent) {
     e.preventDefault()
-    dispatch({ type: actions.setLoading })
+    addLoading()
     if (!isLoading) {
       try {
         await convo.updateUniqueName(nameVal.trim() || uniqueName)
@@ -70,7 +67,7 @@ export default function EditConvo({ convo }: EditComboProps) {
         setError('Name already exists')
       }
     }
-    dispatch({ type: actions.removeLoading })
+    removeLoading()
   }
 
   return (

@@ -19,10 +19,10 @@ import {
   ModalCloseButton,
   useColorModeValue,
 } from '@chakra-ui/react'
+import useStore from 'store/global'
 import useGiphy from 'hooks/useGiphy'
 import { BiSearch } from 'react-icons/bi'
 import type { IGif } from '@giphy/js-types'
-import actions from 'context/globalActions'
 import { useGlobalContext } from 'context/global'
 import { useRef, useState, useEffect, useCallback } from 'react'
 
@@ -34,8 +34,9 @@ interface GifPickerProps {
 export default function GifPicker({ isOpen, onClose }: GifPickerProps) {
   const gf = useGiphy()
   const btnRef = useRef(null)
-  const [gifs, setGifs] = useState<IGif[]>()
-  const { conversation, isLoading, dispatch } = useGlobalContext()
+  const [gifs, setGifs] = useState<IGif[]>([])
+  const { addLoading, removeLoading, isLoading } = useStore()
+  const { conversation } = useGlobalContext()
   const [inputVal, setInputVal] = useState('')
 
   const fetchInitialGifs = useCallback(
@@ -49,10 +50,16 @@ export default function GifPicker({ isOpen, onClose }: GifPickerProps) {
   async function handleSearchGifs(e: React.FormEvent) {
     e.preventDefault()
     e.stopPropagation()
-    dispatch({ type: actions.setLoading })
-    const res = await gf.search(inputVal, { limit: 50 })
-    dispatch({ type: actions.removeLoading })
-    setGifs(res.data)
+    addLoading()
+    try {
+      const res = await gf.search(inputVal, { limit: 50 })
+      setGifs(res.data)
+    } catch (err) {
+      setGifs([])
+      console.error(err)
+    } finally {
+      removeLoading()
+    }
   }
 
   function handleGifClick(gif: IGif) {
@@ -63,9 +70,7 @@ export default function GifPicker({ isOpen, onClose }: GifPickerProps) {
   }
 
   useEffect(() => {
-    if (inputVal === '') {
-      fetchInitialGifs(0)
-    }
+    if (inputVal === '') fetchInitialGifs(0)
   }, [fetchInitialGifs, inputVal])
 
   return (
@@ -107,37 +112,43 @@ export default function GifPicker({ isOpen, onClose }: GifPickerProps) {
               <Spinner />
             </Center>
           ) : (
-            <Grid
-              gap={4}
-              maxH={400}
-              rounded="md"
-              overflowY="auto"
-              templateColumns={{
-                md: 'repeat(3, 1fr)',
-                base: 'repeat(2, 1fr)',
-              }}
-            >
-              {gifs?.map((gif: IGif) => (
-                <GridItem
-                  key={gif.id}
-                  cursor="pointer"
-                  onClick={() => handleGifClick(gif)}
+            <Box>
+              {gifs.length > 0 ? (
+                <Grid
+                  gap={4}
+                  maxH={400}
+                  rounded="md"
+                  overflowY="auto"
+                  templateColumns={{
+                    md: 'repeat(3, 1fr)',
+                    base: 'repeat(2, 1fr)',
+                  }}
                 >
-                  <Image
-                    h={130}
-                    w="100%"
-                    alt="gif"
-                    rounded="lg"
-                    src={gif.images.fixed_height.url}
-                    fallback={
-                      <Center w="100%" h={130} rounded="lg" bg="#242424">
-                        <Spinner />
-                      </Center>
-                    }
-                  />
-                </GridItem>
-              ))}
-            </Grid>
+                  {gifs.map((gif: IGif) => (
+                    <GridItem
+                      key={gif.id}
+                      cursor="pointer"
+                      onClick={() => handleGifClick(gif)}
+                    >
+                      <Image
+                        h={130}
+                        w="100%"
+                        alt="gif"
+                        rounded="lg"
+                        src={gif.images.fixed_height.url}
+                        fallback={
+                          <Center w="100%" h={130} rounded="lg" bg="#242424">
+                            <Spinner />
+                          </Center>
+                        }
+                      />
+                    </GridItem>
+                  ))}
+                </Grid>
+              ) : (
+                <Box>Oops, no gifs found</Box>
+              )}
+            </Box>
           )}
         </ModalBody>
         <ModalFooter>

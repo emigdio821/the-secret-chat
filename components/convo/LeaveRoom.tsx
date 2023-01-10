@@ -1,12 +1,6 @@
-import { useRef } from 'react'
-import { leaveRoom } from 'lib/chat'
-import { BiLogOut } from 'react-icons/bi'
-import actions from 'context/globalActions'
-import { useGlobalContext } from 'context/global'
 import {
   Box,
   Button,
-  MenuItem,
   AlertDialog,
   useDisclosure,
   AlertDialogBody,
@@ -16,9 +10,15 @@ import {
   AlertDialogOverlay,
   AlertDialogContent,
 } from '@chakra-ui/react'
-import useCleanup from 'hooks/useCleanup'
+import { useRef } from 'react'
+import { leaveRoom } from 'lib/chat'
 import { useRouter } from 'next/router'
+import { BiLogOut } from 'react-icons/bi'
+import useCleanup from 'hooks/useCleanup'
+import MenuItem from 'components/MenuItem'
+import actions from 'context/globalActions'
 import AlertError from 'components/AlertError'
+import { useGlobalContext } from 'context/global'
 
 export default function LeaveRoom() {
   const router = useRouter()
@@ -92,11 +92,7 @@ export default function LeaveRoom() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-      <MenuItem
-        rounded="md"
-        icon={<BiLogOut size={16} />}
-        onClick={() => handleOpenModal()}
-      >
+      <MenuItem icon={<BiLogOut size={16} />} onClick={() => handleOpenModal()}>
         Leave room
       </MenuItem>
     </>

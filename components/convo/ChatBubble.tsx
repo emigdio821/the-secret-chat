@@ -1,6 +1,3 @@
-import { formatDate, getAvatar } from 'utils'
-import { useSession } from 'next-auth/react'
-import { Message } from '@twilio/conversations'
 import {
   Box,
   Text,
@@ -11,9 +8,12 @@ import {
   Spinner,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { useGlobalContext } from 'context/global'
-import { useCallback, useEffect, useState } from 'react'
+import useStore from 'store/global'
+import { formatDate, getAvatar } from 'utils'
+import { useSession } from 'next-auth/react'
+import { Message } from '@twilio/conversations'
 import AudioPlayer from 'components/AudioPlayer'
+import { useCallback, useEffect, useState } from 'react'
 import DeleteMsgMenu from './DeleteMsgMenu'
 
 interface ChatBubbleProps {
@@ -21,14 +21,14 @@ interface ChatBubbleProps {
 }
 
 export default function ChatBubble({ message }: ChatBubbleProps) {
-  const { author, body, dateCreated, attributes } = message
-  const mainMsgBg = useColorModeValue('#fafafa', '#141414')
-  const secondaryMsgBg = useColorModeValue('gray.100', '#202020')
+  const { client } = useStore()
   const { data: session } = useSession()
+  const mainMsgBg = useColorModeValue('#fafafa', '#141414')
+  const { author, body, dateCreated, attributes } = message
+  const secondaryMsgBg = useColorModeValue('gray.100', '#202020')
   const currentUser = session?.user?.email || ''
   const userImg = session?.user?.image || ''
   const isAuthor = author === currentUser
-  const { client } = useGlobalContext()
   const [friendlyName, setFriendlyName] = useState<string>(author || '')
   const [avatar, setAvatar] = useState<string>('')
   const [mediaUrl, setMediaUrl] = useState<string>('')
@@ -41,10 +41,12 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
 
   const getFriendlyName = useCallback(async () => {
     if (author) {
-      const user = await client.getUser(author)
-      if (user.friendlyName) setFriendlyName(user.friendlyName)
-      const av = getAvatar(user)
-      if (av) setAvatar(av)
+      const user = await client?.getUser(author)
+      if (user) {
+        if (user.friendlyName) setFriendlyName(user.friendlyName)
+        const av = getAvatar(user)
+        if (av) setAvatar(av)
+      }
     }
   }, [client, author])
 

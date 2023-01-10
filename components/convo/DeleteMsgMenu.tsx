@@ -3,11 +3,11 @@ import {
   Text,
   Menu,
   MenuList,
-  MenuItem,
   MenuButton,
   IconButton,
   useColorModeValue,
 } from '@chakra-ui/react'
+import MenuItem from 'components/MenuItem'
 import { Message } from '@twilio/conversations'
 import { BiDotsVerticalRounded, BiMessageAltX } from 'react-icons/bi'
 
@@ -33,7 +33,6 @@ export default function DeleteMsgMenu({ message }: { message: Message }) {
         />
         <MenuList px={2} shadow="xl" bg={menuBg} minW={140}>
           <MenuItem
-            rounded="md"
             fontSize="xs"
             icon={<BiMessageAltX size={16} color="#ff6961" />}
             onClick={() => handleDeleteMessage()}

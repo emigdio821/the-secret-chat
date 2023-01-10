@@ -1,13 +1,8 @@
-import { useRef } from 'react'
-import { BiUserX } from 'react-icons/bi'
-import actions from 'context/globalActions'
-import { useGlobalContext } from 'context/global'
 import {
   Box,
   Text,
   chakra,
   Button,
-  MenuItem,
   AlertDialog,
   useDisclosure,
   AlertDialogBody,
@@ -17,7 +12,12 @@ import {
   AlertDialogOverlay,
   AlertDialogContent,
 } from '@chakra-ui/react'
+import { useRef } from 'react'
+import { BiUserX } from 'react-icons/bi'
+import MenuItem from 'components/MenuItem'
+import actions from 'context/globalActions'
 import AlertError from 'components/AlertError'
+import { useGlobalContext } from 'context/global'
 import { Conversation, Participant } from '@twilio/conversations'
 
 interface DeleteParticipantProps {
@@ -102,10 +102,9 @@ export default function DeleteParticipant({
         </AlertDialogOverlay>
       </AlertDialog>
       <MenuItem
-        rounded="md"
         fontSize="xs"
-        icon={<BiUserX size={16} color="#ff6961" />}
         onClick={() => handleOpenModal()}
+        icon={<BiUserX size={16} color="#ff6961" />}
       >
         <Text color="#ff6961">Kick</Text>
       </MenuItem>

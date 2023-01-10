@@ -3,7 +3,6 @@ import {
   Menu,
   Text,
   useToast,
-  MenuItem,
   MenuList,
   MenuGroup,
   MenuButton,
@@ -19,11 +18,12 @@ import {
   BiPaperclip,
   BiMicrophone,
 } from 'react-icons/bi'
-import { useState, useEffect, useCallback, ReactElement } from 'react'
-import { useGlobalContext } from 'context/global'
-import styles from 'styles/common.module.css'
-import MotionDiv from 'components/MotionDiv'
 import { secsToTime } from 'utils'
+import MenuItem from 'components/MenuItem'
+import MotionDiv from 'components/MotionDiv'
+import styles from 'styles/common.module.css'
+import { useGlobalContext } from 'context/global'
+import { useState, useEffect, useCallback, ReactElement } from 'react'
 import GifPicker from './GifPicker'
 
 export default function Media() {
@@ -198,14 +198,12 @@ export default function Media() {
                 <MotionDiv>
                   <MenuGroup title={secsToTime(audioBlobs.length)}>
                     <MenuItem
-                      rounded="md"
                       icon={<BiRocket size={16} />}
                       onClick={() => handleStopRecording()}
                     >
                       Send audio
                     </MenuItem>
                     <MenuItem
-                      rounded="md"
                       onClick={() => handleStopRecorder()}
                       icon={<BiTrash size={16} color="#ff6961" />}
                     >
@@ -215,22 +213,16 @@ export default function Media() {
                 </MotionDiv>
               ) : (
                 <>
-                  <MenuItem
-                    rounded="md"
-                    onClick={onOpen}
-                    icon={<BiImages size={16} />}
-                  >
+                  <MenuItem onClick={onOpen} icon={<BiImages size={16} />}>
                     GIF
                   </MenuItem>
                   <MenuItem
-                    rounded="md"
                     icon={<BiImage size={16} />}
                     onClick={() => handleUploadImage()}
                   >
                     Upload image
                   </MenuItem>
                   <MenuItem
-                    rounded="md"
                     icon={<BiMicrophone size={16} />}
                     onClick={() => handleAudioRecord()}
                   >

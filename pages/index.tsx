@@ -15,21 +15,21 @@ import CreateRoom from 'components/home/CreateRoom'
 import JoinRoom from 'components/home/JoinRoom'
 import useInitClient from 'hooks/useInitClient'
 import useCleanup from 'hooks/useCleanup'
+import useStore from 'store/global'
 
 export default function Index({ session }: { session: Session }) {
   const router = useRouter()
   const cleanUp = useCleanup()
   const { newClient, error: clientErr } = useInitClient()
-  const { dispatch, client, conversation } = useGlobalContext()
+  const { dispatch, conversation } = useGlobalContext()
+  const { removeLoading, addLoading, addError, client } = useStore()
 
   const handleCreateChatRoom = async ({
     closeModal,
     inputVal: inVal,
     additionalInputVal: descriptionVal,
   }: ModalCallbackProps) => {
-    dispatch({
-      type: actions.setLoading,
-    })
+    addLoading()
     const inputVal = inVal.trim()
     if (inputVal && client) {
       try {
@@ -48,24 +48,17 @@ export default function Index({ session }: { session: Session }) {
         })
         closeModal()
       } catch {
-        dispatch({
-          type: actions.addError,
-          payload: 'Already exists or something went wrong, try again',
-        })
+        addError('Already exists or something went wrong, try again')
       }
     }
-    dispatch({
-      type: actions.removeLoading,
-    })
+    removeLoading()
   }
 
   const handleJoinChatRoom = async ({
     closeModal,
     inputVal: inVal,
   }: ModalCallbackProps) => {
-    dispatch({
-      type: actions.setLoading,
-    })
+    addLoading()
     const inputVal = inVal.trim()
     if (inputVal && client) {
       try {
@@ -77,15 +70,10 @@ export default function Index({ session }: { session: Session }) {
         closeModal()
         router.push(`/chats/${conver.sid}`)
       } catch {
-        dispatch({
-          type: actions.addError,
-          payload: 'Doesn\'t exist or you don\'t have access to it',
-        })
+        addError('Doesn\'t exist or you don\'t have access to it')
       }
     }
-    dispatch({
-      type: actions.removeLoading,
-    })
+    removeLoading()
   }
 
   const updateMessagesIdx = useCallback(
@@ -173,7 +161,7 @@ export default function Index({ session }: { session: Session }) {
 
   useEffect(() => {
     async function updateAttrs() {
-      await client.user.updateAttributes({
+      await client?.user.updateAttributes({
         avatar: session.user.image,
         friendlyName: client.user.friendlyName,
       })

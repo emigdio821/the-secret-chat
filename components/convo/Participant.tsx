@@ -1,9 +1,9 @@
-import { useSession } from 'next-auth/react'
-import { Participant as Part } from '@twilio/conversations'
-import { Avatar, Stack, Text } from '@chakra-ui/react'
-import { useGlobalContext } from 'context/global'
-import { useEffect, useState, useCallback } from 'react'
 import { getAvatar } from 'utils'
+import useStore from 'store/global'
+import { useSession } from 'next-auth/react'
+import { Avatar, Stack, Text } from '@chakra-ui/react'
+import { useEffect, useState, useCallback } from 'react'
+import { Participant as Part } from '@twilio/conversations'
 import ParticipantMenu from './ParticipantMenu'
 
 interface PartProps {
@@ -30,17 +30,19 @@ export default function Participant({ participant, admin }: PartProps) {
   const userImg = session?.user?.image || ''
   const isAuthor = identity === currentUser
   const { conversation } = participant
-  const { client } = useGlobalContext()
+  const { client } = useStore()
   const [friendlyName, setFriendlyName] = useState<string>(identity || '')
   const [avatar, setAvatar] = useState<string>('')
   const isAdmin = admin?.identity === currentUser
 
   const getFriendlyName = useCallback(async () => {
     if (identity) {
-      const user = await client.getUser(identity)
-      const avatarUrl = getAvatar(user)
-      if (user.friendlyName) setFriendlyName(user.friendlyName)
-      if (avatarUrl) setAvatar(avatarUrl)
+      const user = await client?.getUser(identity)
+      if (user) {
+        const avatarUrl = getAvatar(user)
+        if (user.friendlyName) setFriendlyName(user.friendlyName)
+        if (avatarUrl) setAvatar(avatarUrl)
+      }
     }
   }, [client, identity])
 

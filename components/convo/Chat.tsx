@@ -1,29 +1,30 @@
-import { useEffect, useState } from 'react'
 import {
   Box,
   Menu,
+  Text,
   Stack,
   Button,
   Heading,
   MenuList,
   MenuButton,
   useColorModeValue,
-  Text,
 } from '@chakra-ui/react'
-import { useGlobalContext } from 'context/global'
-import { BiChevronDown } from 'react-icons/bi'
-import useInitClient from 'hooks/useInitClient'
 import { Session } from 'types'
 import { isAdmin } from 'utils'
+import useStore from 'store/global'
+import { useEffect, useState } from 'react'
+import MotionDiv from 'components/MotionDiv'
+import { BiChevronDown } from 'react-icons/bi'
+import useInitClient from 'hooks/useInitClient'
+import { useGlobalContext } from 'context/global'
 import { Participant } from '@twilio/conversations'
 import { AnimatePresence } from 'framer-motion'
-import MotionDiv from 'components/MotionDiv'
 import Messages from './Messages'
-import Participants from './Participants'
+import EditConvo from './EditConvo'
 import LeaveRoom from './LeaveRoom'
 import ChatInput from './ChatInput'
 import AddParticipant from './AddParticipant'
-import EditConvo from './EditConvo'
+import Participants from './Participants'
 import DeleteConvo from './DeleteConvo'
 
 interface ChatProps {
@@ -31,7 +32,8 @@ interface ChatProps {
 }
 
 export default function Chat({ session }: ChatProps) {
-  const { dispatch, conversation, client } = useGlobalContext()
+  const { client } = useStore()
+  const { conversation } = useGlobalContext()
   const btnHover = useColorModeValue('#fff', '#222')
   const btnBg = useColorModeValue('#fafafa', '#262626')
   const { newClient } = useInitClient()
@@ -66,7 +68,7 @@ export default function Chat({ session }: ChatProps) {
     return () => {
       client?.removeAllListeners()
     }
-  }, [client, conversation, dispatch, newClient, session])
+  }, [client, conversation, newClient, session])
 
   return (
     <Stack maxH={{ base: 'calc(100vh - 100px )', sm: '2xl' }}>

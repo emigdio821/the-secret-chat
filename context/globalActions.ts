@@ -1,12 +1,8 @@
 const actions = {
   addError: 'ADD_ERROR',
-  addClient: 'ADD_CLIENT',
-  setLoading: 'ADD_LOADING',
   addMessage: 'ADD_MESSAGE',
   addMessages: 'ADD_MESSAGES',
   removeError: 'REMOVE_ERROR',
-  removeClient: 'REMOVE_CLIENT',
-  removeLoading: 'REMOVE_LOADING',
   removeMessage: 'REMOVE_MESSAGE',
   removeMessages: 'REMOVE_MESSAGES',
   addUsersTyping: 'ADD_USERS_TYPING',

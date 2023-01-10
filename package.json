@@ -15,31 +15,32 @@
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@giphy/js-fetch-api": "^4.3.1",
-    "@giphy/react-components": "^5.12.0",
+    "@giphy/react-components": "^6.5.1",
     "@twilio/conversations": "^2.1.0",
-    "framer-motion": "^6",
-    "next": "12.2.0",
+    "framer-motion": "^8.3.3",
+    "next": "13.1.1",
     "next-auth": "^4.10.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
-    "twilio": "^3.78.0"
+    "twilio": "^3.78.0",
+    "zustand": "^4.2.0"
   },
   "devDependencies": {
-    "@types/node": "18.0.0",
-    "@types/react": "18.0.14",
-    "@types/react-dom": "18.0.5",
+    "@types/node": "18.11.18",
+    "@types/react": "18.0.26",
+    "@types/react-dom": "18.0.10",
     "@typescript-eslint/eslint-plugin": "^5.30.3",
     "@typescript-eslint/parser": "^5.30.3",
     "eslint": "^7.32.0 || ^8.2.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-next": "12.2.0",
+    "eslint-config-next": "13.1.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "typescript": "4.7.4"
+    "typescript": "4.9.4"
   }
 }

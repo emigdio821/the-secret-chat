@@ -1,20 +1,14 @@
-import {
-  Client,
-  Message,
-  Participant,
-  Conversation,
-} from '@twilio/conversations'
+import { Message, Participant, Conversation } from '@twilio/conversations'
 import { InitialState as StateType, ActionPayload } from 'types'
 import actions from './globalActions'
 
-const initialState = {
+const initialState: StateType = {
   error: '',
   messages: [],
   usersTyping: [],
   isLoading: false,
-  client: undefined,
   conversation: undefined,
-} as StateType
+}
 
 const reducer = (state: StateType, action: ActionPayload): StateType => {
   switch (action.type) {
@@ -51,30 +45,10 @@ const reducer = (state: StateType, action: ActionPayload): StateType => {
         ...state,
         messages: action.payload as Message[],
       }
-    case actions.setLoading:
-      return {
-        ...state,
-        isLoading: true,
-      }
-    case actions.removeLoading:
-      return {
-        ...state,
-        isLoading: false,
-      }
     case actions.removeError:
       return {
         ...state,
         error: '',
-      }
-    case actions.addClient:
-      return {
-        ...state,
-        client: action.payload as Client,
-      }
-    case actions.removeClient:
-      return {
-        ...state,
-        client: undefined,
       }
     case actions.addConversation:
       return {
