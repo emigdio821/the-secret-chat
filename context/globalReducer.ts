@@ -2,7 +2,8 @@ import { Message, Participant, Conversation } from '@twilio/conversations'
 import { InitialState as StateType, ActionPayload } from 'types'
 import actions from './globalActions'
 
-const initialState: StateType = {
+// to be replaced with zustand :b
+const initialState: any = {
   error: '',
   messages: [],
   usersTyping: [],

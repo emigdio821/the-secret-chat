@@ -37,7 +37,7 @@ export default function ProfileMenu() {
   const { user } = data || {}
   const { toggleColorMode } = useColorMode()
   const bg = useColorModeValue('#fafafa', '#262626')
-  const bgHover = useColorModeValue('#f5f5f5', '#222')
+  const bgHover = useColorModeValue('gray.100', 'whiteAlpha.100')
   const SwitchIcon = useColorModeValue(BiMoon, BiSun)
   const themeMode = useColorModeValue('Dark', 'Light')
   const cleanUp = useCleanup()
