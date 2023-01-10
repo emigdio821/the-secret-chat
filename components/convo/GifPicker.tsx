@@ -23,7 +23,6 @@ import useStore from 'store/global'
 import useGiphy from 'hooks/useGiphy'
 import { BiSearch } from 'react-icons/bi'
 import type { IGif } from '@giphy/js-types'
-import { useGlobalContext } from 'context/global'
 import { useRef, useState, useEffect, useCallback } from 'react'
 
 interface GifPickerProps {
@@ -35,9 +34,8 @@ export default function GifPicker({ isOpen, onClose }: GifPickerProps) {
   const gf = useGiphy()
   const btnRef = useRef(null)
   const [gifs, setGifs] = useState<IGif[]>([])
-  const { addLoading, removeLoading, isLoading } = useStore()
-  const { conversation } = useGlobalContext()
   const [inputVal, setInputVal] = useState('')
+  const { addLoading, removeLoading, isLoading, conversation } = useStore()
 
   const fetchInitialGifs = useCallback(
     async (offset: number) => {
@@ -63,7 +61,7 @@ export default function GifPicker({ isOpen, onClose }: GifPickerProps) {
   }
 
   function handleGifClick(gif: IGif) {
-    conversation.sendMessage(gif.images.original.url, {
+    conversation?.sendMessage(gif.images.original.url, {
       gif: true,
     })
     onClose()

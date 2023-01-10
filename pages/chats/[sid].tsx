@@ -13,13 +13,11 @@ import useStore from 'store/global'
 import Helmet from 'components/Helmet'
 import Chat from 'components/convo/Chat'
 import AppWrapper from 'components/AppWrapper'
-import { useGlobalContext } from 'context/global'
 import { BiArrowBack, BiGhost } from 'react-icons/bi'
 import { getSession, GetSessionParams } from 'next-auth/react'
 
 export default function ChatPage({ session }: { session: Session }) {
-  const { client } = useStore()
-  const { conversation } = useGlobalContext()
+  const { client, conversation } = useStore()
   const bg = useColorModeValue('#EDEDED', '#2d2d2d')
   const btnBg = useColorModeValue('#333', '#262626')
 

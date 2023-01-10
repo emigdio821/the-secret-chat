@@ -9,6 +9,7 @@ import { BiGhost } from 'react-icons/bi'
 import ScrollBottomBtn from 'components/ScrollBottomBtn'
 import actions from 'context/globalActions'
 import { getMessages } from 'lib/chat'
+import useStore from 'store/global'
 import ChatBubble from './ChatBubble'
 import TypingBubble from './TypingBubble'
 
@@ -23,9 +24,10 @@ function ScrollBottom({ messages }: { messages: Message[] }) {
 export default function Messages() {
   const bgGradient = useBgGradient()
   const { data: session } = useSession()
+  const { conversation, addError } = useStore()
   const currentUser = session?.user?.email || ''
   const msgsContainer = useRef<HTMLDivElement>(null)
-  const { usersTyping, dispatch, conversation, messages } = useGlobalContext()
+  const { usersTyping, dispatch, messages } = useGlobalContext()
   const [showScrollArrow, setShowScrollArrow] = useState(false)
   const [paginator, setPaginator] = useState<Paginator<Message>>()
   const msgsPresent = messages.length > 0
@@ -52,27 +54,28 @@ export default function Messages() {
   useEffect(() => {
     async function getMsgs() {
       try {
-        const msgs = await getMessages(conversation)
-        const { items } = msgs
-        setPaginator(msgs)
-        if (msgs.items.length > 0) {
-          conversation.updateLastReadMessageIndex(items[items.length - 1].index)
-          dispatch({
-            type: actions.addMessages,
-            payload: msgs.items,
-          })
+        if (conversation) {
+          const msgs = await getMessages(conversation)
+          const { items } = msgs
+          setPaginator(msgs)
+          if (msgs.items.length > 0) {
+            conversation.updateLastReadMessageIndex(
+              items[items.length - 1].index,
+            )
+            dispatch({
+              type: actions.addMessages,
+              payload: msgs.items,
+            })
+          }
         }
       } catch {
-        dispatch({
-          type: actions.addError,
-          payload: 'Failed to get messages',
-        })
+        addError('Failed to get messages')
       }
     }
-    if (conversation.status === 'joined') {
+    if (conversation?.status === 'joined') {
       getMsgs()
     }
-  }, [conversation, dispatch])
+  }, [conversation, dispatch, addError])
 
   function handleScroll() {
     if (elContainer) {

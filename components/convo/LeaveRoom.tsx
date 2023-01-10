@@ -16,46 +16,34 @@ import { useRouter } from 'next/router'
 import { BiLogOut } from 'react-icons/bi'
 import useCleanup from 'hooks/useCleanup'
 import MenuItem from 'components/MenuItem'
-import actions from 'context/globalActions'
 import AlertError from 'components/AlertError'
-import { useGlobalContext } from 'context/global'
+import useStore from 'store/global'
 
 export default function LeaveRoom() {
   const router = useRouter()
   const cleanUp = useCleanup()
   const cancelRef = useRef<HTMLButtonElement>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { dispatch, conversation, error } = useGlobalContext()
+  const { conversation, error, addError, removeError } = useStore()
 
   async function handleLeaveRoom() {
     try {
-      await leaveRoom(conversation)
+      if (conversation) await leaveRoom(conversation)
       cleanUp()
       onClose()
       router.push('/')
     } catch (e) {
-      dispatch({
-        type: actions.addError,
-        payload: 'Something went wrong while leaving the room, try again',
-      })
+      addError('Something went wrong while leaving the room, try again')
     }
   }
 
   function handleOpenModal() {
-    if (error) {
-      dispatch({
-        type: actions.removeError,
-      })
-    }
+    if (error) removeError()
     onOpen()
   }
 
   function handleCloseModal() {
-    if (error) {
-      dispatch({
-        type: actions.removeError,
-      })
-    }
+    if (error) removeError()
     onClose()
   }
 
@@ -70,7 +58,7 @@ export default function LeaveRoom() {
         <AlertDialogOverlay backdropFilter="blur(10px)">
           <AlertDialogContent bg={useColorModeValue('#fafafa', '#333')}>
             <AlertDialogHeader>
-              {conversation.friendlyName || conversation.uniqueName}
+              {conversation?.friendlyName || conversation?.uniqueName}
             </AlertDialogHeader>
             <AlertDialogBody>
               <Box mb={2}>Are you sure you want to leave?</Box>

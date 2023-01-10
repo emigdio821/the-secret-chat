@@ -1,27 +1,27 @@
 import { useCallback, useState } from 'react'
-import { useGlobalContext } from 'context/global'
 import {
   Box,
   Input,
   Stack,
-  FormControl,
+  InputGroup,
   IconButton,
+  FormControl,
   useColorModeValue,
   InputRightElement,
-  InputGroup,
 } from '@chakra-ui/react'
 import { BiSend } from 'react-icons/bi'
+import useStore from 'store/global'
 import Media from './Media'
 
 export default function ChatInput() {
   const [message, setMessage] = useState('')
-  const { conversation } = useGlobalContext()
+  const { conversation } = useStore()
 
   async function handleSendMessage(e: React.FormEvent) {
     e.preventDefault()
     setMessage('')
     try {
-      await conversation.sendMessage(message)
+      await conversation?.sendMessage(message)
     } catch (err) {
       console.error('The message could not be sent ->', err)
     }
@@ -34,7 +34,7 @@ export default function ChatInput() {
       }
 
       try {
-        await conversation.typing()
+        await conversation?.typing()
       } catch (err) {
         console.error('Typing error ->', err)
       }

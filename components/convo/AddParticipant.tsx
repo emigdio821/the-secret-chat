@@ -2,14 +2,13 @@ import useStore from 'store/global'
 import { ModalCallbackProps } from 'types'
 import MenuItem from 'components/MenuItem'
 import { BiUserPlus } from 'react-icons/bi'
-import { useGlobalContext } from 'context/global'
 import { useDisclosure } from '@chakra-ui/react'
 import ActionModal from 'components/ActionModal'
 
 export default function AddParticipant() {
-  const { conversation } = useGlobalContext()
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { addLoading, addError, removeLoading, client } = useStore()
+  const { addLoading, addError, removeLoading, client, conversation } =
+    useStore()
   const handleAddParticipant = async ({
     inputVal: inVal,
     closeModal,
@@ -19,7 +18,7 @@ export default function AddParticipant() {
     if (inputVal && client) {
       try {
         const user = await client.getUser(inputVal)
-        await conversation.add(inputVal, {
+        await conversation?.add(inputVal, {
           friendlyName: user.friendlyName,
         })
         closeModal()

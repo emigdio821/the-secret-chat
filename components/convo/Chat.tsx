@@ -16,24 +16,22 @@ import { useEffect, useState } from 'react'
 import MotionDiv from 'components/MotionDiv'
 import { BiChevronDown } from 'react-icons/bi'
 import useInitClient from 'hooks/useInitClient'
-import { useGlobalContext } from 'context/global'
 import { Participant } from '@twilio/conversations'
 import { AnimatePresence } from 'framer-motion'
+import AddParticipant from './AddParticipant'
+import Participants from './Participants'
+import DeleteConvo from './DeleteConvo'
 import Messages from './Messages'
 import EditConvo from './EditConvo'
 import LeaveRoom from './LeaveRoom'
 import ChatInput from './ChatInput'
-import AddParticipant from './AddParticipant'
-import Participants from './Participants'
-import DeleteConvo from './DeleteConvo'
 
 interface ChatProps {
   session: Session
 }
 
 export default function Chat({ session }: ChatProps) {
-  const { client } = useStore()
-  const { conversation } = useGlobalContext()
+  const { client, conversation } = useStore()
   const btnHover = useColorModeValue('#fff', '#222')
   const btnBg = useColorModeValue('#fafafa', '#262626')
   const { newClient } = useInitClient()
@@ -45,8 +43,8 @@ export default function Chat({ session }: ChatProps) {
   useEffect(() => {
     async function getAdminPart() {
       try {
-        const parts = await conversation.getParticipants()
-        const admin = parts.find((p) => isAdmin(p))
+        const parts = await conversation?.getParticipants()
+        const admin = parts?.find((p) => isAdmin(p))
         setAdminPart(admin)
       } catch (err) {
         console.error('Failed to get admin ->', err)
@@ -76,12 +74,12 @@ export default function Chat({ session }: ChatProps) {
         <Stack direction="row" align="center">
           <AnimatePresence
             exitBeforeEnter
-            key={conversation.friendlyName || convoDescription}
+            key={conversation?.friendlyName || convoDescription}
           >
             <MotionDiv>
               <Stack spacing={0}>
                 <Heading noOfLines={1} size={{ base: 'md', sm: 'lg' }}>
-                  {conversation.uniqueName}
+                  {conversation?.uniqueName}
                 </Heading>
                 {convoDescription && (
                   <Text opacity={0.8} fontSize="sm">
@@ -97,7 +95,7 @@ export default function Chat({ session }: ChatProps) {
           spacing={{ base: 1, sm: 2 }}
           direction={{ base: 'row', sm: 'row' }}
         >
-          {isAdminPart && <EditConvo convo={conversation} />}
+          {isAdminPart && conversation && <EditConvo convo={conversation} />}
           <Box>
             <Menu>
               <MenuButton

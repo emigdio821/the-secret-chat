@@ -1,19 +1,14 @@
-import actions from 'context/globalActions'
-import { useGlobalContext } from 'context/global'
+import useStore from 'store/global'
 
 export default function useCleanup() {
-  const { dispatch, conversation } = useGlobalContext()
+  const { conversation, removeConversation, removeMessages } = useStore()
 
   function cleanUp() {
     if (conversation) {
       conversation.removeAllListeners()
     }
-    dispatch({
-      type: actions.removeConversation,
-    })
-    dispatch({
-      type: actions.removeMessages,
-    })
+    removeMessages()
+    removeConversation()
   }
 
   return cleanUp

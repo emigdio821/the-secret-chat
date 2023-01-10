@@ -1,28 +1,35 @@
-import { useEffect, useCallback } from 'react'
-import Helmet from 'components/Helmet'
-import { Heading, Stack } from '@chakra-ui/react'
-import { ModalCallbackProps, Session } from 'types'
-import actions from 'context/globalActions'
-import AppWrapper from 'components/AppWrapper'
-import { useGlobalContext } from 'context/global'
-import { getSession, GetSessionParams } from 'next-auth/react'
-import { Message } from '@twilio/conversations'
+import useStore from 'store/global'
 import { getFirstName } from 'utils'
+import Helmet from 'components/Helmet'
+import { useRouter } from 'next/router'
+import useCleanup from 'hooks/useCleanup'
+import actions from 'context/globalActions'
 import Reconnect from 'components/Reconnect'
 import MyChats from 'components/home/MyChats'
-import { useRouter } from 'next/router'
-import CreateRoom from 'components/home/CreateRoom'
+import { useEffect, useCallback } from 'react'
+import AppWrapper from 'components/AppWrapper'
 import JoinRoom from 'components/home/JoinRoom'
+import { Message } from '@twilio/conversations'
 import useInitClient from 'hooks/useInitClient'
-import useCleanup from 'hooks/useCleanup'
-import useStore from 'store/global'
+import { useGlobalContext } from 'context/global'
+import { Heading, Stack } from '@chakra-ui/react'
+import { ModalCallbackProps, Session } from 'types'
+import CreateRoom from 'components/home/CreateRoom'
+import { getSession, GetSessionParams } from 'next-auth/react'
 
 export default function Index({ session }: { session: Session }) {
+  const {
+    client,
+    addError,
+    addLoading,
+    conversation,
+    removeLoading,
+    addConversation,
+  } = useStore()
   const router = useRouter()
   const cleanUp = useCleanup()
   const { newClient, error: clientErr } = useInitClient()
-  const { dispatch, conversation } = useGlobalContext()
-  const { removeLoading, addLoading, addError, client } = useStore()
+  const { dispatch } = useGlobalContext()
 
   const handleCreateChatRoom = async ({
     closeModal,
@@ -42,10 +49,7 @@ export default function Index({ session }: { session: Session }) {
         })
         // await conver.add(session.user.email)
         await conver.join()
-        dispatch({
-          type: actions.addConversation,
-          payload: conver,
-        })
+        addConversation(conver)
         closeModal()
       } catch {
         addError('Already exists or something went wrong, try again')
@@ -63,10 +67,7 @@ export default function Index({ session }: { session: Session }) {
     if (inputVal && client) {
       try {
         const conver = await client.getConversationByUniqueName(inputVal)
-        dispatch({
-          type: actions.addConversation,
-          payload: conver,
-        })
+        addConversation(conver)
         closeModal()
         router.push(`/chats/${conver.sid}`)
       } catch {

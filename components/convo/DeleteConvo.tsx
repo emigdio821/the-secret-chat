@@ -1,8 +1,3 @@
-import { useRef } from 'react'
-import { deleteConvo } from 'lib/chat'
-import { BiTrash } from 'react-icons/bi'
-import actions from 'context/globalActions'
-import { useGlobalContext } from 'context/global'
 import {
   Box,
   Text,
@@ -17,8 +12,12 @@ import {
   AlertDialogOverlay,
   AlertDialogContent,
 } from '@chakra-ui/react'
-import useCleanup from 'hooks/useCleanup'
+import { useRef } from 'react'
+import useStore from 'store/global'
+import { deleteConvo } from 'lib/chat'
 import { useRouter } from 'next/router'
+import { BiTrash } from 'react-icons/bi'
+import useCleanup from 'hooks/useCleanup'
 import MenuItem from 'components/MenuItem'
 import AlertError from 'components/AlertError'
 
@@ -27,37 +26,26 @@ export default function DeleteConvo() {
   const cleanUp = useCleanup()
   const cancelRef = useRef<HTMLButtonElement>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { dispatch, conversation, error } = useGlobalContext()
+  const { addError, conversation, error, removeError } = useStore()
 
   async function handleDeleteRoom() {
     try {
-      await deleteConvo(conversation)
+      if (conversation) await deleteConvo(conversation)
       cleanUp()
       onClose()
       router.push('/')
     } catch (e) {
-      dispatch({
-        type: actions.addError,
-        payload: 'Something went wrong while deleting the room, try again',
-      })
+      addError('Something went wrong while deleting the room, try again')
     }
   }
 
   function handleOpenModal() {
-    if (error) {
-      dispatch({
-        type: actions.removeError,
-      })
-    }
+    if (error) removeError()
     onOpen()
   }
 
   function handleCloseModal() {
-    if (error) {
-      dispatch({
-        type: actions.removeError,
-      })
-    }
+    if (error) removeError()
     onClose()
   }
 
@@ -72,7 +60,7 @@ export default function DeleteConvo() {
         <AlertDialogOverlay backdropFilter="blur(10px)">
           <AlertDialogContent bg={useColorModeValue('#fafafa', '#333')}>
             <AlertDialogHeader>
-              {conversation.friendlyName || conversation.uniqueName}
+              {conversation?.friendlyName || conversation?.uniqueName}
             </AlertDialogHeader>
             <AlertDialogBody>
               <Box mb={2}>Are you sure you want to delete this room?</Box>

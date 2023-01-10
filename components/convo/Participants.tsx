@@ -11,7 +11,6 @@ import useStore from 'store/global'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import MotionDiv from 'components/MotionDiv'
-import { useGlobalContext } from 'context/global'
 import { sortArray, getFriendlyName } from 'utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState, useCallback } from 'react'
@@ -23,8 +22,7 @@ interface ParticipantsProps {
 }
 
 export default function Participants({ adminPart }: ParticipantsProps) {
-  const { client } = useStore()
-  const { conversation } = useGlobalContext()
+  const { client, conversation } = useStore()
   const notifBg = useColorModeValue('gray.300', '#141414')
   const mainBg = useColorModeValue('#EDEDED', '#272727')
   const [partiJoined, setPartiJoined] = useState<Part>()
@@ -36,21 +34,21 @@ export default function Participants({ adminPart }: ParticipantsProps) {
   const getParticipants = useCallback(async () => {
     try {
       setParticipants([])
-      const parts = await conversation.getParticipants()
+      const parts = await conversation?.getParticipants()
       sortArray(parts as [], 'identity', session?.user?.email || '')
-      setParticipants(parts)
+      if (parts) setParticipants(parts)
     } catch (err) {
       console.error('Failed to get participants ->', err)
     }
   }, [conversation, session])
 
   useEffect(() => {
-    conversation.on('participantJoined', (participant) => {
+    conversation?.on('participantJoined', (participant) => {
       getParticipants()
       setPartiJoined(participant)
     })
 
-    conversation.on('participantLeft', (participant) => {
+    conversation?.on('participantLeft', (participant) => {
       if (participant.identity === session?.user?.email) {
         router.push('/')
       }

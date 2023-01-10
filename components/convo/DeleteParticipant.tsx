@@ -13,11 +13,10 @@ import {
   AlertDialogContent,
 } from '@chakra-ui/react'
 import { useRef } from 'react'
+import useStore from 'store/global'
 import { BiUserX } from 'react-icons/bi'
 import MenuItem from 'components/MenuItem'
-import actions from 'context/globalActions'
 import AlertError from 'components/AlertError'
-import { useGlobalContext } from 'context/global'
 import { Conversation, Participant } from '@twilio/conversations'
 
 interface DeleteParticipantProps {
@@ -33,34 +32,23 @@ export default function DeleteParticipant({
 }: DeleteParticipantProps) {
   const cancelRef = useRef<HTMLButtonElement>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { dispatch, error } = useGlobalContext()
+  const { error, addError, removeError } = useStore()
 
   async function handleKickParticipant() {
     try {
       await convo.removeParticipant(participant)
     } catch {
-      dispatch({
-        type: actions.addError,
-        payload: 'Failed to kick participant, try again',
-      })
+      addError('Failed to kick participant, try again')
     }
   }
 
   function handleOpenModal() {
-    if (error) {
-      dispatch({
-        type: actions.removeError,
-      })
-    }
+    if (error) removeError()
     onOpen()
   }
 
   function handleCloseModal() {
-    if (error) {
-      dispatch({
-        type: actions.removeError,
-      })
-    }
+    if (error) removeError()
     onClose()
   }
 

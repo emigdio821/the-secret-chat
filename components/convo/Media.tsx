@@ -22,13 +22,13 @@ import { secsToTime } from 'utils'
 import MenuItem from 'components/MenuItem'
 import MotionDiv from 'components/MotionDiv'
 import styles from 'styles/common.module.css'
-import { useGlobalContext } from 'context/global'
 import { useState, useEffect, useCallback, ReactElement } from 'react'
+import useStore from 'store/global'
 import GifPicker from './GifPicker'
 
 export default function Media() {
   const toast = useToast()
-  const { conversation } = useGlobalContext()
+  const { conversation } = useStore()
   const bg = useColorModeValue('#fafafa', '#262626')
   const btnHover = useColorModeValue('#fff', '#222')
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -88,7 +88,7 @@ export default function Media() {
       })
       const formData = new FormData()
       formData.append('file', audioBlob as Blob, 'audio.wav')
-      await conversation.sendMessage(formData)
+      await conversation?.sendMessage(formData)
       setAudioBlobs([])
       toast.close(audioToast)
     }
@@ -150,7 +150,7 @@ export default function Media() {
     if (file && validExt.includes(ext as string)) {
       const fileToast = processingToast('Processing image...')
       formData.append('file', file)
-      await conversation.sendMessage(formData)
+      await conversation?.sendMessage(formData)
       toast.close(fileToast)
       e.target.value = ''
     } else {

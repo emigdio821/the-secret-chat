@@ -16,24 +16,22 @@ import {
 import { sortArray } from 'utils'
 import useStore from 'store/global'
 import { useRouter } from 'next/router'
-import actions from 'context/globalActions'
 import MotionDiv from 'components/MotionDiv'
-import { useGlobalContext } from 'context/global'
 import { Conversation } from '@twilio/conversations'
 import { useEffect, useState, useCallback } from 'react'
 import { BiGhost, BiRefresh, BiSearch } from 'react-icons/bi'
 import ConvoCard from './ConvoCard'
 
 export default function MyChats() {
+  const { client, isLoading, addLoading, removeLoading, addConversation } =
+    useStore()
   const router = useRouter()
   const bg = useColorModeValue('#EDEDED', '#2d2d2d')
   const btnBg = useColorModeValue('#444', '#262626')
   const btnHover = useColorModeValue('#333', '#222')
   const [searchValue, setSearchValue] = useState<string>('')
-  const { addLoading, removeLoading, isLoading, client } = useStore()
   const [filtered, setFiltered] = useState<Conversation[]>([])
   const [conversations, setConversations] = useState<Conversation[]>([])
-  const { dispatch, conversation } = useGlobalContext()
 
   const getConversations = useCallback(async () => {
     if (client) {
@@ -53,10 +51,7 @@ export default function MyChats() {
     if (client && uniqueName) {
       try {
         const conver = await client.getConversationByUniqueName(uniqueName)
-        dispatch({
-          type: actions.addConversation,
-          payload: conver,
-        })
+        addConversation(conver)
         router.push(`/chats/${conver.sid}`)
       } catch (err) {
         getConversations()
@@ -69,7 +64,7 @@ export default function MyChats() {
     if (client) {
       getConversations()
     }
-  }, [client, dispatch, conversation, getConversations])
+  }, [client, getConversations])
 
   useEffect(() => {
     if (searchValue) {

@@ -38,6 +38,21 @@ const useStore = create<InitialState>((set) => ({
       ...state,
       isLoading: false,
     })),
+  addConversation: (payload) =>
+    set((state) => ({
+      ...state,
+      conversation: payload,
+    })),
+  removeConversation: () =>
+    set((state) => ({
+      ...state,
+      conversation: undefined,
+    })),
+  removeMessages: () =>
+    set((state) => ({
+      ...state,
+      messages: [],
+    })),
 }))
 
 export default useStore

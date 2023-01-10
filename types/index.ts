@@ -33,6 +33,9 @@ export interface InitialState {
   removeLoading: () => void
   addClient: (payload: Client) => void
   removeClient: () => void
+  addConversation: (payload: Conversation) => void
+  removeConversation: () => void
+  removeMessages: () => void
 }
 
 export interface ActionPayload {
