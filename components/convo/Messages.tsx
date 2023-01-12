@@ -1,17 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
-import { Stack, Text } from '@chakra-ui/react'
-import { Message, Paginator } from '@twilio/conversations'
-import { AnimatePresence, motion } from 'framer-motion'
-import { useSession } from 'next-auth/react'
-import { useGlobalContext } from 'context/global'
-import useBgGradient from 'hooks/useBgGradient'
-import { BiGhost } from 'react-icons/bi'
-import ScrollBottomBtn from 'components/ScrollBottomBtn'
-import actions from 'context/globalActions'
-import { getMessages } from 'lib/chat'
 import useStore from 'store/global'
-import ChatBubble from './ChatBubble'
+import { getMessages } from 'lib/chat'
+import { BiGhost } from 'react-icons/bi'
+import { useSession } from 'next-auth/react'
+import { Button, Stack, Text } from '@chakra-ui/react'
+import useBgGradient from 'hooks/useBgGradient'
+import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import ScrollBottomBtn from 'components/ScrollBottomBtn'
+import { Message, Paginator } from '@twilio/conversations'
 import TypingBubble from './TypingBubble'
+import ChatBubble from './ChatBubble'
 
 function ScrollBottom({ messages }: { messages: Message[] }) {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -24,10 +22,18 @@ function ScrollBottom({ messages }: { messages: Message[] }) {
 export default function Messages() {
   const bgGradient = useBgGradient()
   const { data: session } = useSession()
-  const { conversation, addError } = useStore()
+  const {
+    addError,
+    messages,
+    isLoading,
+    addLoading,
+    usersTyping,
+    addMessages,
+    conversation,
+    removeLoading,
+  } = useStore()
   const currentUser = session?.user?.email || ''
   const msgsContainer = useRef<HTMLDivElement>(null)
-  const { usersTyping, dispatch, messages } = useGlobalContext()
   const [showScrollArrow, setShowScrollArrow] = useState(false)
   const [paginator, setPaginator] = useState<Paginator<Message>>()
   const msgsPresent = messages.length > 0
@@ -41,13 +47,17 @@ export default function Messages() {
   }
 
   async function getPrevMsgs() {
+    addLoading()
     if (paginator) {
-      const prevMsgs = await paginator.prevPage()
-      setPaginator(prevMsgs)
-      dispatch({
-        type: actions.addMessages,
-        payload: [...prevMsgs.items, ...messages],
-      })
+      try {
+        const prevMsgs = await paginator.prevPage()
+        setPaginator(prevMsgs)
+        addMessages([...prevMsgs.items, ...messages])
+      } catch (error) {
+        console.log('Something went wrong ->', error)
+      } finally {
+        removeLoading()
+      }
     }
   }
 
@@ -62,10 +72,7 @@ export default function Messages() {
             conversation.updateLastReadMessageIndex(
               items[items.length - 1].index,
             )
-            dispatch({
-              type: actions.addMessages,
-              payload: msgs.items,
-            })
+            addMessages(msgs.items)
           }
         }
       } catch {
@@ -75,9 +82,9 @@ export default function Messages() {
     if (conversation?.status === 'joined') {
       getMsgs()
     }
-  }, [conversation, dispatch, addError])
+  }, [addError, addMessages, conversation])
 
-  function handleScroll() {
+  async function handleScroll() {
     if (elContainer) {
       const { scrollHeight, scrollTop, clientHeight } = elContainer
       const showScroll = scrollTop + clientHeight <= scrollHeight / 1.2
@@ -87,9 +94,9 @@ export default function Messages() {
       if (!showScroll && showScrollArrow) {
         setShowScrollArrow(false)
       }
-      if (scrollTop === 0 && paginator?.hasPrevPage) {
-        getPrevMsgs()
-      }
+      // if (scrollTop === 0 && paginator?.hasPrevPage) {
+      //   await getPrevMsgs()
+      // }
     }
   }
 
@@ -110,6 +117,13 @@ export default function Messages() {
       <ScrollBottomBtn isVisible={showScrollArrow} container={elContainer} />
       {msgsPresent ? (
         <>
+          {paginator?.hasPrevPage && (
+            <Stack align="flex-end">
+              <Button isLoading={isLoading} onClick={() => getPrevMsgs()}>
+                Load more messages
+              </Button>
+            </Stack>
+          )}
           {messages.map((msg: Message) => {
             const isAuthor = msg.author === currentUser
             return (
@@ -123,7 +137,7 @@ export default function Messages() {
               </motion.div>
             )
           })}
-          <AnimatePresence initial={false} exitBeforeEnter>
+          <AnimatePresence initial={false} mode="wait">
             <motion.div
               key={usersTyping.length > 0 ? 'animate' : 'exit'}
               animate={{ opacity: 1, x: 0 }}

@@ -114,7 +114,7 @@ export default function Participants({ adminPart }: ParticipantsProps) {
             <Badge colorScheme="purple">{participants.length}</Badge>
           )}
         </Stack>
-        <AnimatePresence initial={false} exitBeforeEnter>
+        <AnimatePresence initial={false} mode="wait">
           {partiJoined && (
             <motion.div
               exit={{ opacity: 0, y: -5 }}
@@ -135,7 +135,7 @@ export default function Participants({ adminPart }: ParticipantsProps) {
             </motion.div>
           )}
         </AnimatePresence>
-        <AnimatePresence initial={false} exitBeforeEnter>
+        <AnimatePresence initial={false} mode="wait">
           {partiLeft && (
             <motion.div
               exit={{ opacity: 0, y: -10 }}

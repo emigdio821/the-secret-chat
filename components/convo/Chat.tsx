@@ -73,7 +73,7 @@ export default function Chat({ session }: ChatProps) {
       <Stack align="center" direction="row" justifyContent="space-between">
         <Stack direction="row" align="center">
           <AnimatePresence
-            exitBeforeEnter
+            mode="wait"
             key={conversation?.friendlyName || convoDescription}
           >
             <MotionDiv>

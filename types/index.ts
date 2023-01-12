@@ -27,15 +27,20 @@ export interface InitialState {
   client: Client | undefined
   usersTyping: Participant[]
   conversation: Conversation | undefined
-  addError: (payload: string) => void
+  addError: (error: string) => void
   removeError: () => void
   addLoading: () => void
   removeLoading: () => void
-  addClient: (payload: Client) => void
+  addClient: (client: Client) => void
   removeClient: () => void
-  addConversation: (payload: Conversation) => void
+  addConversation: (convo: Conversation) => void
   removeConversation: () => void
   removeMessages: () => void
+  addMessage: (message: Message) => void
+  removeMessage: (message: Message) => void
+  addMessages: (messages: Message[]) => void
+  addUsersTyping: (participant: Participant) => void
+  removeUsersTyping: (participant: Participant) => void
 }
 
 export interface ActionPayload {

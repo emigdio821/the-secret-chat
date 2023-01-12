@@ -19,7 +19,7 @@ export default function ScrollBottomBtn({
   }
 
   return (
-    <AnimatePresence initial={false} exitBeforeEnter>
+    <AnimatePresence initial={false} mode="wait">
       <motion.div
         key={isVisible ? 'animate' : 'exit'}
         animate={{ opacity: 1, x: 0 }}

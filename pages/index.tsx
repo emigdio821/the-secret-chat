@@ -3,15 +3,12 @@ import { getFirstName } from 'utils'
 import Helmet from 'components/Helmet'
 import { useRouter } from 'next/router'
 import useCleanup from 'hooks/useCleanup'
-import actions from 'context/globalActions'
 import Reconnect from 'components/Reconnect'
 import MyChats from 'components/home/MyChats'
 import { useEffect, useCallback } from 'react'
 import AppWrapper from 'components/AppWrapper'
 import JoinRoom from 'components/home/JoinRoom'
-import { Message } from '@twilio/conversations'
 import useInitClient from 'hooks/useInitClient'
-import { useGlobalContext } from 'context/global'
 import { Heading, Stack } from '@chakra-ui/react'
 import { ModalCallbackProps, Session } from 'types'
 import CreateRoom from 'components/home/CreateRoom'
@@ -22,14 +19,17 @@ export default function Index({ session }: { session: Session }) {
     client,
     addError,
     addLoading,
+    addMessage,
     conversation,
+    removeMessage,
     removeLoading,
+    addUsersTyping,
     addConversation,
+    removeUsersTyping,
   } = useStore()
   const router = useRouter()
   const cleanUp = useCleanup()
   const { newClient, error: clientErr } = useInitClient()
-  const { dispatch } = useGlobalContext()
 
   const handleCreateChatRoom = async ({
     closeModal,
@@ -104,39 +104,25 @@ export default function Index({ session }: { session: Session }) {
     }
 
     if (conversation) {
-      conversation.on('messageAdded', (msg: Message) => {
-        const { author } = msg
-        updateMessagesIdx(msg.index)
+      conversation.on('messageAdded', (message) => {
+        const { author, index } = message
+        updateMessagesIdx(index)
 
         if (author !== session.user.email) {
           const notifAudio = new Audio('/sounds/notif_sound.mp3')
           notifAudio.volume = 0.3
           if (notifAudio.paused) notifAudio.play()
         }
-
-        dispatch({
-          type: actions.addMessage,
-          payload: msg,
-        })
+        addMessage(message)
       })
-      conversation.on('messageRemoved', (msg: Message) => {
-        dispatch({
-          type: actions.removeMessage,
-          payload: msg,
-        })
+      conversation.on('messageRemoved', (message) => {
+        removeMessage(message)
       })
       conversation.on('typingStarted', (participant) => {
-        dispatch({
-          type: actions.addUsersTyping,
-          payload: participant,
-        })
+        addUsersTyping(participant)
       })
-
       conversation.on('typingEnded', (participant) => {
-        dispatch({
-          type: actions.removeUsersTyping,
-          payload: participant,
-        })
+        removeUsersTyping(participant)
       })
       conversation.on('removed', () => {
         cleanUp()
@@ -154,9 +140,12 @@ export default function Index({ session }: { session: Session }) {
     router,
     cleanUp,
     session,
-    dispatch,
     newClient,
+    addMessage,
     conversation,
+    removeMessage,
+    addUsersTyping,
+    removeUsersTyping,
     updateMessagesIdx,
   ])
 

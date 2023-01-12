@@ -8,20 +8,20 @@ const useStore = create<InitialState>((set) => ({
   isLoading: false,
   client: undefined,
   conversation: undefined,
-  addClient: (payload) =>
+  addClient: (client) =>
     set((state) => ({
       ...state,
-      client: payload,
+      client,
     })),
   removeClient: () =>
     set((state) => ({
       ...state,
       client: undefined,
     })),
-  addError: (payload) =>
+  addError: (error) =>
     set((state) => ({
       ...state,
-      error: payload,
+      error,
     })),
   removeError: () =>
     set((state) => ({
@@ -38,10 +38,10 @@ const useStore = create<InitialState>((set) => ({
       ...state,
       isLoading: false,
     })),
-  addConversation: (payload) =>
+  addConversation: (convo) =>
     set((state) => ({
       ...state,
-      conversation: payload,
+      conversation: convo,
     })),
   removeConversation: () =>
     set((state) => ({
@@ -52,6 +52,37 @@ const useStore = create<InitialState>((set) => ({
     set((state) => ({
       ...state,
       messages: [],
+    })),
+  addMessage: (message) =>
+    set((state) => ({
+      ...state,
+      messages: [...state.messages, message],
+    })),
+  removeMessage: (message) =>
+    set((state) => ({
+      ...state,
+      messages: state.messages.filter((m) => m.sid !== message.sid),
+    })),
+  addMessages: (messages) =>
+    set((state) => ({
+      ...state,
+      messages,
+    })),
+  addUsersTyping: (participant) =>
+    set((state) => {
+      if (state.usersTyping.some((p) => p.sid === participant.sid)) {
+        return state
+      }
+
+      return {
+        ...state,
+        usersTyping: [...state.usersTyping, participant],
+      }
+    }),
+  removeUsersTyping: (participant) =>
+    set((state) => ({
+      ...state,
+      usersTyping: state.usersTyping.filter((p) => p.sid !== participant.sid),
     })),
 }))
 
