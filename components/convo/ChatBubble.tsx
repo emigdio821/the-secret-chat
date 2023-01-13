@@ -2,7 +2,6 @@ import {
   Box,
   Text,
   Stack,
-  Image,
   Avatar,
   Center,
   Spinner,
@@ -14,6 +13,7 @@ import { useSession } from 'next-auth/react'
 import { Message } from '@twilio/conversations'
 import AudioPlayer from 'components/AudioPlayer'
 import { useCallback, useEffect, useState } from 'react'
+import ImageViewer from 'components/ImageViewer'
 import DeleteMsgMenu from './DeleteMsgMenu'
 
 interface ChatBubbleProps {
@@ -92,18 +92,9 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
       >
         <Stack direction="row" justifyContent="space-between">
           {isGif || isImage ? (
-            <Image
-              h={130}
-              w="100%"
-              alt="gif"
-              rounded="lg"
-              objectFit="cover"
-              src={isImage ? mediaUrl : (body as string)}
-              fallback={
-                <Center w={120} h={130} rounded="lg" bg="#242424">
-                  <Spinner />
-                </Center>
-              }
+            <ImageViewer
+              name={isGif ? 'Giphy' : rawMedia?.filename}
+              url={isImage ? mediaUrl : (body as string)}
             />
           ) : (
             <>

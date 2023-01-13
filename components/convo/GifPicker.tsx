@@ -133,6 +133,7 @@ export default function GifPicker({ isOpen, onClose }: GifPickerProps) {
                         w="100%"
                         alt="gif"
                         rounded="lg"
+                        objectFit="cover"
                         src={gif.images.fixed_height.url}
                         fallback={
                           <Center w="100%" h={130} rounded="lg" bg="#242424">
