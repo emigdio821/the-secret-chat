@@ -34,10 +34,12 @@ export default function Messages() {
   } = useStore()
   const currentUser = session?.user?.email || ''
   const msgsContainer = useRef<HTMLDivElement>(null)
+  const firstMsgRef = useRef<HTMLDivElement>(null)
   const [showScrollArrow, setShowScrollArrow] = useState(false)
   const [paginator, setPaginator] = useState<Paginator<Message>>()
   const msgsPresent = messages.length > 0
   let scrollBottom = false
+  const firstMessageEl = firstMsgRef.current
   const elContainer = msgsContainer.current
   if (elContainer) {
     const { scrollHeight, scrollTop, clientHeight } = msgsContainer.current
@@ -47,15 +49,19 @@ export default function Messages() {
   }
 
   async function getPrevMsgs() {
-    addLoading()
     if (paginator) {
       try {
+        addLoading()
+        document.body.style.overflow = 'hidden'
         const prevMsgs = await paginator.prevPage()
         setPaginator(prevMsgs)
         addMessages([...prevMsgs.items, ...messages])
       } catch (error) {
         console.log('Something went wrong ->', error)
       } finally {
+        if (firstMessageEl && elContainer) {
+          firstMessageEl.scrollIntoView()
+        }
         removeLoading()
       }
     }
@@ -124,7 +130,7 @@ export default function Messages() {
               </Button>
             </Stack>
           )}
-          {messages.map((msg: Message) => {
+          {messages.map((msg: Message, index) => {
             const isAuthor = msg.author === currentUser
             return (
               <motion.div
@@ -133,7 +139,10 @@ export default function Messages() {
                 transition={{ duration: 0.2 }}
                 initial={{ opacity: 0, x: isAuthor ? 80 : -80 }}
               >
-                <ChatBubble message={msg} />
+                <ChatBubble
+                  message={msg}
+                  ref={index === 0 ? firstMsgRef : undefined}
+                />
               </motion.div>
             )
           })}
