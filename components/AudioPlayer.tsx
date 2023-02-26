@@ -140,7 +140,7 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
             size="sm"
             onClick={stop}
             aria-label="Stop"
-            disabled={!isPlaying}
+            isDisabled={!isPlaying}
             icon={<BiStop size={18} />}
           />
         </Stack>

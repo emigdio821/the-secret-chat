@@ -130,7 +130,7 @@ export default function EditConvo({ convo }: EditComboProps) {
                 <Button
                   size="sm"
                   type="submit"
-                  disabled={isSubmitDisabled}
+                  isDisabled={isSubmitDisabled}
                   rightIcon={!isLoading ? <BiCheck /> : <Spinner />}
                 >
                   {!isLoading ? 'Save' : <BiGhost size={16} />}

@@ -34,7 +34,7 @@ export default function CommonBtn({
       onClick={onClick}
       leftIcon={leftIcon}
       rightIcon={rightIcon}
-      disabled={isDisabled}
+      isDisabled={isDisabled}
       _hover={{
         bg: btnHover,
       }}

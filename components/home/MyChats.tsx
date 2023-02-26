@@ -76,7 +76,7 @@ export default function MyChats({ convos, getConvos }: MyChatsProps) {
             size="sm"
             bg={btnBg}
             color="#fafafa"
-            disabled={isLoading}
+            isDisabled={isLoading}
             onClick={() => getConvos()}
             icon={<BiRefresh size={20} />}
             aria-label="Refresh conversations"

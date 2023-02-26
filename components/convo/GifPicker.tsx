@@ -100,7 +100,7 @@ export default function GifPicker({ isOpen, onClose }: GifPickerProps) {
                   aria-label="Send"
                   icon={<BiSearch />}
                   colorScheme="purple"
-                  disabled={!inputVal.trim() || isLoading}
+                  isDisabled={!inputVal.trim() || isLoading}
                 />
               </Stack>
             </form>

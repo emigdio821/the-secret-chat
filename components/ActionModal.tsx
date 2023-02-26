@@ -116,7 +116,7 @@ export default function ActionModal({
             <Stack direction="row-reverse" mb={2} mt={4}>
               <Button
                 type="submit"
-                disabled={isBtnDisabled()}
+                isDisabled={isBtnDisabled()}
                 rightIcon={!isLoading ? <BiRightArrowAlt /> : <Spinner />}
               >
                 {!isLoading ? btnLabel : <BiGhost size={18} />}

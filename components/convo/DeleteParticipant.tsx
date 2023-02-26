@@ -34,14 +34,6 @@ export default function DeleteParticipant({
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { error, addError, removeError } = useStore()
 
-  async function handleKickParticipant() {
-    try {
-      await convo.removeParticipant(participant)
-    } catch {
-      addError('Failed to kick participant, try again')
-    }
-  }
-
   function handleOpenModal() {
     if (error) removeError()
     onOpen()
@@ -50,6 +42,15 @@ export default function DeleteParticipant({
   function handleCloseModal() {
     if (error) removeError()
     onClose()
+  }
+
+  async function handleKickParticipant() {
+    try {
+      await convo.removeParticipant(participant)
+      handleCloseModal()
+    } catch {
+      addError('Failed to kick participant, try again')
+    }
   }
 
   return (

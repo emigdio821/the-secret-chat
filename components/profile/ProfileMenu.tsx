@@ -59,7 +59,7 @@ export default function ProfileMenu() {
           as={Button}
           rounded="full"
           color={btnColor}
-          disabled={!user}
+          isDisabled={!user}
           _hover={{
             bg: btnHover,
           }}

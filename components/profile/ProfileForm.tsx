@@ -94,7 +94,7 @@ export default function ProfileForm({
               bg: btnHover,
             }}
             icon={<BiEditAlt />}
-            disabled={isLoading}
+            isDisabled={isLoading}
             aria-label="Edit profile"
           />
         </PopoverTrigger>
@@ -122,7 +122,7 @@ export default function ProfileForm({
                 <Button
                   size="sm"
                   type="submit"
-                  disabled={submitDisabled}
+                  isDisabled={submitDisabled}
                   rightIcon={!isLoading ? <BiCheck /> : <Spinner />}
                 >
                   {!isLoading ? 'Save' : <BiGhost size={16} />}

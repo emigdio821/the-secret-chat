@@ -5,24 +5,22 @@ import {
   Button,
   VStack,
   Heading,
+  Spinner,
   useToast,
   useColorModeValue,
-  Spinner,
 } from '@chakra-ui/react'
 import { Session } from 'types'
 import NextLink from 'next/link'
 import useStore from 'store/global'
 import Helmet from 'components/Helmet'
-import { useRouter } from 'next/router'
 import Chat from 'components/convo/Chat'
 import { shallow } from 'zustand/shallow'
-import useCleanup from 'hooks/useCleanup'
 import { getSession } from 'next-auth/react'
-import { useEffect, useCallback } from 'react'
 import AppWrapper from 'components/AppWrapper'
-import { BiArrowBack, BiGhost } from 'react-icons/bi'
-import { GetServerSidePropsContext } from 'next'
 import useInitClient from 'hooks/useInitClient'
+import { GetServerSidePropsContext } from 'next'
+import { useEffect, useCallback, useRef } from 'react'
+import { BiArrowBack, BiGhost } from 'react-icons/bi'
 
 interface ChatPageProps {
   session: Session
@@ -40,6 +38,7 @@ export default function ChatPage({ session, sid }: ChatPageProps) {
     removeMessage,
     addUsersTyping,
     addConversation,
+    removeConversation,
     removeUsersTyping,
   } = useStore(
     (state) => ({
@@ -53,14 +52,14 @@ export default function ChatPage({ session, sid }: ChatPageProps) {
       addUsersTyping: state.addUsersTyping,
       addConversation: state.addConversation,
       removeUsersTyping: state.removeUsersTyping,
+      removeConversation: state.removeConversation,
     }),
     shallow,
   )
   const toast = useToast()
-  const router = useRouter()
-  const cleanUp = useCleanup()
+  const notificationAudio = useRef<HTMLAudioElement>(null)
   const { newClient } = useInitClient()
-  const bg = useColorModeValue('#EDEDED', '#2d2d2d')
+  const bg = useColorModeValue('#ededed', '#2d2d2d')
   const btnBg = useColorModeValue('#333', '#262626')
 
   const updateMessagesIdx = useCallback(
@@ -91,7 +90,7 @@ export default function ChatPage({ session, sid }: ChatPageProps) {
           title: 'Error',
           status: 'error',
           isClosable: true,
-          position: 'top-right',
+          position: 'top',
           description: 'Failed to retrieve this conversation, try again',
         })
       } finally {
@@ -118,9 +117,9 @@ export default function ChatPage({ session, sid }: ChatPageProps) {
       updateMessagesIdx(index)
 
       if (author !== session.user.email) {
-        const notifAudio = new Audio('/sounds/notif_sound.mp3')
-        notifAudio.volume = 0.3
-        if (notifAudio.paused) notifAudio.play()
+        if (notificationAudio.current) {
+          notificationAudio.current.play()
+        }
       }
       addMessage(message)
     })
@@ -137,52 +136,58 @@ export default function ChatPage({ session, sid }: ChatPageProps) {
       toast({
         status: 'info',
         isClosable: true,
-        position: 'top-right',
+        position: 'top',
         title: 'Notification',
         description: `${participant.identity} has joined the chat room`,
       })
     })
     conversation?.on('participantLeft', (participant) => {
+      if (participant.identity === client?.user.identity) {
+        return
+      }
+
       toast({
         status: 'info',
         isClosable: true,
-        position: 'top-right',
+        position: 'top',
         title: 'Notification',
         description: `${participant.identity} has left the chat room`,
       })
     })
     conversation?.on('removed', () => {
-      cleanUp()
       toast({
         status: 'info',
         isClosable: true,
-        position: 'top-right',
+        position: 'top',
         title: 'Notification',
         description:
           'The room was removed by the admin or you were removed from it',
       })
-      router.push('/')
+      removeConversation()
     })
 
     return () => {
       conversation?.removeAllListeners()
     }
   }, [
+    client,
     toast,
     addMessage,
     addUsersTyping,
-    cleanUp,
     conversation,
     removeMessage,
     removeUsersTyping,
-    router,
     session.user.email,
     updateMessagesIdx,
+    removeConversation,
   ])
 
   return (
     <AppWrapper>
       <Helmet title={conversation?.friendlyName || undefined} />
+      <audio ref={notificationAudio} src="/sounds/notif_sound.mp3" hidden>
+        <track kind="captions" />
+      </audio>
       {conversation && client ? (
         <Chat session={session} />
       ) : (
