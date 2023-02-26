@@ -13,39 +13,27 @@ import {
   InputLeftElement,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { sortArray } from 'utils'
 import useStore from 'store/global'
 import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import MotionDiv from 'components/MotionDiv'
 import { Conversation } from '@twilio/conversations'
-import { useEffect, useState, useCallback } from 'react'
 import { BiGhost, BiRefresh, BiSearch } from 'react-icons/bi'
 import ConvoCard from './ConvoCard'
 
-export default function MyChats() {
-  const { client, isLoading, addLoading, removeLoading, addConversation } =
-    useStore()
+interface MyChatsProps {
+  convos: Conversation[]
+  getConvos: () => void
+}
+
+export default function MyChats({ convos, getConvos }: MyChatsProps) {
+  const { client, isLoading, addConversation } = useStore()
   const router = useRouter()
   const bg = useColorModeValue('#EDEDED', '#2d2d2d')
   const btnBg = useColorModeValue('#444', '#262626')
   const btnHover = useColorModeValue('#333', '#222')
   const [searchValue, setSearchValue] = useState<string>('')
   const [filtered, setFiltered] = useState<Conversation[]>([])
-  const [conversations, setConversations] = useState<Conversation[]>([])
-
-  const getConversations = useCallback(async () => {
-    if (client) {
-      addLoading()
-      try {
-        const convers = await client.getSubscribedConversations()
-        const sortedConvers = sortArray(convers.items as [], 'friendlyName')
-        setConversations(sortedConvers)
-      } catch (err) {
-        console.error('Failed to retreive conversations ->', err)
-      }
-      removeLoading()
-    }
-  }, [addLoading, client, removeLoading])
 
   async function getConversation(uniqueName: string) {
     if (client && uniqueName) {
@@ -54,7 +42,7 @@ export default function MyChats() {
         addConversation(conver)
         router.push(`/chats/${conver.sid}`)
       } catch (err) {
-        getConversations()
+        getConvos()
         console.error('Failed to get convo ->', err)
       }
     }
@@ -62,22 +50,22 @@ export default function MyChats() {
 
   useEffect(() => {
     if (client) {
-      getConversations()
+      getConvos()
     }
-  }, [client, getConversations])
+  }, [client, getConvos])
 
   useEffect(() => {
     if (searchValue) {
-      const filteredConversations = conversations.filter((conver) =>
-        conver.friendlyName
+      const filteredConversations = convos.filter((convo: any) =>
+        convo.friendlyName
           ?.toLowerCase()
           .includes(searchValue.toLocaleLowerCase()),
       )
       setFiltered(filteredConversations)
     } else {
-      setFiltered(conversations)
+      setFiltered(convos)
     }
-  }, [conversations, searchValue])
+  }, [convos, searchValue])
 
   return (
     <Box>
@@ -101,9 +89,9 @@ export default function MyChats() {
             bg={btnBg}
             color="#fafafa"
             disabled={isLoading}
+            onClick={() => getConvos()}
             icon={<BiRefresh size={20} />}
             aria-label="Refresh conversations"
-            onClick={() => getConversations()}
             _hover={{
               bg: btnHover,
             }}
@@ -120,7 +108,7 @@ export default function MyChats() {
               value={searchValue}
               placeholder="Search"
               focusBorderColor="#B2ABCC"
-              disabled={isLoading || !conversations.length}
+              disabled={isLoading || !convos.length}
               onChange={(e) => setSearchValue(e.target.value)}
             />
           </InputGroup>

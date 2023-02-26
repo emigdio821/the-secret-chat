@@ -1,4 +1,4 @@
-import create from 'zustand'
+import { create } from 'zustand'
 import { InitialState } from 'types'
 
 const useStore = create<InitialState>((set) => ({

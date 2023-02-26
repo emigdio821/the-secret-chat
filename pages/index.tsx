@@ -1,11 +1,10 @@
+import { useCallback, useEffect, useState } from 'react'
 import useStore from 'store/global'
-import { getFirstName } from 'utils'
+import { getFirstName, sortArray } from 'utils'
 import Helmet from 'components/Helmet'
 import { useRouter } from 'next/router'
-import useCleanup from 'hooks/useCleanup'
 import Reconnect from 'components/Reconnect'
 import MyChats from 'components/home/MyChats'
-import { useEffect, useCallback } from 'react'
 import AppWrapper from 'components/AppWrapper'
 import JoinRoom from 'components/home/JoinRoom'
 import useInitClient from 'hooks/useInitClient'
@@ -13,23 +12,28 @@ import { Heading, Stack } from '@chakra-ui/react'
 import { ModalCallbackProps, Session } from 'types'
 import CreateRoom from 'components/home/CreateRoom'
 import { getSession, GetSessionParams } from 'next-auth/react'
+import { Conversation } from '@twilio/conversations'
 
 export default function Index({ session }: { session: Session }) {
-  const {
-    client,
-    addError,
-    addLoading,
-    addMessage,
-    conversation,
-    removeMessage,
-    removeLoading,
-    addUsersTyping,
-    addConversation,
-    removeUsersTyping,
-  } = useStore()
+  const { client, addError, addLoading, removeLoading, addConversation } =
+    useStore()
   const router = useRouter()
-  const cleanUp = useCleanup()
   const { newClient, error: clientErr } = useInitClient()
+  const [conversations, setConversations] = useState<Conversation[]>([])
+
+  const getConvos = useCallback(async () => {
+    if (client) {
+      addLoading()
+      try {
+        const convers = await client.getSubscribedConversations()
+        const sortedConvers = sortArray(convers.items as [], 'friendlyName')
+        setConversations(sortedConvers)
+      } catch (err) {
+        console.error('Failed to retreive conversations ->', err)
+      }
+      removeLoading()
+    }
+  }, [addLoading, client, removeLoading])
 
   const handleCreateChatRoom = async ({
     closeModal,
@@ -40,16 +44,17 @@ export default function Index({ session }: { session: Session }) {
     const inputVal = inVal.trim()
     if (inputVal && client) {
       try {
-        const conver = await client.createConversation({
+        const convo = await client.createConversation({
           uniqueName: inputVal,
           friendlyName: inputVal,
           attributes: {
             description: descriptionVal || '',
           },
         })
-        // await conver.add(session.user.email)
-        await conver.join()
-        addConversation(conver)
+        await convo.add(session.user.email)
+        // await conver.join()
+        // addConversation(conver)
+        getConvos()
         closeModal()
       } catch {
         addError('Already exists or something went wrong, try again')
@@ -77,19 +82,6 @@ export default function Index({ session }: { session: Session }) {
     removeLoading()
   }
 
-  const updateMessagesIdx = useCallback(
-    async (msgIndex: number) => {
-      if (conversation) {
-        try {
-          await conversation.updateLastReadMessageIndex(msgIndex)
-        } catch (err) {
-          console.error('Failed to update messages count ->', err)
-        }
-      }
-    },
-    [conversation],
-  )
-
   useEffect(() => {
     if (!client) {
       newClient()
@@ -103,51 +95,12 @@ export default function Index({ session }: { session: Session }) {
       })
     }
 
-    if (conversation) {
-      conversation.on('messageAdded', (message) => {
-        const { author, index } = message
-        updateMessagesIdx(index)
-
-        if (author !== session.user.email) {
-          const notifAudio = new Audio('/sounds/notif_sound.mp3')
-          notifAudio.volume = 0.3
-          if (notifAudio.paused) notifAudio.play()
-        }
-        addMessage(message)
-      })
-      conversation.on('messageRemoved', (message) => {
-        removeMessage(message)
-      })
-      conversation.on('typingStarted', (participant) => {
-        addUsersTyping(participant)
-      })
-      conversation.on('typingEnded', (participant) => {
-        removeUsersTyping(participant)
-      })
-      conversation.on('removed', () => {
-        cleanUp()
-        router.push('/')
-      })
-    }
-
     return () => {
       if (client) {
         client.removeAllListeners()
       }
     }
-  }, [
-    client,
-    router,
-    cleanUp,
-    session,
-    newClient,
-    addMessage,
-    conversation,
-    removeMessage,
-    addUsersTyping,
-    removeUsersTyping,
-    updateMessagesIdx,
-  ])
+  }, [client, newClient, session])
 
   useEffect(() => {
     async function updateAttrs() {
@@ -176,7 +129,7 @@ export default function Index({ session }: { session: Session }) {
               <CreateRoom action={handleCreateChatRoom} />
               <JoinRoom action={handleJoinChatRoom} />
             </Stack>
-            {client && <MyChats />}
+            {client && <MyChats convos={conversations} getConvos={getConvos} />}
           </>
         )}
       </>

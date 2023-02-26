@@ -24,7 +24,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
     "twilio": "^3.78.0",
-    "zustand": "^4.2.0"
+    "zustand": "^4.3.3"
   },
   "devDependencies": {
     "@types/node": "18.11.18",
