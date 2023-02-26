@@ -1,16 +1,13 @@
 import { Flex, Heading } from '@chakra-ui/react'
 import { BiGhost } from 'react-icons/bi'
 import styles from 'styles/common.module.css'
-import useCleanup from 'hooks/useCleanup'
 import { useRouter } from 'next/router'
 
 export default function NavLogo() {
-  const cleanUp = useCleanup()
   const router = useRouter()
 
   function handleHomeClick() {
     if (router.pathname === '/') return
-    cleanUp()
     router.push('/')
   }
 

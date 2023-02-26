@@ -27,26 +27,14 @@ interface MyChatsProps {
 }
 
 export default function MyChats({ convos, getConvos }: MyChatsProps) {
-  const { client, isLoading, addConversation } = useStore()
   const router = useRouter()
+  const client = useStore((state) => state.client)
+  const isLoading = useStore((state) => state.isLoading)
   const bg = useColorModeValue('#EDEDED', '#2d2d2d')
   const btnBg = useColorModeValue('#444', '#262626')
   const btnHover = useColorModeValue('#333', '#222')
   const [searchValue, setSearchValue] = useState<string>('')
   const [filtered, setFiltered] = useState<Conversation[]>([])
-
-  async function getConversation(uniqueName: string) {
-    if (client && uniqueName) {
-      try {
-        const conver = await client.getConversationByUniqueName(uniqueName)
-        addConversation(conver)
-        router.push(`/chats/${conver.sid}`)
-      } catch (err) {
-        getConvos()
-        console.error('Failed to get convo ->', err)
-      }
-    }
-  }
 
   useEffect(() => {
     if (client) {
@@ -134,7 +122,7 @@ export default function MyChats({ convos, getConvos }: MyChatsProps) {
                 convo={convo}
                 key={convo.sid}
                 isLoading={isLoading}
-                btnCallback={() => getConversation(convo.uniqueName as string)}
+                btnCallback={() => router.push(`/chats/${convo.sid}`)}
               />
             ))}
           </Grid>

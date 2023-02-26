@@ -3,6 +3,7 @@ import useStore from 'store/global'
 import { getFirstName, sortArray } from 'utils'
 import Helmet from 'components/Helmet'
 import { useRouter } from 'next/router'
+import useCleanup from 'hooks/useCleanup'
 import Reconnect from 'components/Reconnect'
 import MyChats from 'components/home/MyChats'
 import AppWrapper from 'components/AppWrapper'
@@ -15,9 +16,16 @@ import { getSession, GetSessionParams } from 'next-auth/react'
 import { Conversation } from '@twilio/conversations'
 
 export default function Index({ session }: { session: Session }) {
-  const { client, addError, addLoading, removeLoading, addConversation } =
-    useStore()
+  const {
+    client,
+    addError,
+    addLoading,
+    removeLoading,
+    addConversation,
+    conversation,
+  } = useStore()
   const router = useRouter()
+  const cleanUp = useCleanup()
   const { newClient, error: clientErr } = useInitClient()
   const [conversations, setConversations] = useState<Conversation[]>([])
 
@@ -81,6 +89,12 @@ export default function Index({ session }: { session: Session }) {
     }
     removeLoading()
   }
+
+  useEffect(() => {
+    if (conversation) {
+      cleanUp()
+    }
+  }, [cleanUp, conversation])
 
   useEffect(() => {
     if (!client) {
