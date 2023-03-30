@@ -1,40 +1,18 @@
-import { Button, useColorModeValue } from '@chakra-ui/react'
+import { Button, useColorModeValue, type ButtonProps } from '@chakra-ui/react'
 
-interface CommonBtnProps {
-  isDisabled?: boolean
-  onClick?: () => void
-  size?: 'sm' | 'md' | 'lg'
-  type?: 'button' | 'submit'
-  leftIcon?: React.ReactElement
-  rightIcon?: React.ReactElement
+interface CommonBtnProps extends ButtonProps {
   btnLabel: string | React.ReactNode
-  shadow?: 'sm' | 'md' | 'lg' | 'xl' | undefined
 }
 
-export default function CommonBtn({
-  onClick,
-  btnLabel,
-  size = 'md',
-  shadow = 'sm',
-  type = 'button',
-  isDisabled = false,
-  leftIcon = undefined,
-  rightIcon = undefined,
-}: CommonBtnProps) {
+export default function CommonBtn({ btnLabel, ...props }: CommonBtnProps) {
   const btnBg = useColorModeValue('#444', '#262626')
   const btnHover = useColorModeValue('#333', '#222')
 
   return (
     <Button
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
       bg={btnBg}
-      size={size}
-      type={type}
-      color="#fafafa"
-      shadow={shadow}
-      onClick={onClick}
-      leftIcon={leftIcon}
-      rightIcon={rightIcon}
-      isDisabled={isDisabled}
       _hover={{
         bg: btnHover,
       }}

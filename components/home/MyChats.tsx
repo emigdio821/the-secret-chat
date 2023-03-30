@@ -30,6 +30,7 @@ export default function MyChats({ convos, getConvos }: MyChatsProps) {
   const router = useRouter()
   const client = useStore((state) => state.client)
   const isLoading = useStore((state) => state.isLoading)
+  const addLoading = useStore((state) => state.addLoading)
   const bg = useColorModeValue('#EDEDED', '#2d2d2d')
   const btnBg = useColorModeValue('#444', '#262626')
   const btnHover = useColorModeValue('#333', '#222')
@@ -108,7 +109,7 @@ export default function MyChats({ convos, getConvos }: MyChatsProps) {
         minH={{ base: 'calc(100vh - 428px)', sm: 500 }}
         maxH={{ base: 'calc(100vh - 340px)', sm: 'calc(100vh - 300px)' }}
       >
-        {filtered.length ? (
+        {filtered.length > 0 ? (
           <Grid
             gap={6}
             templateColumns={{
@@ -122,7 +123,10 @@ export default function MyChats({ convos, getConvos }: MyChatsProps) {
                 convo={convo}
                 key={convo.sid}
                 isLoading={isLoading}
-                btnCallback={() => router.push(`/chats/${convo.sid}`)}
+                btnCallback={() => {
+                  addLoading()
+                  router.push(`/chats/${convo.sid}`)
+                }}
               />
             ))}
           </Grid>

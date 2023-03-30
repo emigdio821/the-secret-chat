@@ -38,8 +38,9 @@ export default function Index({ session }: { session: Session }) {
         setConversations(sortedConvers)
       } catch (err) {
         console.error('Failed to retreive conversations ->', err)
+      } finally {
+        removeLoading()
       }
-      removeLoading()
     }
   }, [addLoading, client, removeLoading])
 

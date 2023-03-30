@@ -12,10 +12,9 @@ import {
 import { Session } from 'types'
 import { isAdmin } from 'utils'
 import useStore from 'store/global'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import MotionDiv from 'components/MotionDiv'
 import { BiChevronDown } from 'react-icons/bi'
-import useInitClient from 'hooks/useInitClient'
 import { Participant } from '@twilio/conversations'
 import { AnimatePresence } from 'framer-motion'
 import AddParticipant from './AddParticipant'
@@ -31,42 +30,29 @@ interface ChatProps {
 }
 
 export default function Chat({ session }: ChatProps) {
-  const { client, conversation } = useStore()
+  const { conversation } = useStore()
   const btnHover = useColorModeValue('#fff', '#222')
   const btnBg = useColorModeValue('#fafafa', '#262626')
-  const { newClient } = useInitClient()
   const [adminPart, setAdminPart] = useState<Participant>()
   // @ts-ignore
   const convoDescription = conversation.attributes.description
   const isAdminPart = session.user.email === adminPart?.identity
 
+  const getAdmin = useCallback(async () => {
+    try {
+      const parts = await conversation?.getParticipants()
+      const admin = parts?.find((p) => isAdmin(p))
+      setAdminPart(admin)
+    } catch (err) {
+      console.error('Failed to get admin ->', err)
+    }
+  }, [conversation])
+
   useEffect(() => {
-    async function getAdminPart() {
-      try {
-        const parts = await conversation?.getParticipants()
-        const admin = parts?.find((p) => isAdmin(p))
-        setAdminPart(admin)
-      } catch (err) {
-        console.error('Failed to get admin ->', err)
-      }
-    }
-
     if (conversation) {
-      getAdminPart()
+      getAdmin()
     }
-
-    if (client) {
-      client.on('tokenExpired', () => {
-        if (session) {
-          newClient()
-        }
-      })
-    }
-
-    return () => {
-      client?.removeAllListeners()
-    }
-  }, [client, conversation, newClient, session])
+  }, [conversation, getAdmin])
 
   return (
     <Stack maxH={{ base: 'calc(100vh - 100px )', sm: '2xl' }}>
@@ -132,7 +118,7 @@ export default function Chat({ session }: ChatProps) {
         minH={{ base: 400, sm: 600 }}
         direction={{ base: 'column', sm: 'row' }}
       >
-        <Participants adminPart={adminPart} />
+        {adminPart && <Participants adminPart={adminPart} />}
         <Messages />
       </Stack>
       <ChatInput />

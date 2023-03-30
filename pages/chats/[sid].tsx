@@ -106,6 +106,10 @@ export default function ChatPage({ session, sid }: ChatPageProps) {
       newClient()
     }
 
+    client?.on('tokenExpired', () => {
+      newClient()
+    })
+
     return () => {
       client?.removeAllListeners()
     }
@@ -188,7 +192,7 @@ export default function ChatPage({ session, sid }: ChatPageProps) {
       <audio ref={notificationAudio} src="/sounds/notif_sound.mp3" hidden>
         <track kind="captions" />
       </audio>
-      {conversation && client ? (
+      {conversation && client && session ? (
         <Chat session={session} />
       ) : (
         <VStack justify="center">
@@ -201,7 +205,7 @@ export default function ChatPage({ session, sid }: ChatPageProps) {
                 <>
                   <Heading fontSize="3xl">Chat not found</Heading>
                   <Text fontSize="lg">
-                    Seems like you don&apos;t have an active chat, try again.
+                    Seems like this chat no longer exists
                   </Text>
                   <NextLink href="/">
                     <Button

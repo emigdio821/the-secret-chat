@@ -1,18 +1,16 @@
 import {
   Box,
-  Text,
   Stack,
   Badge,
   Heading,
   Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react'
+import { sortArray } from 'utils'
 import useStore from 'store/global'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import MotionDiv from 'components/MotionDiv'
-import { sortArray, getFriendlyName } from 'utils'
-import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState, useCallback } from 'react'
 import { Participant as Part } from '@twilio/conversations'
 import Participant from './Participant'
@@ -23,10 +21,7 @@ interface ParticipantsProps {
 
 export default function Participants({ adminPart }: ParticipantsProps) {
   const { client, conversation } = useStore()
-  const notifBg = useColorModeValue('gray.300', '#141414')
   const mainBg = useColorModeValue('#EDEDED', '#272727')
-  const [partiJoined, setPartiJoined] = useState<Part>()
-  const [partiLeft, setPartiLeft] = useState<Part>()
   const [participants, setParticipants] = useState<Part[]>([])
   const { data: session } = useSession()
   const router = useRouter()
@@ -43,35 +38,19 @@ export default function Participants({ adminPart }: ParticipantsProps) {
   }, [conversation, session])
 
   useEffect(() => {
-    conversation?.on('participantJoined', (participant) => {
+    conversation?.on('participantJoined', () => {
       getParticipants()
-      setPartiJoined(participant)
     })
 
-    conversation?.on('participantLeft', (participant) => {
-      if (participant.identity === session?.user?.email) {
-        router.push('/')
-      }
+    conversation?.on('participantLeft', () => {
       getParticipants()
-      setPartiLeft(participant)
     })
 
     if (conversation) {
       getParticipants()
     }
 
-    let timeOut: any
-    if (partiJoined || partiLeft) {
-      timeOut = setTimeout(() => {
-        setPartiJoined(undefined)
-        setPartiLeft(undefined)
-      }, 3000)
-    }
-
     return () => {
-      if (timeOut) {
-        clearTimeout(timeOut)
-      }
       if (conversation) {
         conversation.removeListener('participantLeft', () => {})
         conversation.removeListener('participantJoined', () => {})
@@ -80,15 +59,7 @@ export default function Participants({ adminPart }: ParticipantsProps) {
         client.removeAllListeners()
       }
     }
-  }, [
-    client,
-    router,
-    session,
-    partiLeft,
-    partiJoined,
-    conversation,
-    getParticipants,
-  ])
+  }, [client, router, session, conversation, getParticipants])
 
   return (
     <Stack spacing={0} w={{ base: '100%', sm: 200 }}>
@@ -114,48 +85,6 @@ export default function Participants({ adminPart }: ParticipantsProps) {
             <Badge colorScheme="purple">{participants.length}</Badge>
           )}
         </Stack>
-        <AnimatePresence initial={false} mode="wait">
-          {partiJoined && (
-            <motion.div
-              exit={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              initial={{ opacity: 0, y: -5 }}
-              key={partiJoined ? 'animate' : 'exit'}
-            >
-              <Text
-                bg={notifBg}
-                rounded="lg"
-                fontSize="xs"
-                px={{ base: 2, sm: 4 }}
-                py={{ base: 1, sm: 2 }}
-              >
-                {getFriendlyName(partiJoined)} was added
-              </Text>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <AnimatePresence initial={false} mode="wait">
-          {partiLeft && (
-            <motion.div
-              exit={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              initial={{ opacity: 0, y: -10 }}
-              key={partiLeft ? 'animate' : 'exit'}
-            >
-              <Text
-                bg={notifBg}
-                rounded="lg"
-                fontSize="xs"
-                px={{ base: 2, sm: 4 }}
-                py={{ base: 1, sm: 2 }}
-              >
-                {getFriendlyName(partiLeft)} left
-              </Text>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </Stack>
       <Box
         px={4}
@@ -164,7 +93,7 @@ export default function Participants({ adminPart }: ParticipantsProps) {
         py={{ base: 3, sm: 6 }}
         borderBottomEndRadius="md"
         borderBottomLeftRadius="md"
-        display={{ base: 'flex', sm: 'inherit' }}
+        // display={{ base: 'flex', sm: 'inherit' }}
         height={{ base: undefined, sm: 'calc(100% - 40px)' }}
       >
         {participants.length > 0 && (

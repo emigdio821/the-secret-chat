@@ -80,7 +80,7 @@ export default function Participant({ participant, admin }: PartProps) {
             src={isAuthor ? userImg : avatar}
             name={friendlyName.charAt(0) || 'Unknown'}
           />
-          <Stack maxW={20} rounded="md">
+          <Stack maxW={24} rounded="md">
             <User p="You" />
           </Stack>
         </>

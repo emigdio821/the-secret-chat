@@ -126,7 +126,7 @@ export default function Messages() {
           {paginator?.hasPrevPage && (
             <Stack align="flex-end">
               <Button isLoading={isLoading} onClick={() => getPrevMsgs()}>
-                Load more messages
+                Load more...
               </Button>
             </Stack>
           )}

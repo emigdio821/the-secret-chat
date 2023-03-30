@@ -7,6 +7,7 @@ import {
   useColorMode,
   useColorModeValue,
 } from '@chakra-ui/react'
+import { useState } from 'react'
 import LoginLogo from 'components/LoginLogo'
 import { signIn } from 'next-auth/react'
 import { FaGithub } from 'react-icons/fa'
@@ -18,9 +19,22 @@ import CommonBtn from 'components/CommonBtn'
 export default function Login() {
   const bgGradient = useBgGradient()
   const { toggleColorMode } = useColorMode()
+  const [isLoading, setLoading] = useState<boolean>(false)
   const btnBg = useColorModeValue('#444', '#262626')
   const btnHover = useColorModeValue('#333', '#222')
   const SwitchIcon = useColorModeValue(BiMoon, BiSun)
+
+  async function handleSignIn() {
+    setLoading(true)
+    try {
+      await signIn('github', {
+        callbackUrl: '/',
+      })
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    }
+  }
 
   return (
     <Center p={6} minH="100vh" bgImage={bgGradient}>
@@ -41,12 +55,9 @@ export default function Login() {
           </Stack>
           <Stack justifyContent="center" direction="row">
             <CommonBtn
+              isLoading={isLoading}
+              onClick={() => handleSignIn()}
               btnLabel="Log in with Github"
-              onClick={() =>
-                signIn('github', {
-                  callbackUrl: '/',
-                })
-              }
               leftIcon={<FaGithub size={20} />}
             />
             <IconButton
