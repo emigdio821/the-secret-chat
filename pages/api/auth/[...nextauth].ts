@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 import GithubProvider from 'next-auth/providers/github'
+import CredentialsProvider from 'next-auth/providers/credentials'
 
 export default NextAuth({
   providers: [
@@ -10,6 +11,38 @@ export default NextAuth({
         params: {
           scope: 'user:email',
         },
+      },
+    }),
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        username: { label: 'Username', type: 'text' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        const user = {
+          id: '1',
+          name: 'Emigdio Torres',
+          email: 'emigdio@dev.com',
+        }
+        const user2 = {
+          id: '2',
+          name: 'Lorenzo Rodríguez',
+          email: 'lorenzo@dev.com',
+        }
+        const isDevUser =
+          credentials?.username === 'admin' && credentials.password === 'admin'
+        const isDevUser2 =
+          credentials?.username === 'admin2' &&
+          credentials.password === 'admin2'
+
+        if (isDevUser) {
+          return user
+        }
+        if (isDevUser2) {
+          return user2
+        }
+        return null
       },
     }),
   ],
