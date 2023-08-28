@@ -1,74 +1,86 @@
+import { type InitialState } from '@/types'
 import { create } from 'zustand'
-import { InitialState } from 'types'
 
-const useStore = create<InitialState>((set) => ({
+export const useStore = create<InitialState>((set) => ({
   error: '',
   messages: [],
   usersTyping: [],
   isLoading: false,
   client: undefined,
   conversation: undefined,
-  addClient: (client) =>
+  addClient: (client) => {
     set((state) => ({
       ...state,
       client,
-    })),
-  removeClient: () =>
+    }))
+  },
+  removeClient: () => {
     set((state) => ({
       ...state,
       client: undefined,
-    })),
-  addError: (error) =>
+    }))
+  },
+  addError: (error) => {
     set((state) => ({
       ...state,
       error,
-    })),
-  removeError: () =>
+    }))
+  },
+  removeError: () => {
     set((state) => ({
       ...state,
       error: '',
-    })),
-  addLoading: () =>
+    }))
+  },
+  addLoading: () => {
     set((state) => ({
       ...state,
       isLoading: true,
-    })),
-  removeLoading: () =>
+    }))
+  },
+  removeLoading: () => {
     set((state) => ({
       ...state,
       isLoading: false,
-    })),
-  addConversation: (convo) =>
+    }))
+  },
+  addConversation: (convo) => {
     set((state) => ({
       ...state,
       conversation: convo,
-    })),
-  removeConversation: () =>
+    }))
+  },
+  removeConversation: () => {
     set((state) => ({
       ...state,
       conversation: undefined,
-    })),
-  removeMessages: () =>
+    }))
+  },
+  removeMessages: () => {
     set((state) => ({
       ...state,
       messages: [],
-    })),
-  addMessage: (message) =>
+    }))
+  },
+  addMessage: (message) => {
     set((state) => ({
       ...state,
       messages: [...state.messages, message],
-    })),
-  removeMessage: (message) =>
+    }))
+  },
+  removeMessage: (message) => {
     set((state) => ({
       ...state,
       messages: state.messages.filter((m) => m.sid !== message.sid),
-    })),
-  addMessages: (messages) =>
+    }))
+  },
+  addMessages: (messages) => {
     set((state) => ({
       ...state,
       messages,
-    })),
-  addUsersTyping: (participant) =>
+    }))
+  },
+  addUsersTyping: (participant) => {
     set((state) => {
       if (state.usersTyping.some((p) => p.sid === participant.sid)) {
         return state
@@ -78,12 +90,12 @@ const useStore = create<InitialState>((set) => ({
         ...state,
         usersTyping: [...state.usersTyping, participant],
       }
-    }),
-  removeUsersTyping: (participant) =>
+    })
+  },
+  removeUsersTyping: (participant) => {
     set((state) => ({
       ...state,
       usersTyping: state.usersTyping.filter((p) => p.sid !== participant.sid),
-    })),
+    }))
+  },
 }))
-
-export default useStore

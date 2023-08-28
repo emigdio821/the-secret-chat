@@ -13,6 +13,9 @@
 // import { BiMoon, BiSun } from 'react-icons/bi'
 // import { FaGithub } from 'react-icons/fa'
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { LoginForm } from '@/components/login/form'
+
 // import useBgGradient from 'hooks/useBgGradient'
 // import Helmet from 'components/Helmet'
 // import CommonBtn from 'components/CommonBtn'
@@ -38,10 +41,15 @@ export default function LoginPage() {
   // }
 
   return (
-    <div>
-      <div className="p-4 pt-2 sm:text-left" />
-      Login
-    </div>
+    <Card className="mx-auto max-w-sm">
+      <CardHeader>
+        <CardTitle>Login</CardTitle>
+        <CardDescription>Start chatting now</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <LoginForm />
+      </CardContent>
+    </Card>
     // <Center p={6} minH="100vh" bgImage={bgGradient}>
     //   <Helmet title="Login" />
     //   <Box

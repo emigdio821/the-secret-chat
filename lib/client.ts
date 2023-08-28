@@ -1,4 +1,5 @@
 import { Client } from '@twilio/conversations'
+
 import getAccessToken from './user'
 
 export async function createClient(accessToken: string) {
@@ -11,6 +12,6 @@ export async function initClient() {
     const twilioClient = await createClient(accessToken)
     return twilioClient
   } catch (err) {
-    return Promise.reject(err)
+    return await Promise.reject(err)
   }
 }

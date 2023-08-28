@@ -1,8 +1,8 @@
-import NextAuth from 'next-auth'
-import GithubProvider from 'next-auth/providers/github'
+import { type AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import GithubProvider from 'next-auth/providers/github'
 
-export default NextAuth({
+export const authOptions: AuthOptions = {
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
@@ -30,11 +30,8 @@ export default NextAuth({
           name: 'Lorenzo Rodríguez',
           email: 'lorenzo@dev.com',
         }
-        const isDevUser =
-          credentials?.username === 'admin' && credentials.password === 'admin'
-        const isDevUser2 =
-          credentials?.username === 'admin2' &&
-          credentials.password === 'admin2'
+        const isDevUser = credentials?.username === 'admin' && credentials.password === 'admin'
+        const isDevUser2 = credentials?.username === 'admin2' && credentials.password === 'admin2'
 
         if (isDevUser) {
           return user
@@ -55,4 +52,4 @@ export default NextAuth({
       return token
     },
   },
-})
+}

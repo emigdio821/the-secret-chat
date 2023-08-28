@@ -1,39 +1,28 @@
-import { Box, Flex, useColorModeValue, Stack } from '@chakra-ui/react'
-import ProfileMenu from 'components/profile/ProfileMenu'
-import NavLogo from './NavLogo'
+import NextLink from 'next/link'
+import { Ghost } from 'lucide-react'
+import { type Session } from 'next-auth'
 
-export default function Navbar() {
+import { siteConfig } from '@/lib/site-config'
+import { cn } from '@/lib/utils'
+import { buttonVariants } from '@/components/ui/button'
+import { ProfileMenu } from '@/components/profile/ProfileMenu'
+
+export function Navbar({ session }: { session: Session }) {
   return (
-    <Box
-      as="nav"
-      w="100%"
-      zIndex={10}
-      position="fixed"
-      css={{
-        backdropFilter: 'blur(10px)',
-      }}
-      bg={useColorModeValue(
-        'rgba(237, 237, 237, 0.9)',
-        'rgba(20, 20, 20, 0.9)',
-      )}
-    >
-      <Flex
-        h={16}
-        px={4}
-        maxW="4xl"
-        m="0 auto"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Box>
-          <Flex alignItems="center">
-            <NavLogo />
-          </Flex>
-        </Box>
-        <Stack alignItems="center" direction="row">
-          <ProfileMenu />
-        </Stack>
-      </Flex>
-    </Box>
+    <header className="sticky top-0 z-40 w-full border-b bg-background/90 px-4 backdrop-blur-md dark:bg-background/90 print:hidden">
+      <nav className="mx-auto flex h-12 max-w-2xl items-center justify-between">
+        <NextLink
+          href="/"
+          className={cn(
+            buttonVariants({ variant: 'link', size: 'sm' }),
+            'px-0 text-lg font-bold transition-opacity duration-200 hover:no-underline hover:opacity-80',
+          )}
+        >
+          <Ghost className="mr-2 h-4 w-4" />
+          {siteConfig.name}
+        </NextLink>
+        <ProfileMenu session={session} />
+      </nav>
+    </header>
   )
 }
