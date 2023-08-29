@@ -11,6 +11,9 @@ const nextConfig = {
   //     'media4.giphy.com',
   //   ],
   // },
+  images: {
+    domains: ['api.dicebear.com'],
+  },
   env: {
     GIPHY_API_KEY: process.env.GIPHY_API_KEY,
     TWILIO_CHANNEL_ADMIN: process.env.TWILIO_CHANNEL_ADMIN,

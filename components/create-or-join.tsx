@@ -1,16 +1,18 @@
-import { MessageSquarePlus, MessagesSquare } from 'lucide-react'
+import { type Session } from 'next-auth'
 
-import { Button } from '@/components/ui/button'
+import { CreateChatDialog } from './chats/create-chat-dialog'
+import { JoinChatDialog } from './chats/join-chat-dialog'
 
-export function CreateOrJoinChat() {
+interface CreateOrJoinChatProps {
+  session: Session
+  isLoading: boolean
+}
+
+export function CreateOrJoinChat({ session, isLoading }: CreateOrJoinChatProps) {
   return (
     <div className="flex items-center gap-2">
-      <Button variant="secondary" type="button">
-        Create chat <MessageSquarePlus className="ml-2 h-4 w-4" />
-      </Button>
-      <Button variant="secondary" type="button">
-        Join chat <MessagesSquare className="ml-2 h-4 w-4" />
-      </Button>
+      <CreateChatDialog isLoading={isLoading} />
+      <JoinChatDialog isLoading={isLoading} />
     </div>
   )
 }

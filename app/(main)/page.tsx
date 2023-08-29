@@ -3,8 +3,7 @@ import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
 import { siteConfig } from '@/lib/site-config'
-import { CreateOrJoinChat } from '@/components/create-or-join'
-import { UserChats } from '@/components/user-chats'
+import { UserChats } from '@/components/chats/user-chats'
 
 export default async function MainPage() {
   const session = await getServerSession(authOptions)
@@ -25,8 +24,7 @@ export default async function MainPage() {
       </h3>
       <p className="text-sm text-muted-foreground">Start chatting now</p>
       <section className="mt-4">
-        <CreateOrJoinChat />
-        <UserChats />
+        <UserChats session={session} />
       </section>
     </>
   )

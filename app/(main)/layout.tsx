@@ -18,8 +18,8 @@ export default async function MainLayout({ children }: MainLayoutProps) {
   return (
     <>
       <Navbar session={session} />
-      <section className="px-4">
-        <div className="mx-auto max-w-2xl py-4">{children}</div>
+      <section className="px-4 pt-4">
+        <div className="mx-auto max-w-2xl">{children}</div>
       </section>
     </>
   )
