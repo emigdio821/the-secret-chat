@@ -5,6 +5,7 @@ import { ArrowRight, Loader2, MoreVertical, Shield, Trash2, User } from 'lucide-
 import { type Session } from 'next-auth'
 import { useQueryClient } from 'react-query'
 
+import { CHATS_QUERY } from '@/lib/constants'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,7 +51,7 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
     try {
       setLoading(true)
       await chat.delete()
-      await queryClient.refetchQueries({ queryKey: ['chats'] })
+      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY] })
       setOpenedAlert(false)
       setLoading(false)
     } catch (err) {

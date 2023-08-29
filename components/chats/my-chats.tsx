@@ -5,6 +5,7 @@ import { RefreshCcw, Search } from 'lucide-react'
 import { type Session } from 'next-auth'
 import { useQuery } from 'react-query'
 
+import { CHATS_QUERY } from '@/lib/constants'
 import { sortArray } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -41,7 +42,7 @@ export function ChatList({ client, session }: ChatListProps) {
     )
   }
 
-  const { data, error, isLoading, refetch } = useQuery(['chats'], getChats, {
+  const { data, error, isLoading, refetch } = useQuery([CHATS_QUERY], getChats, {
     select: filterBySearch,
   })
 

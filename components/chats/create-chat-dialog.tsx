@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { useQueryClient } from 'react-query'
 import type * as z from 'zod'
 
+import { CHATS_QUERY } from '@/lib/constants'
 import { useStore } from '@/lib/store'
 import { createChatRoomSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
@@ -64,7 +65,7 @@ export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
         router.push(`/chats/${chat.sid}`)
       }
 
-      await queryClient.refetchQueries({ queryKey: ['chats'] })
+      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY] })
       setOpenedDialog(false)
       form.reset()
     } catch (err) {

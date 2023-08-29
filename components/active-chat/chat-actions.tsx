@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { type Conversation } from '@twilio/conversations'
-import { Loader2, LogOut, MoreVertical, Trash2, UserPlus } from 'lucide-react'
+import { Loader2, LogOut, MoreVertical, Trash2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useQueryClient } from 'react-query'
 
+import { CHATS_QUERY, PARTICIPANTS_QUERY } from '@/lib/constants'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +27,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { toast } from '@/components/ui/use-toast'
 
+import { AddParticipantDialog } from './add-participant-dialog'
+
 export default function ChatActions({ chat }: { chat: Conversation }) {
   const queryClient = useQueryClient()
   const [openedAlert, setOpenedAlert] = useState(false)
@@ -37,7 +40,8 @@ export default function ChatActions({ chat }: { chat: Conversation }) {
     try {
       setLoading(true)
       await chat.delete()
-      await queryClient.refetchQueries({ queryKey: ['chats'] })
+      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY] })
+      await queryClient.refetchQueries({ queryKey: [PARTICIPANTS_QUERY] })
       setOpenedAlert(false)
     } catch (err) {
       let errMsg = 'Unknown error'
@@ -66,10 +70,7 @@ export default function ChatActions({ chat }: { chat: Conversation }) {
           <DropdownMenuContent align="end" className="max-w-[180px]">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Add participant
-            </DropdownMenuItem>
+            <AddParticipantDialog chat={chat} />
             <DropdownMenuItem>
               <LogOut className="mr-2 h-4 w-4" />
               Leave chat
