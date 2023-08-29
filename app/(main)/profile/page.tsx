@@ -1,11 +1,11 @@
-import Image from 'next/image'
 import { redirect } from 'next/navigation'
-import { AtSign } from 'lucide-react'
+import { AtSign, User } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
-import { avatarFallbackUrl } from '@/lib/constants'
-import { useRainbowGradient } from '@/hooks/use-bg-gradient'
+import { AVATAR_FALLBACK_URL } from '@/lib/constants'
+import { useRainbowGradient } from '@/hooks/use-rainbow-gradient'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default async function ProfilePage() {
@@ -24,9 +24,12 @@ export default async function ProfilePage() {
         <CardTitle>Profile</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="relative mb-4 flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-transparent">
-          <Image fill alt={user?.name ?? 'User image'} src={user?.image ?? avatarFallbackUrl} />
-        </div>
+        <Avatar className="mb-4 h-28 w-28 rounded-lg">
+          <AvatarImage src={user?.image ?? AVATAR_FALLBACK_URL} alt={`${user?.name}`} />
+          <AvatarFallback className="h-28 w-28 rounded-sm">
+            <User className="h-10 w-10" />
+          </AvatarFallback>
+        </Avatar>
         <CardDescription className="mb-4">
           This picture is from your Github account. It will get synced automatically.
         </CardDescription>
@@ -36,7 +39,6 @@ export default async function ProfilePage() {
             <AtSign className="h-4 w-4" />
             {user?.email}
           </h5>
-          {/* <h5 className="text-sm font-medium">{user?.email}</h5> */}
         </div>
       </CardContent>
     </Card>

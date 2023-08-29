@@ -26,7 +26,7 @@ import { useToast } from '@/components/ui/use-toast'
 export function JoinChatDialog({ isLoading }: { isLoading: boolean }) {
   const [openedDialog, setOpenedDialog] = useState(false)
   const client = useStore((state) => state.client)
-  const addConvo = useStore((state) => state.addConversation)
+  const addChat = useStore((state) => state.addConversation)
   const router = useRouter()
   const { toast } = useToast()
 
@@ -39,11 +39,15 @@ export function JoinChatDialog({ isLoading }: { isLoading: boolean }) {
 
   async function onSubmit(values: z.infer<typeof joinChatRoomSchema>) {
     try {
-      const convo = await client?.getConversationByUniqueName(values.name)
+      const chat = await client?.getConversationByUniqueName(values.name)
 
-      if (convo) {
-        addConvo(convo)
-        router.push(`/chats/${convo.sid}`)
+      if (chat?.status === 'notParticipating') {
+        await chat?.join()
+      }
+
+      if (chat) {
+        addChat(chat)
+        router.push(`/chats/${chat.sid}`)
       }
 
       setOpenedDialog(false)

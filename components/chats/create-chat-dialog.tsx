@@ -51,7 +51,7 @@ export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
 
   async function onSubmit(values: z.infer<typeof createChatRoomSchema>) {
     try {
-      const convo = await client?.createConversation({
+      const chat = await client?.createConversation({
         uniqueName: values.name,
         friendlyName: values.name,
         attributes: {
@@ -59,9 +59,9 @@ export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
         },
       })
 
-      if (values.join_after && convo) {
-        await convo.join()
-        router.push(`/chats/${convo.sid}`)
+      if (values.join_after && chat) {
+        await chat.join()
+        router.push(`/chats/${chat.sid}`)
       }
 
       await queryClient.refetchQueries({ queryKey: ['chats'] })
@@ -114,14 +114,26 @@ export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
             <FormField
               control={form.control}
               name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input placeholder="Chat name" autoComplete="false" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const charsLength = field.value.length
+
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        maxLength={40}
+                        autoComplete="false"
+                        placeholder="Chat name"
+                        {...field}
+                      />
+                    </FormControl>
+                    {charsLength >= 30 && (
+                      <p className="text-xs text-muted-foreground">{charsLength} / 40 characters</p>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
             />
             <FormField
               control={form.control}

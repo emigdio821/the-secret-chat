@@ -32,9 +32,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   creator: 'Emigdio Torres',
   icons: {
-    icon: 'images/favicon.ico',
-    shortcut: 'images/favicon-16x16.png',
-    apple: 'images/apple-touch-icon.png',
+    icon: '/images/favicon.ico',
+    shortcut: '/images/favicon-16x16.png',
+    apple: '/images/apple-touch-icon.png',
   },
   openGraph: {
     title: siteConfig.name,
@@ -56,7 +56,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <head />
         <body
           className={cn(
-            'bg-background relative flex min-h-screen flex-col font-sans antialiased ',
+            'relative flex min-h-screen flex-col bg-background font-sans antialiased ',
             fontSans.variable,
           )}
         >

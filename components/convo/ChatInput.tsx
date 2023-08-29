@@ -52,9 +52,9 @@ export default function ChatInput() {
                 value={message}
                 placeholder="Message"
                 focusBorderColor="#B2ABCC"
-                onKeyDown={(e) => handleTypingState(e)}
+                onKeyDown={async (e) => { await handleTypingState(e); }}
                 bg={useColorModeValue('#fafafa', '#272727')}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={(e) => { setMessage(e.target.value); }}
               />
               <InputRightElement>
                 <Media />

@@ -34,10 +34,10 @@ export function useTwilioClient() {
     if (client && !clientFromStore) {
       client.on('connectionStateChanged', (state) => {
         if (state === 'connecting') {
-          toast({
-            title: 'Status',
-            description: 'Connecting to Twilio…',
-          })
+          // toast({
+          //   title: 'Status',
+          //   description: 'Connecting to Twilio…',
+          // })
         }
         if (state === 'connected') {
           toast({

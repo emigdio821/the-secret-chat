@@ -9,7 +9,7 @@ import {
   useToast,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { Session } from 'types'
+import { type Session } from 'types'
 import NextLink from 'next/link'
 import useStore from 'store/global'
 import Helmet from 'components/Helmet'
@@ -18,7 +18,7 @@ import { shallow } from 'zustand/shallow'
 import { getSession } from 'next-auth/react'
 import AppWrapper from 'components/AppWrapper'
 import useInitClient from 'hooks/useInitClient'
-import { GetServerSidePropsContext } from 'next'
+import { type GetServerSidePropsContext } from 'next'
 import { useEffect, useCallback, useRef } from 'react'
 import { BiArrowBack, BiGhost } from 'react-icons/bi'
 

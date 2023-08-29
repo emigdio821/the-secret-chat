@@ -2,7 +2,8 @@
 
 import { useStore } from '@/lib/store'
 import { useTwilioClient } from '@/hooks/use-twilio-client'
-import { ActiveChatContainer } from '@/components/active-chat/container'
+import { ActiveChatContainer } from '@/components/active-chat/active-chat-container'
+import { FullChatSkeleton } from '@/components/active-chat/chat-seketon'
 
 interface ChatsPageProps {
   params: { sid: string }
@@ -14,7 +15,7 @@ export default function ChatsPage({ params }: ChatsPageProps) {
 
   return (
     <>
-      {clientLoading && <div>Loading...</div>}
+      {!client && clientLoading && <FullChatSkeleton />}
       {client && <ActiveChatContainer client={client} chatId={params.sid} />}
     </>
   )
