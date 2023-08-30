@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, MessagesSquare } from 'lucide-react'
+import { MessagesSquare } from 'lucide-react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import type * as z from 'zod'
 
 import { useStore } from '@/lib/store'
@@ -21,14 +22,13 @@ import {
 } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useToast } from '@/components/ui/use-toast'
+import { Loader } from '@/components/icons'
 
 export function JoinChatDialog({ isLoading }: { isLoading: boolean }) {
   const [openedDialog, setOpenedDialog] = useState(false)
   const client = useStore((state) => state.client)
   const addChat = useStore((state) => state.addConversation)
   const router = useRouter()
-  const { toast } = useToast()
 
   const form = useForm<z.infer<typeof joinChatRoomSchema>>({
     resolver: zodResolver(joinChatRoomSchema),
@@ -57,8 +57,7 @@ export function JoinChatDialog({ isLoading }: { isLoading: boolean }) {
       if (err instanceof Error) errMsg = err.message
       console.log('[JOIN_CHAT_DIALOG]', errMsg)
 
-      toast({
-        title: 'Uh oh!',
+      toast.error('Uh oh!', {
         description: "Seems like the chat room doesn't exist or you don't have access to it",
       })
     }
@@ -108,7 +107,7 @@ export function JoinChatDialog({ isLoading }: { isLoading: boolean }) {
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Join
                 {form.formState.isSubmitting ? (
-                  <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  <Loader className="ml-2" />
                 ) : (
                   <MessagesSquare className="ml-2 h-4 w-4" />
                 )}

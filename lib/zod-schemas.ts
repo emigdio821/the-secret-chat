@@ -2,6 +2,7 @@ import * as z from 'zod'
 
 const requiredField = z.string().trim().nonempty('Required field')
 const optionalField = z.string().trim()
+const envVariable = z.string().nonempty()
 
 export const loginFormSchema = z.object({
   username: requiredField,
@@ -24,4 +25,17 @@ export const addParticipantSchema = z.object({
 
 export const sendMessageSchema = z.object({
   message: requiredField,
+})
+
+export const envSchema = z.object({
+  NEXTAUTH_URL: envVariable,
+  GITHUB_ID: envVariable,
+  GITHUB_SECRET: envVariable,
+  NEXTAUTH_SECRET: envVariable,
+  TWILIO_ACCOUNT_SID: envVariable,
+  TWILIO_API_KEY: envVariable,
+  TWILIO_API_SECRET: envVariable,
+  TWILIO_SERVICE_SID: envVariable,
+  TWILIO_CHANNEL_ADMIN: envVariable,
+  GIPHY_API_KEY: envVariable,
 })

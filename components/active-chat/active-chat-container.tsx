@@ -1,142 +1,28 @@
-import { useCallback, useEffect } from 'react'
-import NextLink from 'next/link'
-import { useRouter } from 'next/navigation'
-import { type Client, type Participant } from '@twilio/conversations'
-import { Home } from 'lucide-react'
-import { useQuery, useQueryClient } from 'react-query'
+'use client'
 
-import {
-  ACTIVE_CHAT_MESSAGES_QUERY,
-  ACTIVE_CHAT_QUERY,
-  CHATS_QUERY,
-  PARTICIPANTS_QUERY,
-} from '@/lib/constants'
-import { useStore } from '@/lib/store'
-import { buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { toast } from '@/components/ui/use-toast'
+import { useTwilioClient } from '@/hooks/use-twilio-client'
 import { FullChatSkeleton } from '@/components/active-chat/chat-seketon'
-import { Messages } from '@/components/active-chat/messages'
+import { ClientError } from '@/components/client-error'
 
-import ChatActions from './chat-actions'
-
-interface ConvoDescription {
-  description?: string
-}
+import { ActiveChat } from './active-chat'
 
 interface ActiveChatContainerProps {
-  client: Client
   chatId: string
 }
 
-export function ActiveChatContainer({ client, chatId }: ActiveChatContainerProps) {
-  const { data: chat, isLoading } = useQuery([ACTIVE_CHAT_QUERY, chatId], getCurrentChat)
-  const queryClient = useQueryClient()
-  const router = useRouter()
-  const addUsersTyping = useStore((state) => state.addUsersTyping)
-  const removeUsersTyping = useStore((state) => state.removeUsersTyping)
-  const attrs = chat?.attributes as unknown as ConvoDescription
+export function ActiveChatContainer({ chatId }: ActiveChatContainerProps) {
+  const { error, isLoading, client } = useTwilioClient()
 
-  async function getCurrentChat() {
-    try {
-      const chat = await client.getConversationBySid(chatId)
-      if (chat.status === 'notParticipating') {
-        await chat.join()
-      }
-
-      return chat
-    } catch (err) {
-      console.log('[GET_CURRENT_CHAT]', err)
-    }
+  if (error) {
+    return <ClientError />
   }
-
-  const refetchMessages = useCallback(async () => {
-    await queryClient.refetchQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
-  }, [queryClient])
-
-  const handleChatRemoved = useCallback(() => {
-    toast({
-      title: 'Info',
-      description: 'This chat room was removed by the admin or you were removed from it',
-    })
-    router.push('/')
-  }, [router])
-
-  const handleParticipantJoined = useCallback(
-    async (participant: Participant) => {
-      await queryClient.refetchQueries({ queryKey: [PARTICIPANTS_QUERY] })
-      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY] })
-      // toast({
-      //   title: 'Info',
-      //   description: (
-      //     <span>
-      //       <span className="font-semibold">{participant.identity}</span> has joined the chat room
-      //     </span>
-      //   ),
-      // })
-    },
-    [queryClient],
-  )
-
-  useEffect(() => {
-    if (chat) {
-      chat.on('messageAdded', refetchMessages)
-      chat.on('typingStarted', addUsersTyping)
-      chat.on('typingEnded', removeUsersTyping)
-      chat.on('removed', handleChatRemoved)
-      chat.on('participantJoined', handleParticipantJoined)
-    }
-
-    return () => {
-      if (chat) {
-        chat.removeListener('messageAdded', refetchMessages)
-        chat.removeListener('typingStarted', addUsersTyping)
-        chat.removeListener('typingEnded', removeUsersTyping)
-        chat.removeListener('typingEnded', handleChatRemoved)
-        chat.removeListener('participantJoined', handleParticipantJoined)
-      }
-    }
-  }, [
-    chat,
-    addUsersTyping,
-    refetchMessages,
-    removeUsersTyping,
-    handleChatRemoved,
-    handleParticipantJoined,
-  ])
 
   return (
     <>
       {isLoading ? (
         <FullChatSkeleton />
       ) : (
-        <>
-          {chat ? (
-            <>
-              <div className="flex justify-between gap-2">
-                <div>
-                  <h3 className="text-lg font-semibold">{chat.friendlyName}</h3>
-                  <h5 className="mb-4 text-sm text-muted-foreground">{attrs.description}</h5>
-                </div>
-                <ChatActions chat={chat} />
-              </div>
-              <Messages chat={chat} />
-            </>
-          ) : (
-            <Card className="mx-auto max-w-sm">
-              <CardHeader>
-                <CardTitle>Chat not found</CardTitle>
-                <CardDescription>Seems like this chat no longer exists</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <NextLink href="/" className={buttonVariants({ variant: 'outline' })}>
-                  Home
-                  <Home className="ml-2 h-4 w-4" />
-                </NextLink>
-              </CardContent>
-            </Card>
-          )}
-        </>
+        <>{client && <ActiveChat client={client} chatId={chatId} />}</>
       )}
     </>
   )

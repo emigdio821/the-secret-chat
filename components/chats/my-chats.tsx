@@ -1,26 +1,29 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { type Client, type Conversation } from '@twilio/conversations'
 import { useDebounce } from '@uidotdev/usehooks'
-import { RefreshCcw, Search } from 'lucide-react'
+import { MessageSquareDashed, RefreshCcw, Search } from 'lucide-react'
 import { type Session } from 'next-auth'
-import { useQuery } from 'react-query'
 
 import { CHATS_QUERY } from '@/lib/constants'
 import { sortArray } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { ChatsSkeleton } from '@/components/skeletons'
 
 import { ChatCardItem } from './chat-card-item'
-import { ChatsSkeleton } from './chats-skeleton'
 
 interface ChatListProps {
   client: Client
   session: Session
 }
 
-export function ChatList({ client, session }: ChatListProps) {
+export function MyChats({ client, session }: ChatListProps) {
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 500)
+  const { data, error, isLoading, refetch } = useQuery([CHATS_QUERY], getChats, {
+    select: filterBySearch,
+  })
 
   async function getChats() {
     try {
@@ -29,7 +32,9 @@ export function ChatList({ client, session }: ChatListProps) {
 
       return chats.items
     } catch (err) {
-      console.error('[GET_CHATS]', err)
+      const errMessage = err instanceof Error ? err.message : err
+      console.log('[GET_CHATS]', errMessage)
+      return []
     }
   }
 
@@ -41,10 +46,6 @@ export function ChatList({ client, session }: ChatListProps) {
       (chat) => chat.uniqueName?.toLowerCase().includes(searchText.toLocaleLowerCase()),
     )
   }
-
-  const { data, error, isLoading, refetch } = useQuery([CHATS_QUERY], getChats, {
-    select: filterBySearch,
-  })
 
   if (error) {
     return (
@@ -68,17 +69,28 @@ export function ChatList({ client, session }: ChatListProps) {
     <div className="mt-4">
       <div className="mb-4 flex items-center justify-between gap-2">
         <h3 className="text-lg font-semibold">My chats</h3>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
-          <Input
-            disabled={isLoading}
-            className="w-40 pl-9"
-            onChange={(e) => {
-              setSearch(e.target.value)
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              await refetch()
             }}
-            name="search-chats"
-            placeholder="Search chats"
-          />
+          >
+            <span className="hidden sm:block">Refresh</span>
+            <RefreshCcw className="h-4 w-4 sm:ml-2" />
+          </Button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+            <Input
+              disabled={isLoading}
+              className="w-40 pl-9"
+              onChange={(e) => {
+                setSearch(e.target.value)
+              }}
+              name="search-chats"
+              placeholder="Search chats"
+            />
+          </div>
         </div>
       </div>
       {isLoading ? (
@@ -92,7 +104,10 @@ export function ChatList({ client, session }: ChatListProps) {
               ))}
             </div>
           ) : (
-            <p>{search ? 'No chats found' : 'No chats yet'}</p>
+            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border p-4 text-sm">
+              <MessageSquareDashed className="h-4 w-4" />
+              <span>{search ? 'No chats found' : 'No chats yet'}</span>
+            </div>
           )}
         </>
       )}

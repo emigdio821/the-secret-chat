@@ -36,6 +36,13 @@ export const metadata: Metadata = {
     shortcut: '/images/favicon-16x16.png',
     apple: '/images/apple-touch-icon.png',
   },
+  viewport: {
+    initialScale: 1,
+    minimumScale: 1,
+    maximumScale: 1,
+    height: 'device-height',
+    width: 'device-width',
+  },
   openGraph: {
     title: siteConfig.name,
     description: siteConfig.description,

@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { type Conversation } from '@twilio/conversations'
-import { Loader2, LogOut, MoreVertical, Trash2 } from 'lucide-react'
+import { LogOut, MoreVertical, Trash2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { useQueryClient } from 'react-query'
+import { toast } from 'sonner'
 
 import { CHATS_QUERY, PARTICIPANTS_QUERY } from '@/lib/constants'
 import {
@@ -25,7 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { toast } from '@/components/ui/use-toast'
+import { Loader } from '@/components/icons'
 
 import { AddParticipantDialog } from './add-participant-dialog'
 
@@ -48,8 +49,7 @@ export default function ChatActions({ chat }: { chat: Conversation }) {
       if (err instanceof Error) errMsg = err.message
       console.log('[CHAT_ACTIONS_DELETE]', errMsg)
 
-      toast({
-        title: 'Uh oh!',
+      toast.error('Uh oh!', {
         description: 'Something went wrong while deleting the chat room, try again',
       })
     } finally {
@@ -116,7 +116,7 @@ export default function ChatActions({ chat }: { chat: Conversation }) {
                         }}
                       >
                         Continue
-                        {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                        {isLoading && <Loader className="ml-2" />}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

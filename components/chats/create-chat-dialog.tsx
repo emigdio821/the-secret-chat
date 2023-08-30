@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, MessageSquarePlus } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
+import { MessageSquarePlus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { useQueryClient } from 'react-query'
+import { toast } from 'sonner'
 import type * as z from 'zod'
 
 import { CHATS_QUERY } from '@/lib/constants'
@@ -33,7 +34,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from '@/components/ui/use-toast'
+import { Loader } from '@/components/icons'
 
 export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
   const queryClient = useQueryClient()
@@ -62,7 +63,7 @@ export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
 
       if (values.join_after && chat) {
         await chat.join()
-        router.push(`/chats/${chat.sid}`)
+        router.push(`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`)
       }
 
       await queryClient.refetchQueries({ queryKey: [CHATS_QUERY] })
@@ -77,8 +78,7 @@ export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
           ? 'Seems like that chat name already exists, try another one'
           : 'Something went wrong while creating the chat room, try again'
 
-      toast({
-        title: 'Uh oh!',
+      toast.error('Uh oh!', {
         description: toastMsg,
       })
     }
@@ -185,7 +185,7 @@ export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Create
                 {form.formState.isSubmitting ? (
-                  <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  <Loader className="ml-2" />
                 ) : (
                   <MessageSquarePlus className="ml-2 h-4 w-4" />
                 )}

@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/lib/auth'
 import { siteConfig } from '@/lib/site-config'
-import { UserChats } from '@/components/chats/user-chats'
+import { MyChatsContainer } from '@/components/chats/my-chats-container'
 
 export default async function MainPage() {
   const session = await getServerSession(authOptions)
@@ -24,7 +24,7 @@ export default async function MainPage() {
       </h3>
       <p className="text-sm text-muted-foreground">Start chatting now</p>
       <section className="mt-4">
-        <UserChats session={session} />
+        <MyChatsContainer session={session} />
       </section>
     </>
   )

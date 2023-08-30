@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { type Conversation } from '@twilio/conversations'
-import { Loader2, UserPlus } from 'lucide-react'
+import { UserPlus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import type * as z from 'zod'
 
 import { addParticipantSchema } from '@/lib/zod-schemas'
@@ -19,7 +20,7 @@ import {
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { toast } from '@/components/ui/use-toast'
+import { Loader } from '@/components/icons'
 
 export function AddParticipantDialog({ chat }: { chat: Conversation }) {
   const [openedDialog, setOpenedDialog] = useState(false)
@@ -40,8 +41,7 @@ export function AddParticipantDialog({ chat }: { chat: Conversation }) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
       console.log('[ADD_PARTICIPANT_DIALOG]', errMsg)
-      toast({
-        title: 'Uh oh!',
+      toast.error('Uh oh!', {
         description:
           'Something went wrong while adding the participant, please check the id (email) and try again',
       })
@@ -109,7 +109,7 @@ export function AddParticipantDialog({ chat }: { chat: Conversation }) {
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Add
                 {form.formState.isSubmitting ? (
-                  <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  <Loader className="ml-2" />
                 ) : (
                   <UserPlus className="ml-2 h-4 w-4" />
                 )}

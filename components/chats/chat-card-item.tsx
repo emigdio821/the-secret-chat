@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import NextLink from 'next/link'
+import { useQueryClient } from '@tanstack/react-query'
 import { type Conversation } from '@twilio/conversations'
-import { ArrowRight, Loader2, MoreVertical, Shield, Trash2, User } from 'lucide-react'
+import { ArrowRight, MoreVertical, Shield, Trash2, User } from 'lucide-react'
 import { type Session } from 'next-auth'
-import { useQueryClient } from 'react-query'
+import { toast } from 'sonner'
 
 import { CHATS_QUERY } from '@/lib/constants'
 import {
@@ -27,7 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { toast } from '@/components/ui/use-toast'
+import { Loader } from '@/components/icons'
 
 interface ChatCardItemProps {
   chat: Conversation
@@ -59,8 +60,7 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
       if (err instanceof Error) errMsg = err.message
       console.log('[CHAT_CARDITEM_DELETE]', errMsg)
 
-      toast({
-        title: 'Uh oh!',
+      toast.error('Uh oh!', {
         description: 'Something went wrong while deleting the chat room, try again',
       })
     }
@@ -120,7 +120,7 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
                         }}
                       >
                         Continue
-                        {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                        {isLoading && <Loader className="ml-2" />}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -142,7 +142,11 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
             {createdBy}
           </span>
         </div>
-        <NextLink href={`/chats/${chat.sid}`} className={buttonVariants({ variant: 'outline' })}>
+        <NextLink
+          // as={`/chat/${chat.sid}`}
+          className={buttonVariants({ variant: 'outline' })}
+          href={`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`}
+        >
           Join
           <ArrowRight className="ml-2 h-4 w-4" />
         </NextLink>

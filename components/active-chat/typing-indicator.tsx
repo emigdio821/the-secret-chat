@@ -3,11 +3,15 @@ import { motion } from 'framer-motion'
 import { Keyboard } from 'lucide-react'
 
 export function TypingIndicator({ participants }: { participants: Participant[] }) {
-  const message =
-    participants.length > 1
-      ? `${participants.length} participants are typing...`
-      : `${participants[0].identity} is typing...`
+  let message
 
+  if (participants.length === 1) {
+    message = `${participants[0].identity} is typing...`
+  } else if (participants.length > 1) {
+    message = `${participants.length} participants are typing...`
+  } else {
+    message = 'Somebody is typing...'
+  }
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}

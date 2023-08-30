@@ -1,30 +1,24 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import twilio from 'twilio'
+import { type NextApiRequest, type NextApiResponse } from 'next'
 import { getToken } from 'next-auth/jwt'
+import twilio from 'twilio'
 
 interface Data {
   error?: string
   accessToken?: string
 }
 
-const {
-  JWT_SECRET,
-  TWILIO_API_KEY,
-  TWILIO_API_SECRET,
-  TWILIO_ACCOUNT_SID,
-  TWILIO_SERVICE_SID,
-} = process.env
+const { JWT_SECRET, TWILIO_API_KEY, TWILIO_API_SECRET, TWILIO_ACCOUNT_SID, TWILIO_SERVICE_SID } =
+  process.env
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>,
-) {
-  const token = await getToken({ req, secret: JWT_SECRET })
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+  const token = await getToken({ req, secret: process.env.JWT_SECRET })
 
-  if (!token)
-    return res.status(401).json({
+  if (!token) {
+    res.status(401).json({
       error: 'Invalid token',
     })
+    return
+  }
 
   const { AccessToken } = twilio.jwt
   const { ChatGrant } = AccessToken
@@ -45,7 +39,7 @@ export default async function handler(
 
   accessToken.addGrant(chatGrand)
 
-  return res.status(200).json({
+  res.status(200).json({
     accessToken: accessToken.toJwt(),
   })
 }

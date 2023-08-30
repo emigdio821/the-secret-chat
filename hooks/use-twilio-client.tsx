@@ -1,84 +1,62 @@
 import { useCallback, useEffect, useState } from 'react'
-import { type Client } from '@twilio/conversations'
+import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
-import { initClient } from '@/lib/client'
+import { GET_CLIENT_QUERY } from '@/lib/constants'
 import { useStore } from '@/lib/store'
-import { useToast } from '@/components/ui/use-toast'
+import { initClient } from '@/lib/twilio-client'
 
 export function useTwilioClient() {
   const addClient = useStore((state) => state.addClient)
-  const clientFromStore = useStore((state) => state.client)
-  const [error, setError] = useState<string>('')
-  const [isLoading, setLoading] = useState<boolean>(true)
-  const [client, setClient] = useState<Client>()
-  const { toast } = useToast()
-
+  const [error, setError] = useState('')
+  const [isLoading, setLoading] = useState(true)
   const createClient = useCallback(async () => {
     try {
-      setError('')
-      setLoading(true)
-      const twilioClient = await initClient()
-      setClient(twilioClient)
+      return await initClient()
     } catch (err) {
-      console.log('[INIT_CLIENT]', err)
-      setError('Failed to create client, try again')
+      const errMessage = err instanceof Error ? err.message : err
+      console.log('[CREATE_CLIENT]', errMessage)
+      setError(errMessage as string)
       setLoading(false)
+      return null
     }
   }, [])
 
+  const { data: client, refetch: refetchClient } = useQuery([GET_CLIENT_QUERY], createClient, {
+    staleTime: Infinity,
+  })
+
   useEffect(() => {
-    if (!client || client.connectionState === 'error') {
-      void createClient()
+    if (client) {
+      if (client.connectionState === 'connected') {
+        setLoading(false)
+      } else {
+        client.on('connectionStateChanged', (state) => {
+          if (state === 'connected') {
+            toast('Client status', { description: 'Connected' })
+            addClient(client)
+            setLoading(false)
+            setError('')
+          }
+          if (state === 'denied' || state === 'error') {
+            const errMsg =
+              state === 'error'
+                ? 'Something went wrong while connecting, try again'
+                : 'Access denied'
+            toast.error('Client status', {
+              description: errMsg,
+            })
+            setLoading(false)
+            setError(errMsg)
+          }
+        })
+      }
     }
 
-    if (client && !clientFromStore) {
-      client.on('connectionStateChanged', (state) => {
-        if (state === 'connecting') {
-          // toast({
-          //   title: 'Status',
-          //   description: 'Connecting to Twilio…',
-          // })
-        }
-        if (state === 'connected') {
-          toast({
-            title: 'Cool!',
-            description: "You're now connected",
-          })
-
-          addClient(client)
-          setLoading(false)
-        }
-        // if (state === 'disconnecting') {
-        //   toast({
-        //     title: 'Status',
-        //     description: 'Disconnecting from Twilio…',
-        //   })
-        // }
-        // if (state === 'disconnected') {
-        //   toast({
-        //     title: 'Status',
-        //     description: "You're now disconnected",
-        //   })
-        // }
-        if (state === 'denied') {
-          toast({
-            title: 'Uh oh!',
-            description: 'Failed to connect to Twilio',
-          })
-          setLoading(false)
-          setError('Access denied')
-        }
-      })
+    return () => {
+      client?.removeAllListeners()
     }
+  }, [client, addClient])
 
-    if (clientFromStore) {
-      setLoading(false)
-    }
-
-    // return () => {
-    //   client?.removeAllListeners()
-    // }
-  }, [addClient, client, createClient, toast, clientFromStore])
-
-  return { createClient, error, client, isLoading }
+  return { createClient, error, client, isLoading, refetchClient }
 }

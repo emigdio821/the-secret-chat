@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { type Conversation } from '@twilio/conversations'
 import { AnimatePresence } from 'framer-motion'
 import { Ghost, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
-import { useQuery } from 'react-query'
+import { toast } from 'sonner'
 import type * as z from 'zod'
 
 import { ACTIVE_CHAT_MESSAGES_QUERY } from '@/lib/constants'
@@ -15,8 +16,6 @@ import { useRainbowGradient } from '@/hooks/use-rainbow-gradient'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { toast } from '@/components/ui/use-toast'
 
 import { ChatOnlySkeleton } from './chat-seketon'
 import MessageItem from './message-item'
@@ -49,7 +48,9 @@ export function Messages({ chat }: MessagesProps) {
       const messages = await chat.getMessages()
       return messages.items
     } catch (err) {
-      console.error('[GET_MESSAGES]', err)
+      const errMessage = err instanceof Error ? err.message : err
+      console.log('[GET_MESSAGES]', errMessage)
+      return null
     }
   }
 
@@ -61,16 +62,15 @@ export function Messages({ chat }: MessagesProps) {
 
   async function onSubmit(values: z.infer<typeof sendMessageSchema>) {
     try {
+      form.reset()
       await chat.sendMessage(values.message)
       await refetch()
-      form.reset()
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
       console.log('[ACTIVE_CHAT_SEND_MSG]', errMsg)
 
-      toast({
-        title: 'Uh oh!',
+      toast.error('Uh oh!', {
         description: 'Something went wrong while sending the message, try again',
       })
     }
@@ -94,27 +94,29 @@ export function Messages({ chat }: MessagesProps) {
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-2 sm:flex-row">
                 <ChatParticipants chat={chat} session={session} />
-                <ScrollArea
+                <div
                   style={{ background: containerBg }}
-                  className="relative h-96 w-full rounded-lg border sm:h-[420px]"
+                  className="relative h-96 w-full rounded-lg border sm:h-[420px] "
                 >
-                  {messages.length > 0 ? (
-                    <div className="flex flex-col gap-2 p-4">
-                      {messages.map((message) => (
-                        <MessageItem key={message.sid} session={session} message={message} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
-                      <Ghost className="h-5 w-5" />
-                      No messages yet
-                    </div>
-                  )}
+                  <div className="h-full w-full overflow-y-auto">
+                    {messages.length > 0 ? (
+                      <div className="flex flex-col gap-2 p-4">
+                        {messages.map((message) => (
+                          <MessageItem key={message.sid} session={session} message={message} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
+                        <Ghost className="h-5 w-5" />
+                        No messages yet
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
                   <AnimatePresence>
                     {usersTyping.length > 0 && <TypingIndicator participants={usersTyping} />}
                   </AnimatePresence>
-                  <div ref={messagesEndRef} />
-                </ScrollArea>
+                </div>
               </div>
               <Form {...form}>
                 <form
