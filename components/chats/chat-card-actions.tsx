@@ -4,7 +4,7 @@ import { type Conversation } from '@twilio/conversations'
 import { LogOut, MoreVertical, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { CHATS_QUERY } from '@/lib/constants'
+import { USER_CHATS_QUERY } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -28,7 +28,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
       await chat.delete()
       setOpenedAlert(false)
       setLoading(false)
-      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY] })
+      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
@@ -46,7 +46,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
       await chat.leave()
       setOpenedLeaveChatAlert(false)
       setLoading(false)
-      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY] })
+      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
@@ -68,6 +68,9 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-[180px]">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuLabel className="pt-0 text-xs">
+          {chat.friendlyName ?? chat.uniqueName}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <ControlledAlertDialog
           open={openedLeaveChatAlert}

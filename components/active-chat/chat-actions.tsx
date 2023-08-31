@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { type Conversation } from '@twilio/conversations'
+import { type Client, type Conversation } from '@twilio/conversations'
 import { LogOut, MoreVertical, Trash2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 
-import { CHATS_QUERY, PARTICIPANTS_QUERY } from '@/lib/constants'
+import { ACTIVE_PARTICIPANTS_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -19,7 +19,12 @@ import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
 
 import { AddParticipantDialog } from './add-participant-dialog'
 
-export default function ChatActions({ chat }: { chat: Conversation }) {
+interface ChatActionsProps {
+  chat: Conversation
+  client: Client
+}
+
+export default function ChatActions({ chat, client }: ChatActionsProps) {
   const queryClient = useQueryClient()
   const [openedAlert, setOpenedAlert] = useState(false)
   const [openedLeaveChatAlert, setOpenedLeaveChatAlert] = useState(false)
@@ -31,8 +36,8 @@ export default function ChatActions({ chat }: { chat: Conversation }) {
     try {
       setLoading(true)
       await chat.delete()
-      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY] })
-      await queryClient.refetchQueries({ queryKey: [PARTICIPANTS_QUERY] })
+      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
+      await queryClient.refetchQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
       setOpenedAlert(false)
     } catch (err) {
       let errMsg = 'Unknown error'
@@ -53,7 +58,7 @@ export default function ChatActions({ chat }: { chat: Conversation }) {
       await chat.leave()
       setOpenedLeaveChatAlert(false)
       setLoading(false)
-      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY] })
+      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
@@ -78,7 +83,7 @@ export default function ChatActions({ chat }: { chat: Conversation }) {
           <DropdownMenuContent align="end" className="max-w-[180px]">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <AddParticipantDialog chat={chat} />
+            <AddParticipantDialog chat={chat} client={client} />
             <ControlledAlertDialog
               open={openedLeaveChatAlert}
               isLoading={isLoading}

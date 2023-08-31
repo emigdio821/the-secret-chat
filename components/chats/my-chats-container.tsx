@@ -13,7 +13,7 @@ export function MyChatsContainer({ session }: { session: Session }) {
   const { error, isLoading, client } = useTwilioClient()
 
   if (error) {
-    return <ClientError />
+    return <ClientError errorMsg={error} />
   }
 
   return (

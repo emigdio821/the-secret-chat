@@ -13,9 +13,6 @@ export const siteConfig = {
   ],
   links: {
     github: 'https://github.com/emigdio821/',
-    sourceCode: 'https://github.com/emigdio821/em-torres',
-    linkedin: 'https://www.linkedin.com/in/emigdio821/',
-    jobCompany: 'https://www.wizeline.com/',
-    location: 'https://www.google.com.mx/maps/place/Jalisco',
+    sourceCode: 'https://github.com/emigdio821/the-secret-chat',
   },
 }

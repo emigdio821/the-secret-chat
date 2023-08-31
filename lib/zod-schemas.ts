@@ -27,6 +27,12 @@ export const sendMessageSchema = z.object({
   message: requiredField,
 })
 
+export const editProfileSchema = z.object({
+  name: optionalField,
+  nickname: optionalField,
+  avatar_url: optionalField,
+})
+
 export const envSchema = z.object({
   NEXTAUTH_URL: envVariable,
   GITHUB_ID: envVariable,

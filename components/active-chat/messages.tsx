@@ -31,11 +31,7 @@ export function Messages({ chat }: MessagesProps) {
   const { data: session } = useSession()
   const containerBg = useRainbowGradient()
   const usersTyping = useStore((state) => state.usersTyping)
-  const {
-    data: messages,
-    isLoading,
-    refetch,
-  } = useQuery([ACTIVE_CHAT_MESSAGES_QUERY, chat.sid], getMessages)
+  const { data: messages, isLoading, refetch } = useQuery([ACTIVE_CHAT_MESSAGES_QUERY], getMessages)
   const form = useForm<z.infer<typeof sendMessageSchema>>({
     resolver: zodResolver(sendMessageSchema),
     defaultValues: {
@@ -46,7 +42,13 @@ export function Messages({ chat }: MessagesProps) {
   async function getMessages() {
     try {
       const messages = await chat.getMessages()
-      return messages.items
+      const items = messages.items
+
+      if (items.length > 0) {
+        await chat.updateLastReadMessageIndex(items[items.length - 1].index)
+      }
+
+      return items
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.log('[GET_MESSAGES]', errMessage)

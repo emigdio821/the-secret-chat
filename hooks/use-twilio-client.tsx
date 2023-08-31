@@ -32,17 +32,14 @@ export function useTwilioClient() {
         setLoading(false)
       } else {
         client.on('connectionStateChanged', (state) => {
-          if (state === 'connected') {
-            toast('Client status', { description: 'Connected' })
-            addClient(client)
-            setLoading(false)
-            setError('')
-          }
+          // if (state === 'connected') {
+          //   toast('Client status', { description: 'Connected' })
+          // }
           if (state === 'denied' || state === 'error') {
             const errMsg =
               state === 'error'
-                ? 'Something went wrong while connecting, try again'
-                : 'Access denied'
+                ? 'Something went wrong while connecting, try again.'
+                : 'Access denied.'
             toast.error('Client status', {
               description: errMsg,
             })
@@ -50,13 +47,38 @@ export function useTwilioClient() {
             setError(errMsg)
           }
         })
+        client.on('initialized', () => {
+          addClient(client)
+          setLoading(false)
+          setError('')
+        })
+
+        client.on('tokenAboutToExpire', () => {
+          toast('Client status', {
+            duration: Infinity,
+            description: 'Client token is about to expire',
+            action: {
+              label: 'Refresh',
+              onClick: async () => {
+                toast.promise(refetchClient, {
+                  loading: 'Refreshing token...',
+                  success: 'Token has been refreshed',
+                  error: 'Something went wrong',
+                })
+              },
+            },
+          })
+        })
+        client.on('tokenExpired', () => {
+          setError('Client token has expired.')
+        })
       }
     }
 
     return () => {
       client?.removeAllListeners()
     }
-  }, [client, addClient])
+  }, [client, addClient, refetchClient])
 
   return { createClient, error, client, isLoading, refetchClient }
 }

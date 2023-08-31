@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { type UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { type Conversation } from '@twilio/conversations'
+import { type Client, type Conversation } from '@twilio/conversations'
 import { UserPlus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -22,9 +23,13 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input'
 import { Loader } from '@/components/icons'
 
-export function AddParticipantDialog({ chat }: { chat: Conversation }) {
-  const [openedDialog, setOpenedDialog] = useState(false)
+interface AddParticipantDialogProps {
+  chat: Conversation
+  client: Client
+}
 
+export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps) {
+  const [openedDialog, setOpenedDialog] = useState(false)
   const form = useForm<z.infer<typeof addParticipantSchema>>({
     resolver: zodResolver(addParticipantSchema),
     defaultValues: {
@@ -34,7 +39,13 @@ export function AddParticipantDialog({ chat }: { chat: Conversation }) {
 
   async function onSubmit(values: z.infer<typeof addParticipantSchema>) {
     try {
-      await chat.add(values.id)
+      const user = await client.getUser(values.id)
+      const attrs = user.attributes as unknown as UserAttributes
+      await chat.add(values.id, {
+        nickname: user.friendlyName,
+        avatar_url: attrs.avatar_url ?? '',
+        name: attrs.name ?? '',
+      })
       setOpenedDialog(false)
       form.reset()
     } catch (err) {

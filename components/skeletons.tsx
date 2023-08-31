@@ -1,4 +1,4 @@
-import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export function ChatsSkeleton() {
@@ -43,6 +43,32 @@ export function UserChatsSkeleton() {
         <Skeleton className="h-10 w-40" />
       </div>
       <ChatsSkeleton />
+    </>
+  )
+}
+
+export function ProfileSekelton() {
+  return (
+    <>
+      <CardHeader>
+        <Skeleton className="mb-2 mt-1 h-3 w-20" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-28 w-28 rounded-lg" />
+        <Skeleton className="mb-8 mt-6 h-2 w-1/2" />
+        <Skeleton className="h-3 w-36" />
+        <div className="mt-2 flex flex-col gap-1">
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-2 w-32" />
+          </div>
+          <div className="flex items-center gap-1 ">
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-2 w-28" />
+          </div>
+        </div>
+        <Skeleton className="mt-4 h-9 w-[120px]" />
+      </CardContent>
     </>
   )
 }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
+import { type UserAttributes } from '@/types'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { type Client, type Message, type Participant } from '@twilio/conversations'
 import { Home } from 'lucide-react'
@@ -9,8 +10,8 @@ import { toast } from 'sonner'
 import {
   ACTIVE_CHAT_MESSAGES_QUERY,
   ACTIVE_CHAT_QUERY,
-  CHATS_QUERY,
-  PARTICIPANTS_QUERY,
+  ACTIVE_PARTICIPANTS_QUERY,
+  USER_CHATS_QUERY,
 } from '@/lib/constants'
 import { useStore } from '@/lib/store'
 import { buttonVariants } from '@/components/ui/button'
@@ -25,23 +26,30 @@ interface ActiveChatProps {
   chatId: string
 }
 
-interface ConvoDescription {
+interface ChatAttributes {
   description?: string
 }
 
 export function ActiveChat({ client, chatId }: ActiveChatProps) {
-  const { data: chat, isLoading } = useQuery([ACTIVE_CHAT_QUERY, chatId], getCurrentChat)
+  const { data: chat, isLoading } = useQuery([ACTIVE_CHAT_QUERY], getCurrentChat, {})
   const queryClient = useQueryClient()
   const router = useRouter()
   const addUsersTyping = useStore((state) => state.addUsersTyping)
   const removeUsersTyping = useStore((state) => state.removeUsersTyping)
-  const attrs = chat?.attributes as unknown as ConvoDescription
+  const attrs = chat?.attributes as unknown as ChatAttributes
 
   async function getCurrentChat() {
     try {
       const chat = await client.getConversationBySid(chatId)
       if (chat?.status === 'notParticipating') {
-        await chat.join()
+        // await chat.join()
+        const user = await client.getUser(client.user.identity)
+        const attrs = user.attributes as unknown as UserAttributes
+        await chat.add(client.user.identity, {
+          nickname: user.friendlyName,
+          avatar_url: attrs.avatar_url ?? '',
+          name: attrs.name ?? '',
+        })
       }
 
       return chat
@@ -61,8 +69,8 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
 
   const handleParticipantJoined = useCallback(
     async (participant: Participant) => {
-      await queryClient.refetchQueries({ queryKey: [PARTICIPANTS_QUERY] })
-      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY], type: 'all' })
+      await queryClient.refetchQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
 
       toast('Info', {
         description: (
@@ -77,8 +85,8 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
 
   const handleParticipantLeft = useCallback(
     async (participant: Participant) => {
-      await queryClient.refetchQueries({ queryKey: [PARTICIPANTS_QUERY] })
-      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY], type: 'all' })
+      await queryClient.refetchQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
 
       if (participant.identity !== client.user.identity) {
         toast('Info', {
@@ -124,10 +132,14 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         chat.removeListener('typingEnded', handleChatRemoved)
         chat.removeListener('participantJoined', handleParticipantJoined)
         chat.removeListener('participantLeft', handleParticipantLeft)
+        queryClient.removeQueries({ queryKey: [ACTIVE_CHAT_QUERY] })
+        queryClient.removeQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
+        queryClient.removeQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
       }
     }
   }, [
     chat,
+    queryClient,
     addUsersTyping,
     removeUsersTyping,
     handleChatRemoved,
@@ -149,7 +161,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
                   <h3 className="text-lg font-semibold">{chat.friendlyName}</h3>
                   <h5 className="mb-4 text-sm text-muted-foreground">{attrs.description}</h5>
                 </div>
-                <ChatActions chat={chat} />
+                <ChatActions chat={chat} client={client} />
               </div>
               <Messages chat={chat} />
             </>

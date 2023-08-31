@@ -21,25 +21,34 @@ export function getFirstName(n: string) {
   return n.split(' ')[0]
 }
 
-interface SortArrayProps {
-  items: any[]
-  sortBy: string
-  sortByValue?: string
+interface SortArrayProps<T> {
+  items: T[]
+  key: keyof T
+  comparator?: string
 }
-export function sortArray({ items, sortBy, sortByValue }: SortArrayProps) {
-  if (!sortBy) return items
 
-  if (sortByValue) {
+export function sortArray<T>({ items, key, comparator }: SortArrayProps<T>) {
+  if (!key) return items
+
+  if (comparator) {
     return items.sort((x, y) => {
-      if (x[sortBy] === sortByValue) return -1
-      if (y[sortBy] === sortByValue) return 1
+      if (x[key] === comparator) return -1
+      if (y[key] === comparator) return 1
       return 0
     })
   }
 
   return items.sort((x, y) => {
-    const xVal = x[sortBy]?.toLowerCase() || ''
-    const yVal = y[sortBy]?.toLowerCase() || ''
+    let xVal = x[key] || ''
+    let yVal = y[key] || ''
+
+    if (typeof xVal === 'string') {
+      xVal = xVal.toLowerCase()
+    }
+    if (typeof yVal === 'string') {
+      yVal = yVal.toLowerCase()
+    }
+
     if (xVal < yVal) return -1
     if (xVal > yVal) return 1
     return 0

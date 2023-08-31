@@ -5,7 +5,7 @@ import { useDebounce } from '@uidotdev/usehooks'
 import { MessageSquareDashed, RefreshCcw, Search } from 'lucide-react'
 import { type Session } from 'next-auth'
 
-import { CHATS_QUERY } from '@/lib/constants'
+import { USER_CHATS_QUERY } from '@/lib/constants'
 import { sortArray } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,14 +21,14 @@ interface ChatListProps {
 export function MyChats({ client, session }: ChatListProps) {
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 500)
-  const { data, error, isLoading, refetch } = useQuery([CHATS_QUERY], getChats, {
+  const { data, error, isLoading, refetch } = useQuery([USER_CHATS_QUERY], getChats, {
     select: filterBySearch,
   })
 
   async function getChats() {
     try {
       const chats = await client.getSubscribedConversations()
-      sortArray({ items: chats.items, sortBy: 'friendlyName' })
+      sortArray({ items: chats.items, key: 'friendlyName' })
 
       return chats.items
     } catch (err) {
