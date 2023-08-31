@@ -22,8 +22,12 @@ export function MyChatsContainer({ session }: { session: Session }) {
         <UserChatsSkeleton />
       ) : (
         <>
-          <CreateOrJoinChat session={session} isLoading={isLoading} />
-          {client && <MyChats client={client} session={session} />}
+          {client && (
+            <>
+              <CreateOrJoinChat client={client} isLoading={isLoading} />
+              <MyChats client={client} session={session} />
+            </>
+          )}
         </>
       )}
     </div>

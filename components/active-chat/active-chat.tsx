@@ -3,7 +3,12 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
 import { type UserAttributes } from '@/types'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { type Client, type Message, type Participant } from '@twilio/conversations'
+import {
+  type Client,
+  type Conversation,
+  type Message,
+  type Participant,
+} from '@twilio/conversations'
 import { Home } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -60,12 +65,20 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     }
   }
 
-  const handleChatRemoved = useCallback(() => {
-    toast('Info', {
-      description: 'This chat room was removed by the admin or you were removed from it',
-    })
-    router.push('/')
-  }, [router])
+  const handleChatRemoved = useCallback(
+    (chat: Conversation) => {
+      toast('Info', {
+        description: (
+          <>
+            <span className="font-semibold">{chat.friendlyName ?? chat.uniqueName}</span> chat room
+            was removed by the admin or you were removed from it.
+          </>
+        ),
+      })
+      router.push('/')
+    },
+    [router],
+  )
 
   const handleParticipantJoined = useCallback(
     async (participant: Participant) => {
@@ -129,7 +142,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         chat.removeListener('messageAdded', handleMessageAdded)
         chat.removeListener('typingStarted', addUsersTyping)
         chat.removeListener('typingEnded', removeUsersTyping)
-        chat.removeListener('typingEnded', handleChatRemoved)
+        chat.removeListener('removed', handleChatRemoved)
         chat.removeListener('participantJoined', handleParticipantJoined)
         chat.removeListener('participantLeft', handleParticipantLeft)
         queryClient.removeQueries({ queryKey: [ACTIVE_CHAT_QUERY] })

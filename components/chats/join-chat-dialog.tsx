@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { type Client } from '@twilio/conversations'
 import { MessagesSquare } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type * as z from 'zod'
 
-import { useStore } from '@/lib/store'
 import { joinChatRoomSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,10 +24,13 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input'
 import { Loader } from '@/components/icons'
 
-export function JoinChatDialog({ isLoading }: { isLoading: boolean }) {
+interface JoinChatDialogProps {
+  isLoading: boolean
+  client: Client
+}
+
+export function JoinChatDialog({ isLoading, client }: JoinChatDialogProps) {
   const [openedDialog, setOpenedDialog] = useState(false)
-  const client = useStore((state) => state.client)
-  const addChat = useStore((state) => state.addConversation)
   const router = useRouter()
 
   const form = useForm<z.infer<typeof joinChatRoomSchema>>({
@@ -46,7 +49,6 @@ export function JoinChatDialog({ isLoading }: { isLoading: boolean }) {
       }
 
       if (chat) {
-        addChat(chat)
         router.push(`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`)
       }
 

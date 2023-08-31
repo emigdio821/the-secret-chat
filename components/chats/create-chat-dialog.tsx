@@ -2,15 +2,16 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { type UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
+import { type Client } from '@twilio/conversations'
 import { MessageSquarePlus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type * as z from 'zod'
 
 import { USER_CHATS_QUERY } from '@/lib/constants'
-import { useStore } from '@/lib/store'
 import { createChatRoomSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
@@ -36,10 +37,14 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Loader } from '@/components/icons'
 
-export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
+interface CreateChatDialogProps {
+  isLoading: boolean
+  client: Client
+}
+
+export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
   const queryClient = useQueryClient()
   const [openedDialog, setOpenedDialog] = useState(false)
-  const client = useStore((state) => state.client)
   const router = useRouter()
 
   const form = useForm<z.infer<typeof createChatRoomSchema>>({
@@ -53,7 +58,7 @@ export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
 
   async function onSubmit(values: z.infer<typeof createChatRoomSchema>) {
     try {
-      const chat = await client?.createConversation({
+      const chat = await client.createConversation({
         uniqueName: values.name,
         friendlyName: values.name,
         attributes: {
@@ -62,7 +67,14 @@ export function CreateChatDialog({ isLoading }: { isLoading: boolean }) {
       })
 
       if (values.join_after && chat) {
-        await chat.join()
+        // await chat.join()
+        const user = await client.getUser(client.user.identity)
+        const attrs = user.attributes as unknown as UserAttributes
+        await chat.add(client.user.identity, {
+          nickname: user.friendlyName,
+          avatar_url: attrs.avatar_url ?? '',
+          name: attrs.name ?? '',
+        })
         router.push(`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`)
       }
 

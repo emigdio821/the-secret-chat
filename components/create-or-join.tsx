@@ -1,18 +1,18 @@
-import { type Session } from 'next-auth'
+import { type Client } from '@twilio/conversations'
 
 import { CreateChatDialog } from './chats/create-chat-dialog'
 import { JoinChatDialog } from './chats/join-chat-dialog'
 
 interface CreateOrJoinChatProps {
-  session: Session
   isLoading: boolean
+  client: Client
 }
 
-export function CreateOrJoinChat({ session, isLoading }: CreateOrJoinChatProps) {
+export function CreateOrJoinChat({ client, isLoading }: CreateOrJoinChatProps) {
   return (
     <div className="flex items-center gap-2">
-      <CreateChatDialog isLoading={isLoading} />
-      <JoinChatDialog isLoading={isLoading} />
+      <CreateChatDialog isLoading={isLoading} client={client} />
+      <JoinChatDialog isLoading={isLoading} client={client} />
     </div>
   )
 }
