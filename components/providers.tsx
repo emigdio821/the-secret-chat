@@ -18,18 +18,18 @@ export function Providers({ children }: ProvidersProps) {
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <QueryClientProvider client={queryClient}>
           {children}
-          <ReactQueryDevtools />
+          <ReactQueryDevtools toggleButtonProps={{ style: { width: 28, margin: '0 6px' } }} />
+          <Toaster
+            toastOptions={{
+              style: {
+                background: 'hsl(var(--background))',
+                color: 'hsl(var(--foreground))',
+                border: '1px solid hsl(var(--border))',
+                fontFamily: 'var(--font-sans)',
+              },
+            }}
+          />
         </QueryClientProvider>
-        <Toaster
-          toastOptions={{
-            style: {
-              background: 'hsl(var(--background))',
-              color: 'hsl(var(--foreground))',
-              border: '1px solid hsl(var(--border))',
-              fontFamily: 'var(--font-sans)',
-            },
-          }}
-        />
       </ThemeProvider>
     </SessionProvider>
   )

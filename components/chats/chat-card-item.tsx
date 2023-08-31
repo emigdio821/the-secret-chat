@@ -1,34 +1,12 @@
-import { useState } from 'react'
 import NextLink from 'next/link'
-import { useQueryClient } from '@tanstack/react-query'
 import { type Conversation } from '@twilio/conversations'
-import { ArrowRight, MoreVertical, Shield, Trash2, User } from 'lucide-react'
+import { ArrowRight, MessageSquare, Shield, User } from 'lucide-react'
 import { type Session } from 'next-auth'
-import { toast } from 'sonner'
 
-import { CHATS_QUERY } from '@/lib/constants'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Loader } from '@/components/icons'
+
+import { ChatCardActions } from './chat-card-actions'
 
 interface ChatCardItemProps {
   chat: Conversation
@@ -44,91 +22,20 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
   const attrs = chat.attributes as unknown as ConvoDescription
   const partsCount = chat._participants.size
   const isOwner = session.user?.email === createdBy
-  const queryClient = useQueryClient()
-  const [openedAlert, setOpenedAlert] = useState(false)
-  const [isLoading, setLoading] = useState(false)
-
-  async function handleDeleteChat() {
-    try {
-      setLoading(true)
-      await chat.delete()
-      await queryClient.refetchQueries({ queryKey: [CHATS_QUERY] })
-      setOpenedAlert(false)
-      setLoading(false)
-    } catch (err) {
-      let errMsg = 'Unknown error'
-      if (err instanceof Error) errMsg = err.message
-      console.log('[CHAT_CARDITEM_DELETE]', errMsg)
-
-      toast.error('Uh oh!', {
-        description: 'Something went wrong while deleting the chat room, try again',
-      })
-    }
-  }
 
   return (
     <Card key={chat.sid} className="flex flex-col">
       <CardHeader>
-        <span className="flex items-center justify-between">
-          <CardTitle className="text-base">{chat.friendlyName}</CardTitle>
-          {isOwner && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-6 w-6">
-                  <span className="sr-only">Chat menu</span>
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="max-w-[180px]">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <AlertDialog
-                  open={openedAlert}
-                  onOpenChange={(isOpen) => {
-                    if (!isLoading) {
-                      setOpenedAlert(isOpen)
-                    }
-                  }}
-                >
-                  <AlertDialogTrigger asChild>
-                    <DropdownMenuItem
-                      className="!text-destructive"
-                      onSelect={(e) => {
-                        e.preventDefault()
-                        setOpenedAlert(true)
-                      }}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      <span>Delete chat</span>
-                    </DropdownMenuItem>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete{' '}
-                        <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        disabled={isLoading}
-                        onClick={async (e) => {
-                          e.preventDefault()
-                          await handleDeleteChat()
-                        }}
-                      >
-                        Continue
-                        {isLoading && <Loader className="ml-2" />}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="relative flex items-center gap-1">
+            <CardTitle className="text-base">{chat.friendlyName ?? chat.uniqueName}</CardTitle>
+            <span className="flex items-center gap-1 rounded-lg border px-1 py-px text-xs font-semibold text-muted-foreground">
+              <MessageSquare className="h-3 w-3" />
+              420
+            </span>
+          </span>
+          {isOwner && <ChatCardActions chat={chat} />}
+        </div>
         {attrs.description && <CardDescription>{attrs.description}</CardDescription>}
       </CardHeader>
       <CardFooter className="mt-auto justify-between">

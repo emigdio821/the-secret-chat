@@ -121,7 +121,7 @@ export function Messages({ chat }: MessagesProps) {
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="flex w-full flex-col items-center gap-2 sm:flex-row"
+                  className="flex w-full flex-row items-center gap-2"
                 >
                   <FormField
                     control={form.control}
@@ -139,11 +139,9 @@ export function Messages({ chat }: MessagesProps) {
                       </FormItem>
                     )}
                   />
-
                   <Button
                     size="icon"
                     type="submit"
-                    className="w-full self-start sm:w-10"
                     disabled={form.formState.isSubmitting || !form.formState.isValid}
                   >
                     <Send className="h-4 w-4" />

@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { type Client, type Participant } from '@twilio/conversations'
+import { type Client, type Message, type Participant } from '@twilio/conversations'
 import { Home } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -52,10 +52,6 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     }
   }
 
-  const refetchMessages = useCallback(async () => {
-    await queryClient.refetchQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
-  }, [queryClient])
-
   const handleChatRemoved = useCallback(() => {
     toast('Info', {
       description: 'This chat room was removed by the admin or you were removed from it',
@@ -84,20 +80,35 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
       await queryClient.refetchQueries({ queryKey: [PARTICIPANTS_QUERY] })
       await queryClient.refetchQueries({ queryKey: [CHATS_QUERY], type: 'all' })
 
-      toast('Info', {
-        description: (
-          <span>
-            <span className="font-semibold">{participant.identity}</span> has left the chat room
-          </span>
-        ),
-      })
+      if (participant.identity !== client.user.identity) {
+        toast('Info', {
+          description: (
+            <span>
+              <span className="font-semibold">{participant.identity}</span> has left the chat room
+            </span>
+          ),
+        })
+      }
     },
-    [queryClient],
+    [client.user.identity, queryClient],
+  )
+
+  const handleMessageAdded = useCallback(
+    async (message: Message) => {
+      try {
+        await chat?.updateLastReadMessageIndex(message.index)
+        await queryClient.refetchQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : err
+        console.log('[UPDATE_MSGS_INDEX]', errMessage)
+      }
+    },
+    [chat, queryClient],
   )
 
   useEffect(() => {
     if (chat) {
-      chat.on('messageAdded', refetchMessages)
+      chat.on('messageAdded', handleMessageAdded)
       chat.on('typingStarted', addUsersTyping)
       chat.on('typingEnded', removeUsersTyping)
       chat.on('removed', handleChatRemoved)
@@ -107,7 +118,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
 
     return () => {
       if (chat) {
-        chat.removeListener('messageAdded', refetchMessages)
+        chat.removeListener('messageAdded', handleMessageAdded)
         chat.removeListener('typingStarted', addUsersTyping)
         chat.removeListener('typingEnded', removeUsersTyping)
         chat.removeListener('typingEnded', handleChatRemoved)
@@ -118,9 +129,9 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   }, [
     chat,
     addUsersTyping,
-    refetchMessages,
     removeUsersTyping,
     handleChatRemoved,
+    handleMessageAdded,
     handleParticipantLeft,
     handleParticipantJoined,
   ])

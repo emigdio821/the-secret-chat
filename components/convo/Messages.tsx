@@ -7,7 +7,7 @@ import useBgGradient from 'hooks/useBgGradient'
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import ScrollBottomBtn from 'components/ScrollBottomBtn'
-import { Message, Paginator } from '@twilio/conversations'
+import { type Message, type Paginator } from '@twilio/conversations'
 import TypingBubble from './TypingBubble'
 import ChatBubble from './ChatBubble'
 
@@ -116,7 +116,7 @@ export default function Messages() {
       overflowX="hidden"
       ref={msgsContainer}
       bgImage={bgGradient}
-      onScroll={() => handleScroll()}
+      onScroll={async () => { await handleScroll(); }}
       justify={msgsPresent ? undefined : 'center'}
       minH={{ base: 'calc(100vh - 320px)', sm: '100%' }}
     >
@@ -125,7 +125,7 @@ export default function Messages() {
         <>
           {paginator?.hasPrevPage && (
             <Stack align="flex-end">
-              <Button isLoading={isLoading} onClick={() => getPrevMsgs()}>
+              <Button isLoading={isLoading} onClick={async () => { await getPrevMsgs(); }}>
                 Load more...
               </Button>
             </Stack>

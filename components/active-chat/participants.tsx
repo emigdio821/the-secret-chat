@@ -7,17 +7,6 @@ import { type Session } from 'next-auth'
 
 import { AVATAR_FALLBACK_URL, PARTICIPANTS_QUERY } from '@/lib/constants'
 import { sortArray } from '@/lib/utils'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -29,9 +18,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Loader } from '@/components/icons'
+import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
 
 interface ChatParticipantsProps {
   chat: Conversation
@@ -74,8 +62,8 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
 
   return (
     <div>
-      <ScrollArea className="h-20 w-full rounded-lg border sm:h-[420px] sm:w-36">
-        <div className="flex flex-col gap-1 p-4">
+      <div className="h-20 w-full overflow-auto rounded-lg border sm:h-[420px] sm:w-36">
+        <div className="flex h-full w-full flex-row items-center gap-1 p-4 sm:flex-col">
           {isLoadingParts && (
             <div className="flex flex-col gap-2">
               <Skeleton className="h-2 w-4/5" />
@@ -90,9 +78,9 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
               sortBy: 'identity',
               sortByValue: user?.email ?? '',
             }).map((participant) => (
-              <div className="text-xs" key={participant.sid}>
+              <div className="text-xs sm:w-full" key={participant.sid}>
                 {participant.identity === user?.email ? (
-                  <div className="flex h-8 items-center gap-2 rounded-md border pl-1 pr-3">
+                  <div className="flex h-8 items-center gap-2 rounded-md px-1">
                     <Avatar className="h-5 w-5 rounded-sm">
                       <AvatarImage src={user?.image ?? AVATAR_FALLBACK_URL} alt={`${user?.name}`} />
                       <AvatarFallback className="h-6 w-6 rounded-sm">
@@ -106,9 +94,9 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
-                          variant="outline"
                           size="xs"
-                          className="gap-2 pl-1"
+                          variant="ghost"
+                          className="gap-2 px-1 sm:w-full sm:justify-start"
                           disabled={!session}
                         >
                           <Avatar className="h-5 w-5 rounded-sm">
@@ -120,7 +108,7 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                               <User className="h-4 w-4" />
                             </AvatarFallback>
                           </Avatar>
-                          <span className="max-w-[64px] truncate">{participant.identity}</span>
+                          <span className="max-w-[72px] truncate">{participant.identity}</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="max-w-[180px]">
@@ -147,15 +135,14 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                                 <Shield className="mr-2 h-4 w-4" />
                                 <span>Make admin</span>
                               </DropdownMenuItem>
-                              <AlertDialog
+                              <ControlledAlertDialog
                                 open={openedAlert}
-                                onOpenChange={(isOpen) => {
-                                  if (!isLoading) {
-                                    setOpenedAlert(isOpen)
-                                  }
+                                isLoading={isLoading}
+                                setOpen={setOpenedAlert}
+                                action={async () => {
+                                  await handleKickParticipant(participant)
                                 }}
-                              >
-                                <AlertDialogTrigger asChild>
+                                trigger={
                                   <DropdownMenuItem
                                     className="!text-destructive"
                                     onSelect={(e) => {
@@ -166,30 +153,14 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                                     <UserX className="mr-2 h-4 w-4" />
                                     <span>Kick</span>
                                   </DropdownMenuItem>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      This action cannot be undone. You are about to kick{' '}
-                                      <span className="font-semibold">{`"${participant.identity}".`}</span>
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      disabled={isLoading}
-                                      onClick={async (e) => {
-                                        e.preventDefault()
-                                        await handleKickParticipant(participant)
-                                      }}
-                                    >
-                                      Continue
-                                      {isLoading && <Loader className="ml-2" />}
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                                }
+                                alertMessage={
+                                  <>
+                                    This action cannot be undone. You are about to kick{' '}
+                                    <span className="font-semibold">{`"${participant.identity}".`}</span>
+                                  </>
+                                }
+                              />
                             </DropdownMenuGroup>
                           </>
                         )}
@@ -200,7 +171,7 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
               </div>
             ))}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   )
 }

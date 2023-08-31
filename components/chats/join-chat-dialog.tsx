@@ -47,7 +47,7 @@ export function JoinChatDialog({ isLoading }: { isLoading: boolean }) {
 
       if (chat) {
         addChat(chat)
-        router.push(`/chats/${chat.sid}`)
+        router.push(`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`)
       }
 
       setOpenedDialog(false)
