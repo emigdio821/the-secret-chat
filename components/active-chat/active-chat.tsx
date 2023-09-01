@@ -8,6 +8,7 @@ import {
   type Conversation,
   type Message,
   type Participant,
+  type ParticipantUpdateReason,
 } from '@twilio/conversations'
 import { Home } from 'lucide-react'
 import { toast } from 'sonner'
@@ -35,6 +36,11 @@ interface ChatAttributes {
   description?: string
 }
 
+interface ParticipantUpdatedData {
+  participant: Participant
+  updateReasons: ParticipantUpdateReason[]
+}
+
 export function ActiveChat({ client, chatId }: ActiveChatProps) {
   const { data: chat, isLoading } = useQuery([ACTIVE_CHAT_QUERY], getCurrentChat, {})
   const queryClient = useQueryClient()
@@ -46,11 +52,19 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   async function getCurrentChat() {
     try {
       const chat = await client.getConversationBySid(chatId)
+      const user = await client.getUser(client.user.identity)
+      const attrs = user.attributes as unknown as UserAttributes
+
       if (chat?.status === 'notParticipating') {
         // await chat.join()
-        const user = await client.getUser(client.user.identity)
-        const attrs = user.attributes as unknown as UserAttributes
         await chat.add(client.user.identity, {
+          nickname: user.friendlyName,
+          avatar_url: attrs.avatar_url ?? '',
+          name: attrs.name ?? '',
+        })
+      } else {
+        const participant = await chat.getParticipantByIdentity(client.user.identity)
+        await participant?.updateAttributes({
           nickname: user.friendlyName,
           avatar_url: attrs.avatar_url ?? '',
           name: attrs.name ?? '',
@@ -127,6 +141,20 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     [chat, queryClient],
   )
 
+  const handleUpdatedParticipant = useCallback(
+    async (data: ParticipantUpdatedData) => {
+      try {
+        if (data.updateReasons.includes('attributes')) {
+          await queryClient.resetQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+        }
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : err
+        console.log('[UPDATED_PARTICIPANT]', errMessage)
+      }
+    },
+    [queryClient],
+  )
+
   useEffect(() => {
     if (chat) {
       chat.on('messageAdded', handleMessageAdded)
@@ -135,6 +163,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
       chat.on('removed', handleChatRemoved)
       chat.on('participantJoined', handleParticipantJoined)
       chat.on('participantLeft', handleParticipantLeft)
+      chat.on('participantUpdated', handleUpdatedParticipant)
     }
 
     return () => {
@@ -145,6 +174,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         chat.removeListener('removed', handleChatRemoved)
         chat.removeListener('participantJoined', handleParticipantJoined)
         chat.removeListener('participantLeft', handleParticipantLeft)
+        chat.removeListener('participantUpdated', handleUpdatedParticipant)
         queryClient.removeQueries({ queryKey: [ACTIVE_CHAT_QUERY] })
         queryClient.removeQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
         queryClient.removeQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
@@ -159,6 +189,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     handleMessageAdded,
     handleParticipantLeft,
     handleParticipantJoined,
+    handleUpdatedParticipant,
   ])
 
   return (

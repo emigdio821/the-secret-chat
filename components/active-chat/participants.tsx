@@ -7,7 +7,7 @@ import { AtSign, Shield, User, UserX } from 'lucide-react'
 import { type Session } from 'next-auth'
 
 import { ACTIVE_PARTICIPANTS_QUERY, AVATAR_FALLBACK_URL } from '@/lib/constants'
-import { sortArray } from '@/lib/utils'
+import { cn, sortArray } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -122,24 +122,35 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                             </span>
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="max-w-[180px]">
-                          <Avatar className="mx-2 my-1.5 h-10 w-10 rounded-lg">
+                        <DropdownMenuContent align="end" className="max-w-[220px]">
+                          <Avatar className="mx-2 my-1.5 h-20 w-20 rounded-lg">
                             <AvatarImage
-                              src={user?.image ?? AVATAR_FALLBACK_URL}
                               alt={`${user?.name}`}
+                              className="object-cover"
+                              src={attrs.avatar_url ?? AVATAR_FALLBACK_URL}
                             />
                             <AvatarFallback className="h-6 w-6 rounded-sm">
                               <User className="h-4 w-4" />
                             </AvatarFallback>
                           </Avatar>
-                          <DropdownMenuLabel>User info</DropdownMenuLabel>
-                          <DropdownMenuLabel className="flex items-center gap-2">
+                          {attrs.name && (
+                            <DropdownMenuLabel className="flex items-center gap-2 text-base">
+                              {attrs.name}
+                            </DropdownMenuLabel>
+                          )}
+                          <DropdownMenuLabel
+                            className={cn('flex items-center gap-2 font-normal', {
+                              'pt-0': attrs.name,
+                              'pb-0': attrs.nickname,
+                            })}
+                          >
                             <AtSign className="h-4 w-4" />
                             {participant.identity}
                           </DropdownMenuLabel>
-                          {attrs.name && (
-                            <DropdownMenuLabel className="flex items-center gap-2 pt-0 text-xs">
-                              {attrs.name}
+                          {attrs.nickname && (
+                            <DropdownMenuLabel className="flex items-center gap-2 pt-0 font-normal">
+                              <User className="h-4 w-4" />
+                              {attrs.nickname}
                             </DropdownMenuLabel>
                           )}
                           {isAdmin && (
