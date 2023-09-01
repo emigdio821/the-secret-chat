@@ -10,7 +10,7 @@ import {
 import useStore from 'store/global'
 import { formatDate, getAvatar } from 'utils'
 import { useSession } from 'next-auth/react'
-import { Message } from '@twilio/conversations'
+import { type Message } from '@twilio/conversations'
 import AudioPlayer from 'components/AudioPlayer'
 import { useCallback, useEffect, useState, forwardRef } from 'react'
 import ImageViewer from 'components/ImageViewer'
@@ -34,7 +34,7 @@ const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
     const [avatar, setAvatar] = useState<string>('')
     const [mediaUrl, setMediaUrl] = useState<string>('')
     const rawMedia = message.attachedMedia?.[0]
-    // @ts-ignore
+    // @ts-expect-error
     const isGif = attributes?.gif
     const hasMedia = message.type === 'media'
     const isAudio = hasMedia && rawMedia?.contentType.startsWith('audio')

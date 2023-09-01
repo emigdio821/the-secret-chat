@@ -40,7 +40,7 @@ export function ProfileContainer({ session }: { session: Session }) {
                   <AvatarImage
                     className="object-cover"
                     alt={client.user.identity}
-                    src={attrs.avatar_url ?? AVATAR_FALLBACK_URL}
+                    src={attrs.avatar_url || AVATAR_FALLBACK_URL}
                   />
                   <AvatarFallback className="h-28 w-28 rounded-lg">
                     <User className="h-6 w-6" />
@@ -59,7 +59,7 @@ export function ProfileContainer({ session }: { session: Session }) {
                   </p>
                   <p className="flex items-center gap-1 text-sm font-medium">
                     <User className="h-4 w-4" />
-                    {client.user.friendlyName ?? 'Nickname not yet set'}
+                    {(attrs.nickname || client.user.friendlyName) ?? 'Nickname not yet set'}
                   </p>
                 </div>
                 <EditProfilePopover client={client} session={session} />

@@ -16,7 +16,7 @@ export const createChatRoomSchema = z.object({
 })
 
 export const joinChatRoomSchema = z.object({
-  name: requiredField,
+  id: requiredField,
 })
 
 export const addParticipantSchema = z.object({

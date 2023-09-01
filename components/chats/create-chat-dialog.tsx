@@ -6,7 +6,6 @@ import { type UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { type Client } from '@twilio/conversations'
-import { MessageSquarePlus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type * as z from 'zod'
@@ -109,7 +108,6 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
       <DialogTrigger asChild>
         <Button type="button" disabled={isLoading}>
           Create chat
-          <MessageSquarePlus className="ml-2 h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -196,11 +194,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
             <DialogFooter className="mt-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Create
-                {form.formState.isSubmitting ? (
-                  <Loader className="ml-2" />
-                ) : (
-                  <MessageSquarePlus className="ml-2 h-4 w-4" />
-                )}
+                {form.formState.isSubmitting && <Loader className="ml-2" />}
               </Button>
             </DialogFooter>
           </form>

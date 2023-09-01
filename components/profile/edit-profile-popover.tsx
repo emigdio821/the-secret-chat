@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation'
 import { type UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { type Client } from '@twilio/conversations'
-import { Pencil, Save } from 'lucide-react'
 import { type Session } from 'next-auth'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -24,12 +23,13 @@ interface EditProfilePopoverProps {
 export function EditProfilePopover({ client, session }: EditProfilePopoverProps) {
   const [opened, setOpened] = useState(false)
   const router = useRouter()
+  const currentAttrs = client.user.attributes as unknown as UserAttributes
   const form = useForm<z.infer<typeof editProfileSchema>>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
-      name: '',
-      nickname: '',
-      avatar_url: '',
+      name: (currentAttrs.name || session.user?.name) ?? '',
+      nickname: (currentAttrs.nickname || client.user.friendlyName) ?? '',
+      avatar_url: currentAttrs.avatar_url,
     },
   })
 
@@ -38,17 +38,17 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
       if (values.nickname) {
         await client.user.updateFriendlyName(values.nickname)
       }
-      const currentAttrs = client.user.attributes as unknown as UserAttributes
 
-      await client.user.updateAttributes({
-        name: (values.name || session.user?.name) ?? '',
-        nickname: (values.name || currentAttrs.nickname) ?? '',
-        avatar_url: (values.avatar_url || currentAttrs.avatar_url) ?? '',
-      })
+      const attrsPayload = {
+        name: (values.name || currentAttrs.name || session.user?.name) ?? '',
+        nickname: (values.nickname || currentAttrs.nickname || client.user.friendlyName) ?? '',
+        avatar_url: values.avatar_url,
+      }
 
+      await client.user.updateAttributes(attrsPayload)
       router.refresh()
       setOpened(false)
-      form.reset()
+      form.reset(attrsPayload)
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
@@ -62,9 +62,7 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
   return (
     <Popover open={opened} onOpenChange={setOpened}>
       <PopoverTrigger asChild>
-        <Button variant="outline">
-          Edit profile <Pencil className="ml-2 h-4 w-4" />
-        </Button>
+        <Button variant="outline">Edit profile</Button>
       </PopoverTrigger>
       <PopoverContent align="start">
         <Form {...form}>
@@ -82,24 +80,24 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
               )}
             />
             <FormField
-              name="nickname"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input autoComplete="false" placeholder="Nickname" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
               name="name"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
                     <Input autoComplete="false" placeholder="Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="nickname"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input autoComplete="false" placeholder="Nickname" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,11 +115,7 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Save
-                {form.formState.isSubmitting ? (
-                  <Loader className="ml-2" />
-                ) : (
-                  <Save className="ml-2 h-4 w-4" />
-                )}
+                {form.formState.isSubmitting && <Loader className="ml-2" />}
               </Button>
             </div>
           </form>

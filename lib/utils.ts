@@ -1,4 +1,4 @@
-import type { Participant, User } from '@twilio/conversations'
+import type { Participant } from '@twilio/conversations'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -7,6 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(d: Date) {
+  const date = new Date(d)
+  const today = new Date()
+  const isToday = date.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)
+
+  if (isToday) {
+    return `Today, ${d.getHours()}:${d.getMinutes()}`
+  }
+
   return new Date(d).toLocaleString([], {
     hour12: false,
     month: 'short',
@@ -53,24 +61,6 @@ export function sortArray<T>({ items, key, comparator }: SortArrayProps<T>) {
     if (xVal > yVal) return 1
     return 0
   })
-}
-
-export function getFriendlyName(part: Participant) {
-  // @ts-expect-error: Unreachable code error
-  if (part.attributes?.friendlyName) {
-    // @ts-expect-error: Unreachable code error
-    return part.attributes.friendlyName
-  }
-  return part.identity
-}
-
-export function getAvatar(user: User) {
-  // @ts-expect-error: Unreachable code error
-  if (user.attributes?.avatar) {
-    // @ts-expect-error: Unreachable code error
-    return user.attributes.avatar
-  }
-  return ''
 }
 
 export function isAdmin(part: Participant) {

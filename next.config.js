@@ -12,7 +12,7 @@ const nextConfig = {
   //   ],
   // },
   images: {
-    domains: ['api.dicebear.com'],
+    domains: ['api.dicebear.com', 'media.us1.twilio.com'],
   },
   env: {
     GIPHY_API_KEY: process.env.GIPHY_API_KEY,

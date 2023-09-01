@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { type Client } from '@twilio/conversations'
-import { MessagesSquare } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type * as z from 'zod'
@@ -36,13 +35,13 @@ export function JoinChatDialog({ isLoading, client }: JoinChatDialogProps) {
   const form = useForm<z.infer<typeof joinChatRoomSchema>>({
     resolver: zodResolver(joinChatRoomSchema),
     defaultValues: {
-      name: '',
+      id: '',
     },
   })
 
   async function onSubmit(values: z.infer<typeof joinChatRoomSchema>) {
     try {
-      const chat = await client?.getConversationByUniqueName(values.name)
+      const chat = await client?.getConversationByUniqueName(values.id)
 
       if (chat?.status === 'notParticipating') {
         await chat?.join()
@@ -78,7 +77,6 @@ export function JoinChatDialog({ isLoading, client }: JoinChatDialogProps) {
       <DialogTrigger asChild>
         <Button type="button" disabled={isLoading}>
           Join chat
-          <MessagesSquare className="ml-2 h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -95,11 +93,11 @@ export function JoinChatDialog({ isLoading, client }: JoinChatDialogProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
             <FormField
               control={form.control}
-              name="name"
+              name="id"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="Chat name" autoComplete="false" {...field} />
+                    <Input placeholder="Chat id" autoComplete="false" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,11 +106,7 @@ export function JoinChatDialog({ isLoading, client }: JoinChatDialogProps) {
             <DialogFooter className="mt-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Join
-                {form.formState.isSubmitting ? (
-                  <Loader className="ml-2" />
-                ) : (
-                  <MessagesSquare className="ml-2 h-4 w-4" />
-                )}
+                {form.formState.isSubmitting && <Loader className="ml-2" />}
               </Button>
             </DialogFooter>
           </form>

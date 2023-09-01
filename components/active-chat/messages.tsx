@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { type Conversation } from '@twilio/conversations'
-import { AnimatePresence } from 'framer-motion'
+// import { AnimatePresence } from 'framer-motion'
 import { Ghost, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
@@ -10,17 +10,19 @@ import { toast } from 'sonner'
 import type * as z from 'zod'
 
 import { ACTIVE_CHAT_MESSAGES_QUERY } from '@/lib/constants'
-import { useStore } from '@/lib/store'
+// import { useStore } from '@/lib/store'
 import { sendMessageSchema } from '@/lib/zod-schemas'
 import { useRainbowGradient } from '@/hooks/use-rainbow-gradient'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { ChatOnlySkeleton } from '@/components/skeletons'
 
-import { ChatOnlySkeleton } from './chat-seketon'
+import { MediaActions } from './media-actions'
 import MessageItem from './message-item'
 import { ChatParticipants } from './participants'
-import { TypingIndicator } from './typing-indicator'
+
+// import { TypingIndicator } from './typing-indicator'
 
 interface MessagesProps {
   chat: Conversation
@@ -30,7 +32,7 @@ export function Messages({ chat }: MessagesProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { data: session } = useSession()
   const containerBg = useRainbowGradient()
-  const usersTyping = useStore((state) => state.usersTyping)
+  // const usersTyping = useStore((state) => state.usersTyping)
   const { data: messages, isLoading, refetch } = useQuery([ACTIVE_CHAT_MESSAGES_QUERY], getMessages)
   const form = useForm<z.infer<typeof sendMessageSchema>>({
     resolver: zodResolver(sendMessageSchema),
@@ -98,26 +100,25 @@ export function Messages({ chat }: MessagesProps) {
                 <ChatParticipants chat={chat} session={session} />
                 <div
                   style={{ background: containerBg }}
-                  className="relative h-96 w-full rounded-lg border sm:h-[420px] "
+                  className="relative h-96 w-full overflow-y-auto rounded-lg border sm:h-[420px]"
                 >
-                  <div className="h-full w-full overflow-y-auto">
-                    {messages.length > 0 ? (
-                      <div className="flex flex-col gap-2 p-4">
-                        {messages.map((message) => (
-                          <MessageItem key={message.sid} session={session} message={message} />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
-                        <Ghost className="h-5 w-5" />
-                        No messages yet
-                      </div>
-                    )}
-                    <div ref={messagesEndRef} />
-                  </div>
-                  <AnimatePresence>
+                  {messages.length > 0 ? (
+                    <div className="flex flex-col gap-2 p-4">
+                      {messages.map((message) => (
+                        <MessageItem key={message.sid} session={session} message={message} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
+                      <Ghost className="h-5 w-5" />
+                      No messages yet
+                    </div>
+                  )}
+                  {/* TODO: Fix Typing indicator */}
+                  {/* <AnimatePresence>
                     {usersTyping.length > 0 && <TypingIndicator participants={usersTyping} />}
-                  </AnimatePresence>
+                  </AnimatePresence> */}
+                  <div ref={messagesEndRef} />
                 </div>
               </div>
               <Form {...form}>
@@ -130,14 +131,20 @@ export function Messages({ chat }: MessagesProps) {
                     name="message"
                     render={({ field }) => (
                       <FormItem className="w-full flex-1">
-                        <FormControl>
-                          <Input
-                            autoComplete="false"
-                            onKeyDown={handleUserTyping}
-                            placeholder="Type your message"
-                            {...field}
-                          />
-                        </FormControl>
+                        <div className="relative">
+                          <span className="absolute right-3 flex h-full items-center justify-center">
+                            <MediaActions chat={chat} />
+                          </span>
+                          <FormControl>
+                            <Input
+                              className="pr-12"
+                              autoComplete="false"
+                              onKeyDown={handleUserTyping}
+                              placeholder="Type your message"
+                              {...field}
+                            />
+                          </FormControl>
+                        </div>
                       </FormItem>
                     )}
                   />

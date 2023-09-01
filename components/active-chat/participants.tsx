@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { type ParticipantAttributes } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { type Conversation, type Participant } from '@twilio/conversations'
-import { AnimatePresence } from 'framer-motion'
 import { AtSign, Shield, User, UserX } from 'lucide-react'
 import { type Session } from 'next-auth'
 
@@ -89,7 +88,7 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                         <AvatarImage
                           alt={`${user?.name}`}
                           className="object-cover"
-                          src={attrs.avatar_url ?? AVATAR_FALLBACK_URL}
+                          src={attrs.avatar_url || AVATAR_FALLBACK_URL}
                         />
                         <AvatarFallback className="h-6 w-6 rounded-sm">
                           <User className="h-4 w-4" />
@@ -98,102 +97,103 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                       <span className="font-semibold">You</span>
                     </div>
                   ) : (
-                    <AnimatePresence key={participant.sid}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            size="xs"
-                            variant="ghost"
-                            className="gap-2 px-1 sm:w-full sm:justify-start"
-                            disabled={!session}
-                          >
-                            <Avatar className="h-5 w-5 rounded-sm">
-                              <AvatarImage
-                                alt={`${user?.name}`}
-                                className="object-cover"
-                                src={attrs.avatar_url ?? AVATAR_FALLBACK_URL}
-                              />
-                              <AvatarFallback className="h-6 w-6 rounded-sm">
-                                <User className="h-4 w-4" />
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="max-w-[72px] truncate">
-                              {attrs.nickname ?? participant.identity}
-                            </span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="max-w-[220px]">
-                          <Avatar className="mx-2 my-1.5 h-20 w-20 rounded-lg">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="xs"
+                          variant="ghost"
+                          className="gap-2 px-1 sm:w-full sm:justify-start"
+                          disabled={!session}
+                        >
+                          <Avatar className="h-5 w-5 rounded-sm">
                             <AvatarImage
                               alt={`${user?.name}`}
                               className="object-cover"
-                              src={attrs.avatar_url ?? AVATAR_FALLBACK_URL}
+                              src={attrs.avatar_url || AVATAR_FALLBACK_URL}
                             />
                             <AvatarFallback className="h-6 w-6 rounded-sm">
                               <User className="h-4 w-4" />
                             </AvatarFallback>
                           </Avatar>
-                          {attrs.name && (
-                            <DropdownMenuLabel className="flex items-center gap-2 text-base">
-                              {attrs.name}
-                            </DropdownMenuLabel>
-                          )}
-                          <DropdownMenuLabel
-                            className={cn('flex items-center gap-2 font-normal', {
-                              'pt-0': attrs.name,
-                              'pb-0': attrs.nickname,
-                            })}
-                          >
-                            <AtSign className="h-4 w-4" />
-                            {participant.identity}
+                          <span className="max-w-[72px] truncate">
+                            {participant.isTyping ? (
+                              'Typing...'
+                            ) : (
+                              <>{attrs.nickname ?? participant.identity}</>
+                            )}
+                          </span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="max-w-[220px]">
+                        <Avatar className="mx-2 my-1.5 h-20 w-20 rounded-lg">
+                          <AvatarImage
+                            alt={`${user?.name}`}
+                            className="object-cover"
+                            src={attrs.avatar_url || AVATAR_FALLBACK_URL}
+                          />
+                          <AvatarFallback className="h-6 w-6 rounded-sm">
+                            <User className="h-4 w-4" />
+                          </AvatarFallback>
+                        </Avatar>
+                        {attrs.name && (
+                          <DropdownMenuLabel className="flex items-center gap-2 text-base">
+                            {attrs.name}
                           </DropdownMenuLabel>
-                          {attrs.nickname && (
-                            <DropdownMenuLabel className="flex items-center gap-2 pt-0 font-normal">
-                              <User className="h-4 w-4" />
-                              {attrs.nickname}
-                            </DropdownMenuLabel>
-                          )}
-                          {isAdmin && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuGroup>
-                                <DropdownMenuItem>
-                                  <Shield className="mr-2 h-4 w-4" />
-                                  <span>Make admin</span>
-                                </DropdownMenuItem>
-                                <ControlledAlertDialog
-                                  open={openedAlert}
-                                  isLoading={isLoading}
-                                  setOpen={setOpenedAlert}
-                                  action={async () => {
-                                    await handleKickParticipant(participant)
-                                  }}
-                                  trigger={
-                                    <DropdownMenuItem
-                                      className="!text-destructive"
-                                      onSelect={(e) => {
-                                        e.preventDefault()
-                                        setOpenedAlert(true)
-                                      }}
-                                    >
-                                      <UserX className="mr-2 h-4 w-4" />
-                                      <span>Kick</span>
-                                    </DropdownMenuItem>
-                                  }
-                                  alertMessage={
-                                    <>
-                                      This action cannot be undone. You are about to kick{' '}
-                                      <span className="font-semibold">{`"${participant.identity}".`}</span>
-                                    </>
-                                  }
-                                />
-                              </DropdownMenuGroup>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </AnimatePresence>
+                        )}
+                        <DropdownMenuLabel
+                          className={cn('flex items-center gap-2 font-normal', {
+                            'pt-0': attrs.name,
+                            'pb-0': attrs.nickname,
+                          })}
+                        >
+                          <AtSign className="h-4 w-4" />
+                          {participant.identity}
+                        </DropdownMenuLabel>
+                        {attrs.nickname && (
+                          <DropdownMenuLabel className="flex items-center gap-2 pt-0 font-normal">
+                            <User className="h-4 w-4" />
+                            {attrs.nickname}
+                          </DropdownMenuLabel>
+                        )}
+                        {isAdmin && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuGroup>
+                              <DropdownMenuItem>
+                                <Shield className="mr-2 h-4 w-4" />
+                                <span>Make admin</span>
+                              </DropdownMenuItem>
+                              <ControlledAlertDialog
+                                open={openedAlert}
+                                isLoading={isLoading}
+                                setOpen={setOpenedAlert}
+                                action={async () => {
+                                  await handleKickParticipant(participant)
+                                }}
+                                trigger={
+                                  <DropdownMenuItem
+                                    className="!text-destructive"
+                                    onSelect={(e) => {
+                                      e.preventDefault()
+                                      setOpenedAlert(true)
+                                    }}
+                                  >
+                                    <UserX className="mr-2 h-4 w-4" />
+                                    <span>Kick</span>
+                                  </DropdownMenuItem>
+                                }
+                                alertMessage={
+                                  <>
+                                    This action cannot be undone. You are about to kick{' '}
+                                    <span className="font-semibold">{`"${participant.identity}".`}</span>
+                                  </>
+                                }
+                              />
+                            </DropdownMenuGroup>
+                          </>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   )}
                 </div>
               )

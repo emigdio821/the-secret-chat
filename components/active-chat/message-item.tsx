@@ -1,11 +1,18 @@
+import { useCallback, useEffect, useState } from 'react'
+import { type ParticipantAttributes } from '@/types'
+import { useQuery } from '@tanstack/react-query'
 import { type Message } from '@twilio/conversations'
 import { motion } from 'framer-motion'
 import { User } from 'lucide-react'
 import { type Session } from 'next-auth'
 
-import { AVATAR_FALLBACK_URL } from '@/lib/constants'
+import { AVATAR_FALLBACK_URL, MESSAGE_PARTICIPANT_QUERY } from '@/lib/constants'
 import { cn, formatDate } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+
+import { BlurImage } from '../blur-image'
+import { Skeleton } from '../ui/skeleton'
+import { MessageActions } from './message-actions'
 
 interface MessageItemProps {
   message: Message
@@ -13,9 +20,42 @@ interface MessageItemProps {
 }
 
 export default function MessageItem({ session, message }: MessageItemProps) {
-  const sessionUser = session.user
+  const user = session.user
+  const [mediaURL, setMediaURL] = useState<string | null>(null)
   const { author, sid, body, dateCreated } = message
-  const isAuthor = author === sessionUser?.email
+  const isAuthor = author === user?.email
+  const hasMedia = message.type === 'media'
+  const rawMedia = message.attachedMedia?.[0]
+  // const isAudio = hasMedia && rawMedia?.contentType.startsWith('audio')
+  const isImage = hasMedia && rawMedia?.contentType.startsWith('image')
+  const { data: msgParticipant } = useQuery(
+    [MESSAGE_PARTICIPANT_QUERY, message.sid],
+    getMessageParticipant,
+  )
+  const attrs = msgParticipant && (msgParticipant.attributes as unknown as ParticipantAttributes)
+
+  async function getMessageParticipant() {
+    try {
+      return await message.getParticipant()
+    } catch (err) {
+      const errMessage = err instanceof Error ? err.message : err
+      console.log('[GET_MSG_PARTICIPANT]', errMessage)
+      return null
+    }
+  }
+
+  const getMediaUrl = useCallback(async () => {
+    if (rawMedia) {
+      const url = await rawMedia.getContentTemporaryUrl()
+      setMediaURL(url)
+    }
+  }, [rawMedia])
+
+  useEffect(() => {
+    if (hasMedia) {
+      void getMediaUrl()
+    }
+  }, [getMediaUrl, hasMedia])
 
   return (
     <div
@@ -24,7 +64,11 @@ export default function MessageItem({ session, message }: MessageItemProps) {
       })}
     >
       <Avatar className="h-6 w-6 self-start rounded-lg">
-        <AvatarImage src={sessionUser?.image ?? AVATAR_FALLBACK_URL} alt={`${sessionUser?.name}`} />
+        <AvatarImage
+          className="object-cover"
+          alt={`${user?.name}`}
+          src={attrs?.avatar_url ?? AVATAR_FALLBACK_URL}
+        />
         <AvatarFallback className="h-6 w-6 rounded-lg">
           <User className="h-4 w-4" />
         </AvatarFallback>
@@ -37,10 +81,19 @@ export default function MessageItem({ session, message }: MessageItemProps) {
           'bg-muted/60': !isAuthor,
         })}
       >
-        {body}
+        <span className="flex justify-between gap-2">
+          {isImage && mediaURL ? (
+            <div className="relative h-20 w-28 overflow-hidden rounded-lg">
+              <BlurImage src={mediaURL} />
+            </div>
+          ) : (
+            <>{body ?? <Skeleton className="h-20 w-28" />}</>
+          )}
+          {message.author === user?.email && <MessageActions message={message} />}
+        </span>
         <div className="flex flex-col text-[10px] leading-4 text-muted-foreground">
           <span>{dateCreated && formatDate(dateCreated)}</span>
-          {!isAuthor && <span>{author}</span>}
+          {!isAuthor && <span>{attrs?.nickname ?? author}</span>}
         </div>
       </motion.div>
     </div>

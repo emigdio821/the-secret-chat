@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { type Client, type Conversation } from '@twilio/conversations'
 import { useDebounce } from '@uidotdev/usehooks'
 import { MessageSquareDashed, RefreshCcw, Search } from 'lucide-react'
 import { type Session } from 'next-auth'
 
-import { USER_CHATS_QUERY } from '@/lib/constants'
+import { UNREAD_MSGS_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
 import { sortArray } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,6 +20,7 @@ interface ChatListProps {
 
 export function MyChats({ client, session }: ChatListProps) {
   const [search, setSearch] = useState('')
+  const queryClient = useQueryClient()
   const debouncedSearch = useDebounce(search, 500)
   const { data, error, isLoading, refetch } = useQuery([USER_CHATS_QUERY], getChats, {
     select: filterBySearch,
@@ -74,6 +75,7 @@ export function MyChats({ client, session }: ChatListProps) {
             variant="outline"
             onClick={async () => {
               await refetch()
+              await queryClient.refetchQueries({ queryKey: [UNREAD_MSGS_QUERY] })
             }}
           >
             <span className="hidden sm:block">Refresh</span>

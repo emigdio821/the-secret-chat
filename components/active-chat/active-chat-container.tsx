@@ -1,8 +1,8 @@
 'use client'
 
 import { useTwilioClient } from '@/hooks/use-twilio-client'
-import { FullChatSkeleton } from '@/components/active-chat/chat-seketon'
 import { ClientError } from '@/components/client-error'
+import { FullChatSkeleton } from '@/components/skeletons'
 
 import { ActiveChat } from './active-chat'
 

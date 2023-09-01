@@ -1,10 +1,11 @@
 import NextLink from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 import { type Conversation } from '@twilio/conversations'
-import { ArrowRight, MessageSquare, Shield, User } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { MessageSquare, Shield, User } from 'lucide-react'
 import { type Session } from 'next-auth'
 
-import { GET_UNREAD_MSGS } from '@/lib/constants'
+import { UNREAD_MSGS_QUERY } from '@/lib/constants'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -24,14 +25,14 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
   const attrs = chat.attributes as unknown as ConvoDescription
   const partsCount = chat._participants.size
   const isOwner = session.user?.email === createdBy
-  const { data: unreadMsgs } = useQuery([GET_UNREAD_MSGS, chat.sid], getUnreadMessages)
+  const { data: unreadMsgs } = useQuery([UNREAD_MSGS_QUERY, chat.sid], getUnreadMessages)
 
   async function getUnreadMessages() {
     try {
       return await chat.getUnreadMessagesCount()
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[GET_UNREAD_MSGS]', errMessage)
+      console.log('[UNREAD_MSGS_QUERY]', errMessage)
       return null
     }
   }
@@ -45,7 +46,14 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
             {unreadMsgs && unreadMsgs > 0 ? (
               <span className="flex items-center gap-1 rounded-lg border px-1 py-px text-xs font-semibold text-muted-foreground">
                 <MessageSquare className="h-3 w-3" />
-                <span className="text-xs">{unreadMsgs}</span>
+                <motion.span
+                  key={unreadMsgs}
+                  className="text-xs"
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  {unreadMsgs}
+                </motion.span>
               </span>
             ) : null}
           </span>
@@ -70,7 +78,6 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
           href={`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`}
         >
           Join
-          <ArrowRight className="ml-2 h-4 w-4" />
         </NextLink>
       </CardFooter>
     </Card>

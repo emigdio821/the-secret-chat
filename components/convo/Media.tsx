@@ -22,7 +22,7 @@ import { secsToTime } from 'utils'
 import MenuItem from 'components/MenuItem'
 import MotionDiv from 'components/MotionDiv'
 import styles from 'styles/common.module.css'
-import { useState, useEffect, useCallback, ReactElement } from 'react'
+import { useState, useEffect, useCallback, type ReactElement } from 'react'
 import useStore from 'store/global'
 import GifPicker from './GifPicker'
 
@@ -73,7 +73,7 @@ export default function Media() {
     if (audioRecorder && audioStream && audioStream.active) {
       toast.closeAll()
       audioRecorder.stop()
-      audioStream.getTracks().forEach((track) => track.stop())
+      audioStream.getTracks().forEach((track) => { track.stop(); })
       setIsRecording(false)
     }
   }, [audioRecorder, audioStream, toast])
@@ -87,7 +87,7 @@ export default function Media() {
         type: 'audio/wav',
       })
       const formData = new FormData()
-      formData.append('file', audioBlob as Blob, 'audio.wav')
+      formData.append('file', audioBlob , 'audio.wav')
       await conversation?.sendMessage(formData)
       setAudioBlobs([])
       toast.close(audioToast)
@@ -199,12 +199,12 @@ export default function Media() {
                   <MenuGroup title={secsToTime(audioBlobs.length)}>
                     <MenuItem
                       icon={<BiRocket size={16} />}
-                      onClick={() => handleStopRecording()}
+                      onClick={async () => { await handleStopRecording(); }}
                     >
                       Send audio
                     </MenuItem>
                     <MenuItem
-                      onClick={() => handleStopRecorder()}
+                      onClick={() => { handleStopRecorder(); }}
                       icon={<BiTrash size={16} color="#ff6961" />}
                     >
                       <Text color="#ff6961">Cancel recording</Text>
@@ -218,13 +218,13 @@ export default function Media() {
                   </MenuItem>
                   <MenuItem
                     icon={<BiImage size={16} />}
-                    onClick={() => handleUploadImage()}
+                    onClick={() => { handleUploadImage(); }}
                   >
                     Upload image
                   </MenuItem>
                   <MenuItem
                     icon={<BiMicrophone size={16} />}
-                    onClick={() => handleAudioRecord()}
+                    onClick={async () => { await handleAudioRecord(); }}
                   >
                     Record audio
                   </MenuItem>
@@ -233,7 +233,7 @@ export default function Media() {
                     id="file-input"
                     accept="image/*"
                     style={{ display: 'none' }}
-                    onChange={(e) => handleUploadImg(e)}
+                    onChange={async (e) => { await handleUploadImg(e); }}
                   />
                 </>
               )}
