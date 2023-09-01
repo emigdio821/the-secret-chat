@@ -81,7 +81,6 @@ export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps
         </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent
-        className="sm:max-w-[425px]"
         onInteractOutside={(e) => {
           e.preventDefault()
         }}

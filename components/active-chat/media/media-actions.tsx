@@ -1,4 +1,5 @@
 import { type Conversation } from '@twilio/conversations'
+import { useToggle } from '@uidotdev/usehooks'
 import { ImageIcon, Mic, Paperclip, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -12,7 +13,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
+import { GifPicker } from './gif-picker'
+
 export function MediaActions({ chat }: { chat: Conversation }) {
+  const [openedGifDialog, setOpenedGifDialog] = useToggle(false)
+
   function handleUploadImage() {
     const fileInput = document.getElementById('file-input')
     fileInput?.click()
@@ -37,6 +42,19 @@ export function MediaActions({ chat }: { chat: Conversation }) {
     }
   }
 
+  async function handleSendGif(url: string) {
+    try {
+      await chat.sendMessage(url, {
+        gif: true,
+      })
+      setOpenedGifDialog(false)
+    } catch (err) {
+      const errMessage = err instanceof Error ? err.message : err
+      console.log('[SEND_GIF]', errMessage)
+      return null
+    }
+  }
+
   return (
     <>
       <DropdownMenu>
@@ -49,10 +67,22 @@ export function MediaActions({ chat }: { chat: Conversation }) {
         <DropdownMenuContent align="end" className="max-w-[180px]">
           <DropdownMenuLabel>Media</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <ImageIcon className="mr-2 h-4 w-4" />
-            GIF
-          </DropdownMenuItem>
+          <GifPicker
+            trigger={
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault()
+                  setOpenedGifDialog(true)
+                }}
+              >
+                <ImageIcon className="mr-2 h-4 w-4" />
+                GIF
+              </DropdownMenuItem>
+            }
+            action={handleSendGif}
+            isOpen={openedGifDialog}
+            setOpen={setOpenedGifDialog}
+          />
           <DropdownMenuItem onSelect={handleUploadImage}>
             <Upload className="mr-2 h-4 w-4" />
             Upload image

@@ -33,6 +33,10 @@ export const editProfileSchema = z.object({
   avatar_url: optionalField,
 })
 
+export const searchGifsSchema = z.object({
+  name: optionalField,
+})
+
 export const envSchema = z.object({
   NEXTAUTH_URL: envVariable,
   GITHUB_ID: envVariable,

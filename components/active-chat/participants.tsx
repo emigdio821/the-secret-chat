@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import { type ParticipantAttributes } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { type Conversation, type Participant } from '@twilio/conversations'
+import { useToggle } from '@uidotdev/usehooks'
 import { AtSign, Shield, User, UserX } from 'lucide-react'
 import { type Session } from 'next-auth'
 
@@ -9,15 +9,8 @@ import { ACTIVE_PARTICIPANTS_QUERY, AVATAR_FALLBACK_URL } from '@/lib/constants'
 import { cn, sortArray } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
 
@@ -27,8 +20,8 @@ interface ChatParticipantsProps {
 }
 
 export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
-  const [openedAlert, setOpenedAlert] = useState(false)
-  const [isLoading, setLoading] = useState(false)
+  const [openedAlert, setOpenedAlert] = useToggle(false)
+  const [isLoading, setLoading] = useToggle(false)
   const { data: participants, isLoading: isLoadingParts } = useQuery(
     [ACTIVE_PARTICIPANTS_QUERY],
     getParticipants,
@@ -97,8 +90,8 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                       <span className="font-semibold">You</span>
                     </div>
                   ) : (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                    <Popover>
+                      <PopoverTrigger asChild>
                         <Button
                           size="xs"
                           variant="ghost"
@@ -123,8 +116,8 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                             )}
                           </span>
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="max-w-[220px]">
+                      </PopoverTrigger>
+                      <PopoverContent align="end" className="max-w-[220px] p-1">
                         <Avatar className="mx-2 my-1.5 h-20 w-20 rounded-lg">
                           <AvatarImage
                             alt={`${user?.name}`}
@@ -158,11 +151,11 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                         {isAdmin && (
                           <>
                             <DropdownMenuSeparator />
-                            <DropdownMenuGroup>
-                              <DropdownMenuItem>
+                            <section className="flex flex-col">
+                              <Button variant="ghost" className="h-full justify-start px-2 py-1.5">
                                 <Shield className="mr-2 h-4 w-4" />
                                 <span>Make admin</span>
-                              </DropdownMenuItem>
+                              </Button>
                               <ControlledAlertDialog
                                 open={openedAlert}
                                 isLoading={isLoading}
@@ -171,16 +164,16 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                                   await handleKickParticipant(participant)
                                 }}
                                 trigger={
-                                  <DropdownMenuItem
-                                    className="!text-destructive"
-                                    onSelect={(e) => {
-                                      e.preventDefault()
+                                  <Button
+                                    variant="ghost"
+                                    className="h-full justify-start px-2 py-1.5 !text-destructive"
+                                    onClick={() => {
                                       setOpenedAlert(true)
                                     }}
                                   >
                                     <UserX className="mr-2 h-4 w-4" />
                                     <span>Kick</span>
-                                  </DropdownMenuItem>
+                                  </Button>
                                 }
                                 alertMessage={
                                   <>
@@ -189,11 +182,11 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                                   </>
                                 }
                               />
-                            </DropdownMenuGroup>
+                            </section>
                           </>
                         )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      </PopoverContent>
+                    </Popover>
                   )}
                 </div>
               )

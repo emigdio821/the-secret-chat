@@ -80,7 +80,6 @@ export function JoinChatDialog({ isLoading, client }: JoinChatDialogProps) {
         </Button>
       </DialogTrigger>
       <DialogContent
-        className="sm:max-w-[425px]"
         onInteractOutside={(e) => {
           e.preventDefault()
         }}

@@ -132,3 +132,13 @@ export function FullChatSkeleton() {
     </div>
   )
 }
+
+export function GifsSkeleton() {
+  return (
+    <>
+      {Array.from(Array(12).keys()).map((n) => (
+        <Skeleton key={n} className="h-24 w-full rounded-lg" />
+      ))}
+    </>
+  )
+}

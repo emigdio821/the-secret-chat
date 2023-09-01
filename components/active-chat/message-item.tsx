@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { type ParticipantAttributes } from '@/types'
+import { type MessageAttributes, type ParticipantAttributes } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { type Message } from '@twilio/conversations'
 import { motion } from 'framer-motion'
@@ -21,7 +21,7 @@ interface MessageItemProps {
 
 export default function MessageItem({ session, message }: MessageItemProps) {
   const user = session.user
-  const [mediaURL, setMediaURL] = useState<string | null>(null)
+  const [mediaURL, setMediaURL] = useState<string>('')
   const { author, sid, body, dateCreated } = message
   const isAuthor = author === user?.email
   const hasMedia = message.type === 'media'
@@ -32,7 +32,9 @@ export default function MessageItem({ session, message }: MessageItemProps) {
     [MESSAGE_PARTICIPANT_QUERY, message.sid],
     getMessageParticipant,
   )
-  const attrs = msgParticipant && (msgParticipant.attributes as unknown as ParticipantAttributes)
+  const partAttrs =
+    msgParticipant && (msgParticipant.attributes as unknown as ParticipantAttributes)
+  const msgAttrs = message.attributes as unknown as MessageAttributes
 
   async function getMessageParticipant() {
     try {
@@ -47,7 +49,7 @@ export default function MessageItem({ session, message }: MessageItemProps) {
   const getMediaUrl = useCallback(async () => {
     if (rawMedia) {
       const url = await rawMedia.getContentTemporaryUrl()
-      setMediaURL(url)
+      setMediaURL(url ?? '')
     }
   }, [rawMedia])
 
@@ -67,7 +69,7 @@ export default function MessageItem({ session, message }: MessageItemProps) {
         <AvatarImage
           className="object-cover"
           alt={`${user?.name}`}
-          src={attrs?.avatar_url ?? AVATAR_FALLBACK_URL}
+          src={partAttrs?.avatar_url ?? AVATAR_FALLBACK_URL}
         />
         <AvatarFallback className="h-6 w-6 rounded-lg">
           <User className="h-4 w-4" />
@@ -82,9 +84,9 @@ export default function MessageItem({ session, message }: MessageItemProps) {
         })}
       >
         <span className="flex justify-between gap-2">
-          {isImage && mediaURL ? (
+          {msgAttrs?.gif ?? (isImage && mediaURL) ? (
             <div className="relative h-20 w-28 overflow-hidden rounded-lg">
-              <BlurImage src={mediaURL} />
+              <BlurImage src={isImage ? mediaURL : (body as string)} />
             </div>
           ) : (
             <>{body ?? <Skeleton className="h-20 w-28" />}</>
@@ -93,7 +95,7 @@ export default function MessageItem({ session, message }: MessageItemProps) {
         </span>
         <div className="flex flex-col text-[10px] leading-4 text-muted-foreground">
           <span>{dateCreated && formatDate(dateCreated)}</span>
-          {!isAuthor && <span>{attrs?.nickname ?? author}</span>}
+          {!isAuthor && <span>{partAttrs?.nickname ?? author}</span>}
         </div>
       </motion.div>
     </div>

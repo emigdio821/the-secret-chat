@@ -61,3 +61,7 @@ export interface UserAttributes {
 export type ParticipantAttributes = {
   role?: string
 } & UserAttributes
+
+export interface MessageAttributes {
+  gif?: boolean
+}

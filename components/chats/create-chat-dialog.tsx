@@ -111,7 +111,6 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
         </Button>
       </DialogTrigger>
       <DialogContent
-        className="sm:max-w-[425px]"
         onInteractOutside={(e) => {
           e.preventDefault()
         }}

@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { ChatOnlySkeleton } from '@/components/skeletons'
 
-import { MediaActions } from './media-actions'
+import { MediaActions } from './media/media-actions'
 import MessageItem from './message-item'
 import { ChatParticipants } from './participants'
 
