@@ -1,11 +1,11 @@
 <img src="https://user-images.githubusercontent.com/6751108/180099788-a12f3788-4b23-4acb-82bb-d24596acc12c.png" width="64" height="64">
 
-## TheSecretChat
+## The Secret Chat
 
-TheSecretChat is just a simple chat app using Nextjs, Chakra UI and Twilio API. <br />
+The Secret Chat is just a simple chat app using Next.js, Tailwind with shadcn/ui, Twilio API and GIPHY API. <br />
 Follow below instructions if you want to run the project locally 🐒.
 
-#### Create an .env file
+#### Create a .env file
 
 ```
 GITHUB_ID=
@@ -16,19 +16,18 @@ TWILIO_API_KEY=
 TWILIO_API_SECRET=
 TWILIO_ACCOUNT_SID=
 TWILIO_SERVICE_SID=
-TWILIO_CHANNEL_ADMIN=
+NEXT_PUBLIC_GIPHY_API_KEY=
+NEXT_PUBLIC_TWILIO_CHANNEL_ADMIN=
 ```
 
 #### Install the dependencies
 ```bash
-yarn 
-# or 
-yarn install
+pnpm install
 ```
 
 #### Run the dev server
 ```bash
-yarn dev
+pnpm dev
 ```
 <br/>
 
