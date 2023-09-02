@@ -2,15 +2,11 @@ import { type AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GithubProvider from 'next-auth/providers/github'
 
-import { serverEnvSchema } from './zod-schemas'
-
-const env = serverEnvSchema.parse(process.env)
-
 export const authOptions: AuthOptions = {
   providers: [
     GithubProvider({
-      clientId: env.GITHUB_ID,
-      clientSecret: env.GITHUB_SECRET,
+      clientId: process.env.GITHUB_ID as string,
+      clientSecret: process.env.GITHUB_SECRET as string,
       authorization: {
         params: {
           scope: 'user:email',
@@ -56,7 +52,7 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
-  secret: env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: '/login',
   },
