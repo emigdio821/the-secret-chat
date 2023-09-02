@@ -80,8 +80,8 @@ export function ChatOnlySkeleton() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2 sm:flex-row">
-        <div className="h-20 w-full overflow-auto rounded-lg border sm:h-[420px] sm:w-36">
-          <div className="flex h-full w-full flex-row items-center gap-1 p-4 sm:flex-col">
+        <div className="h-20 w-full rounded-lg border sm:h-[420px] sm:w-36">
+          <div className="flex h-full w-full flex-row items-center gap-1 p-4 sm:flex-col sm:items-start">
             <div className="flex h-8 items-center gap-1">
               <Skeleton className="h-5 w-5 rounded-sm" />
               <Skeleton className="h-2 w-10" />
@@ -126,8 +126,8 @@ export function ChatOnlySkeleton() {
 export function FullChatSkeleton() {
   return (
     <div className="flex flex-col gap-2">
-      <Skeleton className="my-1 h-4 w-28" />
-      <Skeleton className="mb-4 h-2 w-3/4" />
+      <Skeleton className="my-1 hidden h-4 w-28 sm:block" />
+      <Skeleton className="mb-4 hidden h-2 w-3/4 sm:block" />
       <ChatOnlySkeleton />
     </div>
   )

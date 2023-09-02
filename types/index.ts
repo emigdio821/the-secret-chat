@@ -1,4 +1,4 @@
-import type { Client, Conversation, Message, Participant } from '@twilio/conversations'
+import type { Client, Conversation, JSONValue, Message, Participant } from '@twilio/conversations'
 
 export interface Session {
   user: {
@@ -52,16 +52,17 @@ export interface ActionPayload {
     | Participant[]
 }
 
-export interface UserAttributes {
+export type UserAttributes = {
   nickname: string
   avatar_url: string
   name: string
-}
+  isOnline: boolean
+} & JSONValue
 
 export type ParticipantAttributes = {
   role?: string
 } & UserAttributes
 
-export interface MessageAttributes {
+export type MessageAttributes = {
   gif?: boolean
-}
+} & JSONValue

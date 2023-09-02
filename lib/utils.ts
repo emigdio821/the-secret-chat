@@ -2,6 +2,8 @@ import type { Participant } from '@twilio/conversations'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
+import { envClient } from '@/lib/zod-schemas'
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -64,7 +66,7 @@ export function sortArray<T>({ items, key, comparator }: SortArrayProps<T>) {
 }
 
 export function isAdmin(part: Participant) {
-  return part.roleSid === (process.env.TWILIO_CHANNEL_ADMIN as string)
+  return part.roleSid === envClient.NEXT_PUBLIC_TWILIO_CHANNEL_ADMIN
 }
 
 export function byteFormatter(bytes: number, decimals: number = 0) {

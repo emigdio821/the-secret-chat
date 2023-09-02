@@ -2,9 +2,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 import twilio from 'twilio'
 
-import { envSchema } from '@/lib/zod-schemas'
+import { serverEnvSchema } from '@/lib/zod-schemas'
 
-const env = envSchema.parse(process.env)
+const env = serverEnvSchema.parse(process.env)
 
 export async function GET(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })

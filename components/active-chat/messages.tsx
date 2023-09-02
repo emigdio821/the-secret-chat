@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
-import { type Conversation } from '@twilio/conversations'
+import { type Client, type Conversation } from '@twilio/conversations'
 // import { AnimatePresence } from 'framer-motion'
 import { Ghost, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -26,9 +26,10 @@ import { ChatParticipants } from './participants'
 
 interface MessagesProps {
   chat: Conversation
+  client: Client
 }
 
-export function Messages({ chat }: MessagesProps) {
+export function Messages({ chat, client }: MessagesProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { data: session } = useSession()
   const containerBg = useRainbowGradient()
@@ -97,7 +98,7 @@ export function Messages({ chat }: MessagesProps) {
           {messages && session && (
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-2 sm:flex-row">
-                <ChatParticipants chat={chat} session={session} />
+                <ChatParticipants chat={chat} session={session} client={client} />
                 <div
                   style={{ background: containerBg }}
                   className="relative h-96 w-full overflow-y-auto rounded-lg border sm:h-[420px]"

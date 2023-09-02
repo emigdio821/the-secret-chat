@@ -22,7 +22,7 @@ export function ProfileContainer({ session }: { session: Session }) {
     return <ClientError />
   }
 
-  const attrs = client?.user.attributes as unknown as UserAttributes
+  const userAttrs = client?.user.attributes as UserAttributes
 
   return (
     <Card style={{ background: bg }}>
@@ -40,7 +40,7 @@ export function ProfileContainer({ session }: { session: Session }) {
                   <AvatarImage
                     className="object-cover"
                     alt={client.user.identity}
-                    src={attrs.avatar_url || AVATAR_FALLBACK_URL}
+                    src={userAttrs?.avatar_url || AVATAR_FALLBACK_URL}
                   />
                   <AvatarFallback className="h-28 w-28 rounded-lg">
                     <User className="h-6 w-6" />
@@ -50,7 +50,7 @@ export function ProfileContainer({ session }: { session: Session }) {
                   Here you&apos;ll find basic info. about your account.
                 </CardDescription>
                 <h3 className="text-xl font-semibold">
-                  {(attrs.name || session.user?.name) ?? client?.user.identity}
+                  {(userAttrs?.name || session.user?.name) ?? client?.user.identity}
                 </h3>
                 <div className="mb-4">
                   <p className="flex items-center gap-1 text-sm font-medium">
@@ -59,7 +59,7 @@ export function ProfileContainer({ session }: { session: Session }) {
                   </p>
                   <p className="flex items-center gap-1 text-sm font-medium">
                     <User className="h-4 w-4" />
-                    {(attrs.nickname || client.user.friendlyName) ?? 'Nickname not yet set'}
+                    {(userAttrs?.nickname || client.user.friendlyName) ?? 'Nickname not yet set'}
                   </p>
                 </div>
                 <EditProfilePopover client={client} session={session} />

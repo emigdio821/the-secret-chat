@@ -68,11 +68,11 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
       if (values.join_after && chat) {
         // await chat.join()
         const user = await client.getUser(client.user.identity)
-        const attrs = user.attributes as unknown as UserAttributes
+        const userAttrs = user.attributes as unknown as UserAttributes
         await chat.add(client.user.identity, {
           nickname: user.friendlyName,
-          avatar_url: attrs.avatar_url ?? '',
-          name: attrs.name ?? '',
+          avatar_url: userAttrs?.avatar_url || '',
+          name: userAttrs?.name || '',
         })
         router.push(`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`)
       }

@@ -72,27 +72,7 @@
   transform: rotate(330deg) translate(146%);
 }
 
-@keyframes blinking {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes ghost {
-  0% {
-    transform: rotate(40deg);
-  }
-
-  30%,
-  100% {
-    transform: rotate(0);
-  }
-}
-
+/* TODO": Migrate to Tailwind config */
 @keyframes recording {
   0% {
     transform: scale(1);

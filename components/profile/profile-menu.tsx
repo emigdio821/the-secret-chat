@@ -27,8 +27,7 @@ import { Logout } from './profile-menu-logout'
 export function ProfileMenu({ session }: { session: Session }) {
   const user = session.user
   const { client, isLoading } = useTwilioClient()
-
-  const attrs = client?.user.attributes as unknown as UserAttributes
+  const userAttrs = client?.user.attributes as unknown as UserAttributes
 
   return (
     <DropdownMenu>
@@ -42,7 +41,7 @@ export function ProfileMenu({ session }: { session: Session }) {
               <AvatarImage
                 alt={`${user?.name}`}
                 className="object-cover"
-                src={attrs.avatar_url || AVATAR_FALLBACK_URL}
+                src={userAttrs?.avatar_url || AVATAR_FALLBACK_URL}
               />
               <AvatarFallback className="h-6 w-6 rounded-sm">
                 <User className="h-4 w-4" />
@@ -53,7 +52,7 @@ export function ProfileMenu({ session }: { session: Session }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-[180px]">
         <DropdownMenuLabel>
-          {(attrs?.name || session.user?.name) ?? client?.user.identity}
+          {(userAttrs?.name || session.user?.name) ?? client?.user.identity}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>

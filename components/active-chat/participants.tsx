@@ -1,8 +1,8 @@
 import { type ParticipantAttributes } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { type Conversation, type Participant } from '@twilio/conversations'
+import { type Client, type Conversation, type Participant } from '@twilio/conversations'
 import { useToggle } from '@uidotdev/usehooks'
-import { AtSign, Shield, User, UserX } from 'lucide-react'
+import { AtSign, Shield, Signal, User, UserX } from 'lucide-react'
 import { type Session } from 'next-auth'
 
 import { ACTIVE_PARTICIPANTS_QUERY, AVATAR_FALLBACK_URL } from '@/lib/constants'
@@ -14,12 +14,15 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Skeleton } from '@/components/ui/skeleton'
 import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
 
+import ChatActions from './chat-actions'
+
 interface ChatParticipantsProps {
   chat: Conversation
   session: Session
+  client: Client
 }
 
-export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
+export function ChatParticipants({ chat, session, client }: ChatParticipantsProps) {
   const [openedAlert, setOpenedAlert] = useToggle(false)
   const [isLoading, setLoading] = useToggle(false)
   const { data: participants, isLoading: isLoadingParts } = useQuery(
@@ -54,9 +57,9 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
   }
 
   return (
-    <div>
+    <div className="relative">
       <div className="h-20 w-full overflow-auto rounded-lg border sm:h-[420px] sm:w-36">
-        <div className="flex h-full w-full flex-row items-center gap-1 p-4 sm:flex-col">
+        <div className="flex h-full w-full flex-row items-center gap-1 p-4 pr-9 sm:flex-col sm:p-4">
           {isLoadingParts && (
             <div className="flex flex-col gap-2">
               <Skeleton className="h-2 w-4/5" />
@@ -71,7 +74,7 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
               items: participants,
               comparator: user?.email ?? '',
             }).map((participant) => {
-              const attrs = participant.attributes as unknown as ParticipantAttributes
+              const partAttrs = participant.attributes as ParticipantAttributes
 
               return (
                 <div className="text-xs sm:w-full" key={participant.sid}>
@@ -81,7 +84,7 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                         <AvatarImage
                           alt={`${user?.name}`}
                           className="object-cover"
-                          src={attrs.avatar_url || AVATAR_FALLBACK_URL}
+                          src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
                         />
                         <AvatarFallback className="h-6 w-6 rounded-sm">
                           <User className="h-4 w-4" />
@@ -95,14 +98,20 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                         <Button
                           size="xs"
                           variant="ghost"
-                          className="gap-2 px-1 sm:w-full sm:justify-start"
                           disabled={!session}
+                          className={cn('gap-2 px-1 sm:w-full sm:justify-start', {
+                            'opacity-50': !partAttrs?.isOnline,
+                          })}
                         >
-                          <Avatar className="h-5 w-5 rounded-sm">
+                          <Avatar
+                            className={cn('h-5 w-5 rounded-sm', {
+                              'border border-green-400 dark:border-green-300': partAttrs?.isOnline,
+                            })}
+                          >
                             <AvatarImage
                               alt={`${user?.name}`}
                               className="object-cover"
-                              src={attrs.avatar_url || AVATAR_FALLBACK_URL}
+                              src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
                             />
                             <AvatarFallback className="h-6 w-6 rounded-sm">
                               <User className="h-4 w-4" />
@@ -112,7 +121,7 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                             {participant.isTyping ? (
                               'Typing...'
                             ) : (
-                              <>{attrs.nickname ?? participant.identity}</>
+                              <>{partAttrs?.nickname || participant.identity}</>
                             )}
                           </span>
                         </Button>
@@ -122,32 +131,36 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
                           <AvatarImage
                             alt={`${user?.name}`}
                             className="object-cover"
-                            src={attrs.avatar_url || AVATAR_FALLBACK_URL}
+                            src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
                           />
                           <AvatarFallback className="h-6 w-6 rounded-sm">
                             <User className="h-4 w-4" />
                           </AvatarFallback>
                         </Avatar>
-                        {attrs.name && (
+                        {partAttrs?.name && (
                           <DropdownMenuLabel className="flex items-center gap-2 text-base">
-                            {attrs.name}
+                            {partAttrs?.name}
                           </DropdownMenuLabel>
                         )}
                         <DropdownMenuLabel
                           className={cn('flex items-center gap-2 font-normal', {
-                            'pt-0': attrs.name,
-                            'pb-0': attrs.nickname,
+                            'pt-0': partAttrs?.name,
+                            'pb-0': partAttrs?.nickname,
                           })}
                         >
                           <AtSign className="h-4 w-4" />
                           {participant.identity}
                         </DropdownMenuLabel>
-                        {attrs.nickname && (
-                          <DropdownMenuLabel className="flex items-center gap-2 pt-0 font-normal">
+                        {partAttrs?.nickname && (
+                          <DropdownMenuLabel className="flex items-center gap-2 py-0 font-normal">
                             <User className="h-4 w-4" />
-                            {attrs.nickname}
+                            {partAttrs?.nickname}
                           </DropdownMenuLabel>
                         )}
+                        <DropdownMenuLabel className="flex items-center gap-2 pt-0 font-normal">
+                          <Signal className="h-4 w-4" />
+                          {partAttrs?.isOnline ? 'Online' : 'Offline'}
+                        </DropdownMenuLabel>
                         {isAdmin && (
                           <>
                             <DropdownMenuSeparator />
@@ -193,6 +206,9 @@ export function ChatParticipants({ chat, session }: ChatParticipantsProps) {
             })}
         </div>
       </div>
+      <span className="absolute right-2 top-2 sm:hidden">
+        <ChatActions chat={chat} client={client} />
+      </span>
     </div>
   )
 }

@@ -13,10 +13,6 @@ const nextConfig = {
       'media.us1.twilio.com',
     ],
   },
-  env: {
-    GIPHY_API_KEY: process.env.GIPHY_API_KEY,
-    TWILIO_CHANNEL_ADMIN: process.env.TWILIO_CHANNEL_ADMIN,
-  },
 }
 
 module.exports = nextConfig

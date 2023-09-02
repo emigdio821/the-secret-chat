@@ -40,11 +40,11 @@ export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps
   async function onSubmit(values: z.infer<typeof addParticipantSchema>) {
     try {
       const user = await client.getUser(values.id)
-      const attrs = user.attributes as unknown as UserAttributes
+      const userAttrs = user.attributes as UserAttributes
       await chat.add(values.id, {
         nickname: user.friendlyName,
-        avatar_url: attrs.avatar_url ?? '',
-        name: attrs.name ?? '',
+        avatar_url: userAttrs.avatar_url || '',
+        name: userAttrs?.name || '',
       })
       setOpenedDialog(false)
       form.reset()

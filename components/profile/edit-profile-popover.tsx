@@ -23,13 +23,13 @@ interface EditProfilePopoverProps {
 export function EditProfilePopover({ client, session }: EditProfilePopoverProps) {
   const [opened, setOpened] = useState(false)
   const router = useRouter()
-  const currentAttrs = client.user.attributes as unknown as UserAttributes
+  const userAttrs = client.user.attributes as UserAttributes
   const form = useForm<z.infer<typeof editProfileSchema>>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
-      name: (currentAttrs.name || session.user?.name) ?? '',
-      nickname: (currentAttrs.nickname || client.user.friendlyName) ?? '',
-      avatar_url: currentAttrs.avatar_url,
+      name: (userAttrs?.name || session.user?.name) ?? '',
+      nickname: (userAttrs?.nickname || client.user.friendlyName) ?? '',
+      avatar_url: userAttrs?.avatar_url,
     },
   })
 
@@ -39,9 +39,10 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
         await client.user.updateFriendlyName(values.nickname)
       }
 
-      const attrsPayload = {
-        name: (values.name || currentAttrs.name || session.user?.name) ?? '',
-        nickname: (values.nickname || currentAttrs.nickname || client.user.friendlyName) ?? '',
+      const attrsPayload: UserAttributes = {
+        isOnline: false,
+        name: (values.name || userAttrs?.name || session.user?.name) ?? '',
+        nickname: (values.nickname || userAttrs?.nickname || client.user.friendlyName) ?? '',
         avatar_url: values.avatar_url,
       }
 

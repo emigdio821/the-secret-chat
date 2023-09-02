@@ -3,7 +3,7 @@ import { type MessageAttributes, type ParticipantAttributes } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { type Message } from '@twilio/conversations'
 import { motion } from 'framer-motion'
-import { User } from 'lucide-react'
+import { ImageOff, User } from 'lucide-react'
 import { type Session } from 'next-auth'
 
 import { AVATAR_FALLBACK_URL, MESSAGE_PARTICIPANT_QUERY } from '@/lib/constants'
@@ -86,7 +86,13 @@ export default function MessageItem({ session, message }: MessageItemProps) {
         <span className="flex justify-between gap-2">
           {msgAttrs?.gif ?? (isImage && mediaURL) ? (
             <div className="relative h-20 w-28 overflow-hidden rounded-lg">
-              <BlurImage src={isImage ? mediaURL : (body as string)} />
+              {body ?? mediaURL ? (
+                <BlurImage src={body ?? mediaURL} />
+              ) : (
+                <span className="flex h-full w-full items-center justify-center bg-muted">
+                  <ImageOff className="h-4 w-4" />
+                </span>
+              )}
             </div>
           ) : (
             <>{body ?? <Skeleton className="h-20 w-28" />}</>
@@ -94,7 +100,10 @@ export default function MessageItem({ session, message }: MessageItemProps) {
           {message.author === user?.email && <MessageActions message={message} />}
         </span>
         <div className="flex flex-col text-[10px] leading-4 text-muted-foreground">
-          <span>{dateCreated && formatDate(dateCreated)}</span>
+          <span>
+            {dateCreated && formatDate(dateCreated)} {msgAttrs?.gif && ' (via GIPHY)'}{' '}
+            {isImage && hasMedia && rawMedia?.contentType && ` (${rawMedia?.contentType})`}
+          </span>
           {!isAuthor && <span>{partAttrs?.nickname ?? author}</span>}
         </div>
       </motion.div>

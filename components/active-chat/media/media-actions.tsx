@@ -87,7 +87,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
             <Upload className="mr-2 h-4 w-4" />
             Upload image
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem disabled>
             <Mic className="mr-2 h-4 w-4" />
             Record audio
           </DropdownMenuItem>

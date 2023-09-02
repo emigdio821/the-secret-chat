@@ -2,7 +2,8 @@ import * as z from 'zod'
 
 const requiredField = z.string().trim().nonempty('Required field')
 const optionalField = z.string().trim()
-const envVariable = z.string().nonempty()
+const serverEnvVariable = z.string().trim().nonempty()
+const clientEnvVariable = z.string().trim().nonempty()
 
 export const loginFormSchema = z.object({
   username: requiredField,
@@ -37,15 +38,24 @@ export const searchGifsSchema = z.object({
   name: optionalField,
 })
 
-export const envSchema = z.object({
-  NEXTAUTH_URL: envVariable,
-  GITHUB_ID: envVariable,
-  GITHUB_SECRET: envVariable,
-  NEXTAUTH_SECRET: envVariable,
-  TWILIO_ACCOUNT_SID: envVariable,
-  TWILIO_API_KEY: envVariable,
-  TWILIO_API_SECRET: envVariable,
-  TWILIO_SERVICE_SID: envVariable,
-  TWILIO_CHANNEL_ADMIN: envVariable,
-  GIPHY_API_KEY: envVariable,
+export const serverEnvSchema = z.object({
+  NEXTAUTH_URL: serverEnvVariable,
+  GITHUB_ID: serverEnvVariable,
+  GITHUB_SECRET: serverEnvVariable,
+  NEXTAUTH_SECRET: serverEnvVariable,
+  TWILIO_ACCOUNT_SID: serverEnvVariable,
+  TWILIO_API_KEY: serverEnvVariable,
+  TWILIO_API_SECRET: serverEnvVariable,
+  TWILIO_SERVICE_SID: serverEnvVariable,
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+})
+
+export const clientEnvSchema = z.object({
+  NEXT_PUBLIC_TWILIO_CHANNEL_ADMIN: clientEnvVariable,
+  NEXT_PUBLIC_GIPHY_API_KEY: clientEnvVariable,
+})
+
+export const envClient = clientEnvSchema.parse({
+  NEXT_PUBLIC_TWILIO_CHANNEL_ADMIN: process.env.NEXT_PUBLIC_TWILIO_CHANNEL_ADMIN,
+  NEXT_PUBLIC_GIPHY_API_KEY: process.env.NEXT_PUBLIC_GIPHY_API_KEY,
 })
