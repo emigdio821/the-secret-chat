@@ -1,7 +1,7 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
-import { type ParticipantAttributes, type UserAttributes } from '@/types'
+import { type ChatAttributes, type ParticipantAttributes, type UserAttributes } from '@/types'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   type Client,
@@ -10,6 +10,7 @@ import {
   type Participant,
   type ParticipantUpdateReason,
 } from '@twilio/conversations'
+import { useIdle } from '@uidotdev/usehooks'
 import { Home } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -32,10 +33,6 @@ interface ActiveChatProps {
   chatId: string
 }
 
-interface ChatAttributes {
-  description?: string
-}
-
 interface ParticipantUpdatedData {
   participant: Participant
   updateReasons: ParticipantUpdateReason[]
@@ -45,10 +42,9 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   const { data: chat, isLoading } = useQuery([ACTIVE_CHAT_QUERY], getCurrentChat)
   const queryClient = useQueryClient()
   const router = useRouter()
-  // TODO: Handle user typing store
-  // const addUsersTyping = useStore((state) => state.addUsersTyping)
-  // const removeUsersTyping = useStore((state) => state.removeUsersTyping)
+  const [currParticipant, setCurrParticipant] = useState<Participant | null>(null)
   const chatAttrs = chat?.attributes as ChatAttributes
+  const isIdle = useIdle(300000)
 
   async function getCurrentChat() {
     try {
@@ -66,12 +62,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         })
       } else {
         const participant = await chat.getParticipantByIdentity(client.user.identity)
-        await participant?.updateAttributes({
-          isOnline: true,
-          nickname: user.friendlyName,
-          avatar_url: userAttrs?.avatar_url || '',
-          name: userAttrs?.name || '',
-        })
+        setCurrParticipant(participant)
       }
 
       return chat
@@ -193,6 +184,26 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     }
   }, [chat, client.user.identity])
 
+  const handleUpdateCurrParticipantStatus = useCallback(
+    async ({ isOnline = false }: { isOnline: boolean }) => {
+      if (chat) {
+        try {
+          const participant = await chat.getParticipantByIdentity(client.user.identity)
+          const partAttrs = participant?.attributes as ParticipantAttributes
+
+          if (partAttrs.isOnline !== isOnline) {
+            partAttrs.isOnline = isOnline
+            await currParticipant?.updateAttributes(partAttrs)
+          }
+        } catch (err) {
+          const errMessage = err instanceof Error ? err.message : err
+          console.log('[UPDATE_CURR_PART_ATTRS]', errMessage)
+        }
+      }
+    },
+    [chat, client.user.identity, currParticipant],
+  )
+
   useEffect(() => {
     if (chat) {
       chat.on('messageAdded', handleMessageAdded)
@@ -235,6 +246,14 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     handleParticipantJoined,
     handleUpdatedParticipant,
   ])
+
+  useEffect(() => {
+    if (isIdle) {
+      void handleUpdateCurrParticipantStatus({ isOnline: false })
+    } else {
+      void handleUpdateCurrParticipantStatus({ isOnline: true })
+    }
+  }, [isIdle, currParticipant, handleUpdateCurrParticipantStatus])
 
   return (
     <>

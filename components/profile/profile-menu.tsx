@@ -41,7 +41,7 @@ export function ProfileMenu({ session }: { session: Session }) {
               <AvatarImage
                 alt={`${user?.name}`}
                 className="object-cover"
-                src={userAttrs?.avatar_url || AVATAR_FALLBACK_URL}
+                src={(userAttrs?.avatar_url || session.user?.image) ?? AVATAR_FALLBACK_URL}
               />
               <AvatarFallback className="h-6 w-6 rounded-sm">
                 <User className="h-4 w-4" />

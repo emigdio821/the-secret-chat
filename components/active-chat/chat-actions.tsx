@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { type ChatAttributes } from '@/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { type Client, type Conversation } from '@twilio/conversations'
 import { LogOut, MoreVertical, Trash2 } from 'lucide-react'
@@ -11,6 +12,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
@@ -30,6 +32,7 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
   const [isLoading, setLoading] = useState(false)
   const { data: session } = useSession()
   const isAdmin = session?.user?.email === chat.createdBy
+  const chatAttrs = chat.attributes as ChatAttributes
 
   async function handleDeleteChat() {
     try {
@@ -80,6 +83,15 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="max-w-[180px]">
+            <DropdownMenuLabel className="sm:hidden">
+              {chat.friendlyName ?? 'Chat'}
+            </DropdownMenuLabel>
+            {chatAttrs?.description && (
+              <DropdownMenuLabel className="pt-0 text-xs font-normal sm:hidden">
+                {chatAttrs?.description}
+              </DropdownMenuLabel>
+            )}
+            <DropdownMenuSeparator className="sm:hidden" />
             <AddParticipantDialog chat={chat} client={client} />
             <ControlledAlertDialog
               open={openedLeaveChatAlert}

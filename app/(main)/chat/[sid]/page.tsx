@@ -8,7 +8,7 @@ interface ChatsPageProps {
 }
 
 export async function generateMetadata({ searchParams }: ChatsPageProps): Promise<Metadata> {
-  const chatName = searchParams.name
+  const chatName = searchParams.name || 'Chat'
 
   return {
     title: {

@@ -29,7 +29,7 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
     defaultValues: {
       name: (userAttrs?.name || session.user?.name) ?? '',
       nickname: (userAttrs?.nickname || client.user.friendlyName) ?? '',
-      avatar_url: userAttrs?.avatar_url,
+      avatar_url: (userAttrs?.avatar_url || session.user?.image) ?? '',
     },
   })
 
@@ -43,7 +43,7 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
         isOnline: false,
         name: (values.name || userAttrs?.name || session.user?.name) ?? '',
         nickname: (values.nickname || userAttrs?.nickname || client.user.friendlyName) ?? '',
-        avatar_url: values.avatar_url,
+        avatar_url: (values.avatar_url || session.user?.image) ?? '',
       }
 
       await client.user.updateAttributes(attrsPayload)

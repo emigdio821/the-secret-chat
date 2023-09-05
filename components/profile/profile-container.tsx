@@ -40,7 +40,7 @@ export function ProfileContainer({ session }: { session: Session }) {
                   <AvatarImage
                     className="object-cover"
                     alt={client.user.identity}
-                    src={userAttrs?.avatar_url || AVATAR_FALLBACK_URL}
+                    src={(userAttrs?.avatar_url || session.user?.image) ?? AVATAR_FALLBACK_URL}
                   />
                   <AvatarFallback className="h-28 w-28 rounded-lg">
                     <User className="h-6 w-6" />

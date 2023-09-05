@@ -3,15 +3,15 @@ import { type MessageAttributes, type ParticipantAttributes } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { type Message } from '@twilio/conversations'
 import { motion } from 'framer-motion'
-import { ImageOff, User } from 'lucide-react'
+import { User } from 'lucide-react'
 import { type Session } from 'next-auth'
 
 import { AVATAR_FALLBACK_URL, MESSAGE_PARTICIPANT_QUERY } from '@/lib/constants'
 import { cn, formatDate } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Skeleton } from '@/components/ui/skeleton'
+import { BlurImage } from '@/components/blur-image'
 
-import { BlurImage } from '../blur-image'
-import { Skeleton } from '../ui/skeleton'
 import { MessageActions } from './message-actions'
 
 interface MessageItemProps {
@@ -27,14 +27,14 @@ export default function MessageItem({ session, message }: MessageItemProps) {
   const hasMedia = message.type === 'media'
   const rawMedia = message.attachedMedia?.[0]
   // const isAudio = hasMedia && rawMedia?.contentType.startsWith('audio')
-  const isImage = hasMedia && rawMedia?.contentType.startsWith('image')
+  const isRawImage = hasMedia && rawMedia?.contentType.startsWith('image')
   const { data: msgParticipant } = useQuery(
     [MESSAGE_PARTICIPANT_QUERY, message.sid],
     getMessageParticipant,
   )
-  const partAttrs =
-    msgParticipant && (msgParticipant.attributes as unknown as ParticipantAttributes)
-  const msgAttrs = message.attributes as unknown as MessageAttributes
+  const partAttrs = msgParticipant?.attributes as ParticipantAttributes
+  const msgAttrs = message.attributes as MessageAttributes
+  const isGif = msgAttrs?.gif
 
   async function getMessageParticipant() {
     try {
@@ -69,7 +69,11 @@ export default function MessageItem({ session, message }: MessageItemProps) {
         <AvatarImage
           className="object-cover"
           alt={`${user?.name}`}
-          src={partAttrs?.avatar_url ?? AVATAR_FALLBACK_URL}
+          src={
+            isAuthor
+              ? (partAttrs?.avatar_url || session.user?.image) ?? AVATAR_FALLBACK_URL
+              : partAttrs?.avatar_url || AVATAR_FALLBACK_URL
+          }
         />
         <AvatarFallback className="h-6 w-6 rounded-lg">
           <User className="h-4 w-4" />
@@ -84,25 +88,45 @@ export default function MessageItem({ session, message }: MessageItemProps) {
         })}
       >
         <span className="flex justify-between gap-2">
-          {msgAttrs?.gif ?? (isImage && mediaURL) ? (
-            <div className="relative h-20 w-28 overflow-hidden rounded-lg">
-              {body ?? mediaURL ? (
-                <BlurImage src={body ?? mediaURL} />
-              ) : (
-                <span className="flex h-full w-full items-center justify-center bg-muted">
-                  <ImageOff className="h-4 w-4" />
-                </span>
-              )}
-            </div>
-          ) : (
-            <>{body ?? <Skeleton className="h-20 w-28" />}</>
-          )}
+          <span>
+            {isGif && (
+              <>
+                {body ? (
+                  <div className="relative h-20 w-28 overflow-hidden rounded-lg">
+                    <BlurImage src={body} />
+                  </div>
+                ) : (
+                  <Skeleton className="h-20 w-28" />
+                )}
+              </>
+            )}
+            {isRawImage && (
+              <>
+                {mediaURL ? (
+                  <div className="relative h-20 w-28 overflow-hidden rounded-lg">
+                    <BlurImage src={mediaURL} />
+                  </div>
+                ) : (
+                  <Skeleton className="h-20 w-28" />
+                )}
+              </>
+            )}
+            {!isGif && !isRawImage && (
+              <span
+                className={cn({
+                  'italic text-muted-foreground': !body,
+                })}
+              >
+                {body ?? 'Empty message'}
+              </span>
+            )}
+          </span>
           {message.author === user?.email && <MessageActions message={message} />}
         </span>
         <div className="flex flex-col text-[10px] leading-4 text-muted-foreground">
           <span>
-            {dateCreated && formatDate(dateCreated)} {msgAttrs?.gif && ' (via GIPHY)'}{' '}
-            {isImage && hasMedia && rawMedia?.contentType && ` (${rawMedia?.contentType})`}
+            {dateCreated && formatDate(dateCreated)} {isGif && ' (via GIPHY)'}{' '}
+            {isRawImage && hasMedia && rawMedia?.contentType && ` (${rawMedia?.contentType})`}
           </span>
           {!isAuthor && <span>{partAttrs?.nickname ?? author}</span>}
         </div>

@@ -103,20 +103,26 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                             'opacity-50': !partAttrs?.isOnline,
                           })}
                         >
-                          <Avatar
-                            className={cn('h-5 w-5 rounded-sm', {
-                              'border border-green-400 dark:border-green-300': partAttrs?.isOnline,
-                            })}
-                          >
-                            <AvatarImage
-                              alt={`${user?.name}`}
-                              className="object-cover"
-                              src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
+                          <div className="relative h-5 w-5 rounded-sm">
+                            <Avatar className="h-full w-full rounded-[inherit]">
+                              <AvatarImage
+                                alt={`${user?.name}`}
+                                className="object-cover"
+                                src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
+                              />
+                              <AvatarFallback className="h-6 w-6 rounded-sm">
+                                <User className="h-4 w-4" />
+                              </AvatarFallback>
+                            </Avatar>
+                            <span
+                              className={cn(
+                                'absolute -bottom-[2px] -right-[2px] h-2 w-2 rounded-full border border-card bg-gray-100',
+                                {
+                                  'bg-green-400': partAttrs?.isOnline,
+                                },
+                              )}
                             />
-                            <AvatarFallback className="h-6 w-6 rounded-sm">
-                              <User className="h-4 w-4" />
-                            </AvatarFallback>
-                          </Avatar>
+                          </div>
                           <span className="max-w-[72px] truncate">
                             {participant.isTyping ? (
                               'Typing...'
@@ -126,7 +132,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                           </span>
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent align="end" className="max-w-[220px] p-1">
+                      <PopoverContent align="end" className="max-w-[240px] p-1">
                         <Avatar className="mx-2 my-1.5 h-20 w-20 rounded-lg">
                           <AvatarImage
                             alt={`${user?.name}`}
@@ -149,7 +155,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                           })}
                         >
                           <AtSign className="h-4 w-4" />
-                          {participant.identity}
+                          <span className="break-all">{participant.identity}</span>
                         </DropdownMenuLabel>
                         {partAttrs?.nickname && (
                           <DropdownMenuLabel className="flex items-center gap-2 py-0 font-normal">
