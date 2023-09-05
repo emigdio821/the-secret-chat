@@ -38,6 +38,10 @@ export const searchGifsSchema = z.object({
   name: optionalField,
 })
 
+export const editMessageSchema = z.object({
+  body: requiredField,
+})
+
 export const serverEnvSchema = z.object({
   NEXTAUTH_URL: serverEnvVariable,
   GITHUB_ID: serverEnvVariable,

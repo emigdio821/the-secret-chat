@@ -89,7 +89,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
           </DropdownMenuItem>
           <DropdownMenuItem disabled>
             <Mic className="mr-2 h-4 w-4" />
-            Record audio
+            Record audio (WIP)
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

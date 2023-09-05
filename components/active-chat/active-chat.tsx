@@ -7,6 +7,7 @@ import {
   type Client,
   type Conversation,
   type Message,
+  type MessageUpdateReason,
   type Participant,
   type ParticipantUpdateReason,
 } from '@twilio/conversations'
@@ -18,6 +19,7 @@ import {
   ACTIVE_CHAT_MESSAGES_QUERY,
   ACTIVE_CHAT_QUERY,
   ACTIVE_PARTICIPANTS_QUERY,
+  MESSAGE_PARTICIPANT_QUERY,
   USER_CHATS_QUERY,
 } from '@/lib/constants'
 // import { useStore } from '@/lib/store'
@@ -36,6 +38,11 @@ interface ActiveChatProps {
 interface ParticipantUpdatedData {
   participant: Participant
   updateReasons: ParticipantUpdateReason[]
+}
+
+interface MessageUpdatedData {
+  message: Message
+  updateReasons: MessageUpdateReason[]
 }
 
 export function ActiveChat({ client, chatId }: ActiveChatProps) {
@@ -139,6 +146,18 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     [chat, queryClient],
   )
 
+  const handleUpdatedMessage = useCallback(
+    async (data: MessageUpdatedData) => {
+      try {
+        await queryClient.resetQueries({ queryKey: [MESSAGE_PARTICIPANT_QUERY, data.message.sid] })
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : err
+        console.log('[UPDATE_MSG]', errMessage)
+      }
+    },
+    [queryClient],
+  )
+
   const handleMessageRemoved = useCallback(async () => {
     try {
       await queryClient.refetchQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
@@ -216,6 +235,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
       chat.on('participantJoined', handleParticipantJoined)
       chat.on('participantLeft', handleParticipantLeft)
       chat.on('participantUpdated', handleUpdatedParticipant)
+      chat.on('messageUpdated', handleUpdatedMessage)
     }
 
     return () => {
@@ -228,6 +248,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         chat.removeListener('participantJoined', handleParticipantJoined)
         chat.removeListener('participantLeft', handleParticipantLeft)
         chat.removeListener('participantUpdated', handleUpdatedParticipant)
+        chat.removeListener('messageUpdated', handleUpdatedMessage)
         queryClient.removeQueries({ queryKey: [ACTIVE_CHAT_QUERY] })
         queryClient.removeQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
         queryClient.removeQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
@@ -242,6 +263,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     handleOfflineUser,
     handleMessageAdded,
     handleMessageRemoved,
+    handleUpdatedMessage,
     handleParticipantLeft,
     handleParticipantJoined,
     handleUpdatedParticipant,
