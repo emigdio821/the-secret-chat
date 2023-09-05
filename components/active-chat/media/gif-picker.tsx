@@ -85,6 +85,9 @@ export function GifPicker({ trigger, action, isOpen, setOpen }: GifPickerProps) 
         )}
       </DialogTrigger>
       <DialogContent
+        onOpenAutoFocus={(e) => {
+          e.preventDefault()
+        }}
         onInteractOutside={(e) => {
           e.preventDefault()
         }}
@@ -130,7 +133,7 @@ export function GifPicker({ trigger, action, isOpen, setOpen }: GifPickerProps) 
                         key={gif.id}
                         type="button"
                         variant="unstyled"
-                        className="h-24 w-full rounded-lg p-0"
+                        className="h-24 w-full rounded-lg p-0 transition-transform hover:scale-105"
                         onClick={(e) => {
                           const parent = e.currentTarget.parentElement
                           if (parent) {

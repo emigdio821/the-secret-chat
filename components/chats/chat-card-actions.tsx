@@ -67,10 +67,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-[180px]">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuLabel className="pt-0 text-xs">
-          {chat.friendlyName ?? chat.uniqueName}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel>{chat.friendlyName ?? chat.uniqueName}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <ControlledAlertDialog
           open={openedLeaveChatAlert}
