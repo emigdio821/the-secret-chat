@@ -205,7 +205,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   const handleRemoveTyping = useCallback(
     async (participant: Participant) => {
       try {
-        removeUsersTyping(participant)
+        removeUsersTyping({ participant })
         await queryClient.resetQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : err
@@ -275,6 +275,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         queryClient.removeQueries({ queryKey: [ACTIVE_CHAT_QUERY] })
         queryClient.removeQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
         queryClient.removeQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+        removeUsersTyping({ removeAll: true })
         void handleOfflineUser()
       }
     }
@@ -282,6 +283,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     chat,
     queryClient,
     handleTyping,
+    removeUsersTyping,
     handleChatRemoved,
     handleOfflineUser,
     handleRemoveTyping,

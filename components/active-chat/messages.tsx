@@ -112,11 +112,11 @@ export function Messages({ chat, client }: MessagesProps) {
                       const shDiv = e.currentTarget.scrollHeight
                       const stDiv = e.currentTarget.scrollTop + e.currentTarget.clientHeight
 
-                      if (stDiv < shDiv / 2 && !showScrollBottom) {
+                      if (stDiv < (shDiv * 3) / 4 && !showScrollBottom) {
                         setShowScrollBottom(true)
                       }
 
-                      if (shDiv === stDiv || (stDiv >= shDiv / 2 && showScrollBottom)) {
+                      if (shDiv === stDiv || (stDiv >= (shDiv * 3) / 4 && showScrollBottom)) {
                         setShowScrollBottom(false)
                       }
                     }}
