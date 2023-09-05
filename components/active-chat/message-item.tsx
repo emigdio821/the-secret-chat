@@ -117,11 +117,15 @@ export default function MessageItem({ session, message }: MessageItemProps) {
               </span>
             )}
           </span>
-          {message.author === user?.email && <MessageActions message={message} />}
+          {message.author === user?.email && (
+            <MessageActions message={message} editMode={!isRawImage && !isGif} />
+          )}
         </span>
         <div className="flex flex-col text-[10px] leading-4 text-muted-foreground">
           <span>
-            {dateCreated && formatDate(dateCreated)} {isGif && ' (via GIPHY)'}{' '}
+            {dateCreated && formatDate(dateCreated)}
+            {isGif && ' (via GIPHY)'}
+            {msgAttrs.isEdited && ' (edited)'}
             {isRawImage && hasMedia && rawMedia?.contentType && ` (${rawMedia?.contentType})`}
           </span>
           {!isAuthor && <span>{partAttrs?.nickname ?? author}</span>}

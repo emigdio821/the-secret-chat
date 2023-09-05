@@ -16,13 +16,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
+import { Loader } from '@/components/icons'
 
-import { Loader } from '../icons'
-import { Input } from '../ui/input'
+interface MessageActionsProps {
+  message: Message
+  editMode: boolean
+}
 
-export function MessageActions({ message }: { message: Message }) {
+export function MessageActions({ message, editMode }: MessageActionsProps) {
   const [openedAlert, setOpenedAlert] = useToggle(false)
   const [isLoading, setLoading] = useToggle(false)
   const [isEditMode, setEditMode] = useToggle(false)
@@ -49,6 +53,7 @@ export function MessageActions({ message }: { message: Message }) {
   async function onSubmit(values: z.infer<typeof editMessageSchema>) {
     try {
       await message.updateBody(values.body)
+      await message.updateAttributes({ isEdited: true })
       setEditMode(false)
       form.reset(values)
     } catch (err) {
@@ -77,61 +82,65 @@ export function MessageActions({ message }: { message: Message }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-[180px]">
-        <Popover
-          modal={true}
-          open={isEditMode}
-          onOpenChange={(opened) => {
-            if (!opened) {
-              form.reset()
-            }
-            setEditMode(opened)
-          }}
-        >
-          <PopoverTrigger asChild>
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault()
-                setEditMode(true)
+        {editMode && (
+          <>
+            <Popover
+              modal={true}
+              open={isEditMode}
+              onOpenChange={(opened) => {
+                if (!opened) {
+                  form.reset()
+                }
+                setEditMode(opened)
               }}
             >
-              <Edit2 className="mr-2 h-4 w-4" />
-              <span>Edit</span>
-            </DropdownMenuItem>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex w-full flex-row items-center gap-2"
-              >
-                <FormField
-                  name="body"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          autoComplete="false"
-                          placeholder={message.body ?? 'Edit your message'}
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  size="icon"
-                  type="submit"
-                  disabled={form.formState.isSubmitting || !form.formState.isValid}
+              <PopoverTrigger asChild>
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault()
+                    setEditMode(true)
+                  }}
                 >
-                  {form.formState.isSubmitting ? <Loader /> : <Save className="h-4 w-4" />}
-                  <span className="sr-only">Save message</span>
-                </Button>
-              </form>
-            </Form>
-          </PopoverContent>
-        </Popover>
-        <DropdownMenuSeparator />
+                  <Edit2 className="mr-2 h-4 w-4" />
+                  <span>Edit</span>
+                </DropdownMenuItem>
+              </PopoverTrigger>
+              <PopoverContent>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="flex w-full flex-row items-center gap-2"
+                  >
+                    <FormField
+                      name="body"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              autoComplete="false"
+                              placeholder={message.body ?? 'Edit your message'}
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      size="icon"
+                      type="submit"
+                      disabled={form.formState.isSubmitting || !form.formState.isValid}
+                    >
+                      {form.formState.isSubmitting ? <Loader /> : <Save className="h-4 w-4" />}
+                      <span className="sr-only">Save message</span>
+                    </Button>
+                  </form>
+                </Form>
+              </PopoverContent>
+            </Popover>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <ControlledAlertDialog
           open={openedAlert}
           isLoading={isLoading}

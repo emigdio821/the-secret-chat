@@ -116,7 +116,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                             </Avatar>
                             <span
                               className={cn(
-                                'absolute -bottom-[2px] -right-[2px] h-2 w-2 rounded-full border border-card bg-gray-100',
+                                'absolute -bottom-[2px] -right-[2px] h-2 w-2 rounded-full border border-card bg-zinc-400',
                                 {
                                   'bg-green-400': partAttrs?.isOnline,
                                 },
@@ -171,7 +171,10 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                           <>
                             <DropdownMenuSeparator />
                             <section className="flex flex-col">
-                              <Button variant="ghost" className="h-full justify-start px-2 py-1.5">
+                              <Button
+                                variant="dropdown"
+                                className="h-full justify-start px-2 py-1.5"
+                              >
                                 <Shield className="mr-2 h-4 w-4" />
                                 <span>Make admin</span>
                               </Button>
@@ -184,7 +187,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                                 }}
                                 trigger={
                                   <Button
-                                    variant="ghost"
+                                    variant="dropdown"
                                     className="h-full justify-start px-2 py-1.5 !text-destructive"
                                     onClick={() => {
                                       setOpenedAlert(true)

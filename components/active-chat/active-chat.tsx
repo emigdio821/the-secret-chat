@@ -69,6 +69,12 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         })
       } else {
         const participant = await chat.getParticipantByIdentity(client.user.identity)
+        await participant?.updateAttributes({
+          isOnline: true,
+          nickname: user.friendlyName,
+          avatar_url: userAttrs?.avatar_url || '',
+          name: userAttrs?.name || '',
+        })
         setCurrParticipant(participant)
       }
 

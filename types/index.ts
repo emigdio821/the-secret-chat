@@ -65,6 +65,7 @@ export type ParticipantAttributes = {
 
 export type MessageAttributes = {
   gif?: boolean
+  isEdited?: boolean
 } & JSONValue
 
 export interface ChatAttributes {

@@ -18,7 +18,7 @@ export function ImageViewer({ url, title }: ImageViewerProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="unstyled" className="h-20 w-28 rounded-lg p-0">
+        <Button variant="unstyled" className="block h-20 w-28 rounded-lg p-0">
           <BlurImage src={url} />
           <span className="sr-only">Open image</span>
         </Button>
