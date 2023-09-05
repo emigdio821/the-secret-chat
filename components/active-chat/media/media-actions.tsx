@@ -1,8 +1,9 @@
 import { type Conversation } from '@twilio/conversations'
 import { useToggle } from '@uidotdev/usehooks'
-import { ImageIcon, Mic, Paperclip, Upload } from 'lucide-react'
+import { ImageIcon, Mic, Paperclip, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { useAudioRecorder } from '@/hooks/use-audio-recorder'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -17,7 +18,7 @@ import { GifPicker } from './gif-picker'
 
 export function MediaActions({ chat }: { chat: Conversation }) {
   const [openedGifDialog, setOpenedGifDialog] = useToggle(false)
-
+  const audioRecorder = useAudioRecorder()
   function handleUploadImage() {
     const fileInput = document.getElementById('file-input')
     fileInput?.click()
@@ -51,7 +52,19 @@ export function MediaActions({ chat }: { chat: Conversation }) {
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.log('[SEND_GIF]', errMessage)
-      return null
+    }
+  }
+
+  async function handleSendAudio(blob: Blob) {
+    try {
+      const formData = new FormData()
+      const audioToast = toast.loading('Processing audio...')
+      formData.append('file', blob, 'audio-blob')
+      await chat.sendMessage(formData)
+      toast.dismiss(audioToast)
+    } catch (err) {
+      const errMessage = err instanceof Error ? err.message : err
+      console.log('[SEND_AUDIO]', errMessage)
     }
   }
 
@@ -65,32 +78,88 @@ export function MediaActions({ chat }: { chat: Conversation }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="max-w-[180px]">
-          <DropdownMenuLabel>Media</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            {audioRecorder.isRecording ? (
+              <>
+                {audioRecorder.isPaused ? (
+                  'Paused'
+                ) : (
+                  <span className="animate-pulse">Recording</span>
+                )}
+              </>
+            ) : (
+              'Media'
+            )}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <GifPicker
-            trigger={
+          {!audioRecorder.isRecording && (
+            <>
+              <GifPicker
+                trigger={
+                  <DropdownMenuItem
+                    disabled={audioRecorder.isRecording}
+                    onSelect={(e) => {
+                      e.preventDefault()
+                      setOpenedGifDialog(true)
+                    }}
+                  >
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    GIF
+                  </DropdownMenuItem>
+                }
+                action={handleSendGif}
+                isOpen={openedGifDialog}
+                setOpen={setOpenedGifDialog}
+              />
+              <DropdownMenuItem onSelect={handleUploadImage} disabled={audioRecorder.isRecording}>
+                <Upload className="mr-2 h-4 w-4" />
+                Upload image
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={async (e) => {
+                  e.preventDefault()
+                  await audioRecorder.startRecording()
+                }}
+                disabled={audioRecorder.isRecording}
+              >
+                <Mic className="mr-2 h-4 w-4" />
+                Record audio
+              </DropdownMenuItem>
+            </>
+          )}
+          {audioRecorder.isRecording && (
+            <>
               <DropdownMenuItem
                 onSelect={(e) => {
                   e.preventDefault()
-                  setOpenedGifDialog(true)
+                  audioRecorder.togglePauseResume()
                 }}
               >
-                <ImageIcon className="mr-2 h-4 w-4" />
-                GIF
+                <Pause className="mr-2 h-4 w-4" />
+                {audioRecorder.isPaused ? 'Resume' : 'Pause'} audio
               </DropdownMenuItem>
-            }
-            action={handleSendGif}
-            isOpen={openedGifDialog}
-            setOpen={setOpenedGifDialog}
-          />
-          <DropdownMenuItem onSelect={handleUploadImage}>
-            <Upload className="mr-2 h-4 w-4" />
-            Upload image
-          </DropdownMenuItem>
-          <DropdownMenuItem disabled>
-            <Mic className="mr-2 h-4 w-4" />
-            Record audio (WIP)
-          </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault()
+                  audioRecorder.stopRecording()
+                }}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Cancel audio
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={async () => {
+                  const blob = audioRecorder.stopRecording()
+                  if (blob) {
+                    await handleSendAudio(blob)
+                  }
+                }}
+              >
+                <SendHorizonal className="mr-2 h-4 w-4" />
+                Send audio
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       <input

@@ -10,6 +10,7 @@ import { AVATAR_FALLBACK_URL, MESSAGE_PARTICIPANT_QUERY } from '@/lib/constants'
 import { cn, formatDate } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AudioPlayer } from '@/components/audio-player'
 import { ImageViewer } from '@/components/image-viewer'
 
 import { MessageActions } from './message-actions'
@@ -26,7 +27,7 @@ export default function MessageItem({ session, message }: MessageItemProps) {
   const isAuthor = author === user?.email
   const hasMedia = message.type === 'media'
   const rawMedia = message.attachedMedia?.[0]
-  // const isAudio = hasMedia && rawMedia?.contentType.startsWith('audio')
+  const isAudio = hasMedia && rawMedia?.contentType.startsWith('audio')
   const isRawImage = hasMedia && rawMedia?.contentType.startsWith('image')
   const { data: msgParticipant } = useQuery(
     [MESSAGE_PARTICIPANT_QUERY, message.sid],
@@ -107,7 +108,10 @@ export default function MessageItem({ session, message }: MessageItemProps) {
                 )}
               </>
             )}
-            {!isGif && !isRawImage && (
+            {isAudio && (
+              <>{mediaURL ? <AudioPlayer url={mediaURL} /> : <Skeleton className="h-20 w-32" />}</>
+            )}
+            {!isGif && !isRawImage && !isAudio && (
               <span
                 className={cn({
                   'italic text-muted-foreground': !body,
