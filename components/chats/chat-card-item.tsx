@@ -16,13 +16,13 @@ interface ChatCardItemProps {
   session: Session
 }
 
-interface ConvoDescription {
+interface ChatDescription {
   description?: string
 }
 
 export function ChatCardItem({ chat, session }: ChatCardItemProps) {
   const { createdBy } = chat
-  const attrs = chat.attributes as unknown as ConvoDescription
+  const attrs = chat.attributes as ChatDescription
   const partsCount = chat._participants.size
   const isOwner = session.user?.email === createdBy
   const { data: unreadMsgs } = useQuery([UNREAD_MSGS_QUERY, chat.sid], getUnreadMessages)

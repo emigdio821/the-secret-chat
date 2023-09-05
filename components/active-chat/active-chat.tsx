@@ -22,7 +22,7 @@ import {
   MESSAGE_PARTICIPANT_QUERY,
   USER_CHATS_QUERY,
 } from '@/lib/constants'
-// import { useStore } from '@/lib/store'
+import { useStore } from '@/lib/store'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Messages } from '@/components/active-chat/messages'
@@ -49,6 +49,8 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   const { data: chat, isLoading } = useQuery([ACTIVE_CHAT_QUERY], getCurrentChat)
   const queryClient = useQueryClient()
   const router = useRouter()
+  const addUsersTyping = useStore((state) => state.addUsersTyping)
+  const removeUsersTyping = useStore((state) => state.removeUsersTyping)
   const [currParticipant, setCurrParticipant] = useState<Participant | null>(null)
   const chatAttrs = chat?.attributes as ChatAttributes
   const isIdle = useIdle(300000)
@@ -187,14 +189,31 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     [queryClient],
   )
 
-  const handleTyping = useCallback(async () => {
-    try {
-      await queryClient.resetQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
-    } catch (err) {
-      const errMessage = err instanceof Error ? err.message : err
-      console.log('[TYPING]', errMessage)
-    }
-  }, [queryClient])
+  const handleTyping = useCallback(
+    async (participant: Participant) => {
+      try {
+        addUsersTyping(participant)
+        await queryClient.resetQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : err
+        console.log('[TYPING]', errMessage)
+      }
+    },
+    [queryClient, addUsersTyping],
+  )
+
+  const handleRemoveTyping = useCallback(
+    async (participant: Participant) => {
+      try {
+        removeUsersTyping(participant)
+        await queryClient.resetQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : err
+        console.log('[REMOVE_TYPING]', errMessage)
+      }
+    },
+    [queryClient, removeUsersTyping],
+  )
 
   const handleOfflineUser = useCallback(async () => {
     try {
@@ -233,10 +252,8 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     if (chat) {
       chat.on('messageAdded', handleMessageAdded)
       chat.on('messageRemoved', handleMessageRemoved)
-      // chat.on('typingStarted', addUsersTyping)
-      // chat.on('typingEnded', removeUsersTyping)
       chat.on('typingStarted', handleTyping)
-      chat.on('typingEnded', handleTyping)
+      chat.on('typingEnded', handleRemoveTyping)
       chat.on('removed', handleChatRemoved)
       chat.on('participantJoined', handleParticipantJoined)
       chat.on('participantLeft', handleParticipantLeft)
@@ -249,7 +266,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         chat.removeListener('messageAdded', handleMessageAdded)
         chat.removeListener('messageRemoved', handleMessageRemoved)
         chat.removeListener('typingStarted', handleTyping)
-        chat.removeListener('typingEnded', handleTyping)
+        chat.removeListener('typingEnded', handleRemoveTyping)
         chat.removeListener('removed', handleChatRemoved)
         chat.removeListener('participantJoined', handleParticipantJoined)
         chat.removeListener('participantLeft', handleParticipantLeft)
@@ -267,6 +284,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     handleTyping,
     handleChatRemoved,
     handleOfflineUser,
+    handleRemoveTyping,
     handleMessageAdded,
     handleMessageRemoved,
     handleUpdatedMessage,

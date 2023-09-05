@@ -1,19 +1,21 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { type Client, type Conversation } from '@twilio/conversations'
-// import { AnimatePresence } from 'framer-motion'
-import { Ghost, Send } from 'lucide-react'
+import { useToggle } from '@uidotdev/usehooks'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowDown, Ghost, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type * as z from 'zod'
 
 import { ACTIVE_CHAT_MESSAGES_QUERY } from '@/lib/constants'
-// import { useStore } from '@/lib/store'
+import { useStore } from '@/lib/store'
+import { cn } from '@/lib/utils'
 import { sendMessageSchema } from '@/lib/zod-schemas'
 import { useRainbowGradient } from '@/hooks/use-rainbow-gradient'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { ChatOnlySkeleton } from '@/components/skeletons'
@@ -21,8 +23,7 @@ import { ChatOnlySkeleton } from '@/components/skeletons'
 import { MediaActions } from './media/media-actions'
 import MessageItem from './message-item'
 import { ChatParticipants } from './participants'
-
-// import { TypingIndicator } from './typing-indicator'
+import { TypingIndicator } from './typing-indicator'
 
 interface MessagesProps {
   chat: Conversation
@@ -30,10 +31,11 @@ interface MessagesProps {
 }
 
 export function Messages({ chat, client }: MessagesProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const msgsContainerRef = useRef<HTMLDivElement>(null)
   const { data: session } = useSession()
+  const [showScrollBottom, setShowScrollBottom] = useToggle(false)
   const containerBg = useRainbowGradient()
-  // const usersTyping = useStore((state) => state.usersTyping)
+  const usersTyping = useStore((state) => state.usersTyping)
   const { data: messages, isLoading, refetch } = useQuery([ACTIVE_CHAT_MESSAGES_QUERY], getMessages)
   const form = useForm<z.infer<typeof sendMessageSchema>>({
     resolver: zodResolver(sendMessageSchema),
@@ -81,13 +83,17 @@ export function Messages({ chat, client }: MessagesProps) {
     }
   }
 
-  useEffect(() => {
-    const messagesEndEl = messagesEndRef.current
+  const scrollBottom = useCallback(() => {
+    const msgsContainerEl = msgsContainerRef.current
 
-    if (messagesEndEl) {
-      messagesEndEl.scrollIntoView({ behavior: 'smooth' })
+    if (msgsContainerEl) {
+      msgsContainerEl.scrollTo({ top: msgsContainerEl.scrollHeight, behavior: 'smooth' })
     }
-  }, [messages])
+  }, [])
+
+  useEffect(() => {
+    scrollBottom()
+  }, [messages, scrollBottom])
 
   return (
     <>
@@ -99,27 +105,58 @@ export function Messages({ chat, client }: MessagesProps) {
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-2 sm:flex-row">
                 <ChatParticipants chat={chat} session={session} client={client} />
-                <div
-                  style={{ background: containerBg }}
-                  className="relative h-96 w-full overflow-y-auto rounded-lg border sm:h-[420px]"
-                >
-                  {messages.length > 0 ? (
-                    <div className="flex flex-col gap-2 p-4">
-                      {messages.map((message) => (
-                        <MessageItem key={message.sid} session={session} message={message} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
-                      <Ghost className="h-5 w-5" />
-                      No messages yet
-                    </div>
-                  )}
-                  {/* TODO: Fix Typing indicator */}
-                  {/* <AnimatePresence>
+                <div className="relative h-[420px] w-full sm:flex-1">
+                  <div
+                    ref={msgsContainerRef}
+                    onScroll={(e) => {
+                      const shDiv = e.currentTarget.scrollHeight
+                      const stDiv = e.currentTarget.scrollTop + e.currentTarget.clientHeight
+
+                      if (stDiv < shDiv / 2 && !showScrollBottom) {
+                        setShowScrollBottom(true)
+                      }
+
+                      if (shDiv === stDiv || (stDiv >= shDiv / 2 && showScrollBottom)) {
+                        setShowScrollBottom(false)
+                      }
+                    }}
+                    style={{ background: containerBg }}
+                    className="absolute h-full w-full overflow-y-auto rounded-lg border"
+                  >
+                    {messages.length > 0 ? (
+                      <div className="flex flex-col gap-2 p-4">
+                        {messages.map((message) => (
+                          <MessageItem key={message.sid} session={session} message={message} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
+                        <Ghost className="h-5 w-5" />
+                        No messages yet
+                      </div>
+                    )}
+                  </div>
+                  <AnimatePresence>
                     {usersTyping.length > 0 && <TypingIndicator participants={usersTyping} />}
-                  </AnimatePresence> */}
-                  <div ref={messagesEndRef} />
+                  </AnimatePresence>
+                  <AnimatePresence>
+                    {showScrollBottom && (
+                      <motion.button
+                        type="button"
+                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, y: 5 }}
+                        exit={{ opacity: 0, y: 5 }}
+                        onClick={scrollBottom}
+                        className={cn(
+                          buttonVariants({ size: 'icon' }),
+                          'absolute bottom-4 right-4 h-6 w-6 rounded-full',
+                        )}
+                      >
+                        <ArrowDown className="h-3 w-3" />
+                        <span className="sr-only">Scroll bottom</span>
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
               <Form {...form}>

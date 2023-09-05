@@ -80,7 +80,7 @@ export function ChatOnlySkeleton() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2 sm:flex-row">
-        <div className="h-20 w-full rounded-lg border sm:h-[420px] sm:w-36">
+        <div className="h-16 w-full rounded-lg border sm:h-[420px] sm:w-36">
           <div className="flex h-full w-full flex-row items-center gap-1 p-4 sm:flex-col sm:items-start">
             <div className="flex h-8 items-center gap-1">
               <Skeleton className="h-5 w-5 rounded-sm" />
@@ -96,7 +96,7 @@ export function ChatOnlySkeleton() {
             </div>
           </div>
         </div>
-        <div className="flex h-96 w-full flex-col gap-2 rounded-lg border p-4 sm:h-[420px] sm:flex-1">
+        <div className="flex h-[420px] w-full flex-col gap-2 rounded-lg border p-4 sm:flex-1">
           <div className="flex gap-2">
             <Skeleton className="h-6 w-6 rounded-lg" />
             <Skeleton className="h-16 w-28" />

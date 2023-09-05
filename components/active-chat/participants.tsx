@@ -57,9 +57,9 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
   }
 
   return (
-    <div className="relative">
-      <div className="h-20 w-full overflow-auto rounded-lg border sm:h-[420px] sm:w-36">
-        <div className="flex h-full w-full flex-row items-center gap-1 p-4 pr-9 sm:flex-col sm:p-4">
+    <div className="relative flex h-16 w-full items-center justify-between rounded-lg border sm:h-[420px] sm:w-36">
+      <div className="h-full w-full overflow-auto">
+        <div className="flex h-full w-full flex-row items-center gap-1 px-4 py-2 sm:flex-col sm:p-4">
           {isLoadingParts && (
             <div className="flex flex-col gap-2">
               <Skeleton className="h-2 w-4/5" />
@@ -215,7 +215,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
             })}
         </div>
       </div>
-      <span className="absolute right-2 top-2 sm:hidden">
+      <span className="px-4 py-2 sm:hidden">
         <ChatActions chat={chat} client={client} />
       </span>
     </div>

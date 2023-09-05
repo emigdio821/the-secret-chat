@@ -7,7 +7,7 @@ export function TypingIndicator({ participants }: { participants: Participant[] 
   let message
 
   if (participants.length === 1) {
-    const attrs = participants[0].attributes as unknown as ParticipantAttributes
+    const attrs = participants[0].attributes as ParticipantAttributes
     message = `${attrs.nickname ?? participants[0].identity} is typing...`
   } else if (participants.length > 1) {
     message = `${participants.length} participants are typing...`
@@ -17,11 +17,11 @@ export function TypingIndicator({ participants }: { participants: Participant[] 
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}
-      initial={{ opacity: 0, y: 5 }}
-      exit={{ opacity: 0, y: 5 }}
-      className="mb-2 flex w-full justify-center"
+      initial={{ opacity: 0, y: -5 }}
+      exit={{ opacity: 0, y: -5 }}
+      className="flex w-full justify-center"
     >
-      <div className="mx-auto flex items-center gap-1 rounded-lg border bg-background/80 px-3 py-2 text-xs backdrop-blur-sm">
+      <div className="mx-auto flex items-center gap-1 rounded-b-lg border bg-background/80 px-3 py-2 text-xs backdrop-blur-sm">
         <Keyboard className="h-4 w-4 animate-pulse" />
         <span>{message}</span>
       </div>

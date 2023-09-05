@@ -68,7 +68,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
       if (values.join_after && chat) {
         // await chat.join()
         const user = await client.getUser(client.user.identity)
-        const userAttrs = user.attributes as unknown as UserAttributes
+        const userAttrs = user.attributes as UserAttributes
         await chat.add(client.user.identity, {
           nickname: user.friendlyName,
           avatar_url: userAttrs?.avatar_url || '',

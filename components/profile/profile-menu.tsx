@@ -27,7 +27,7 @@ import { Logout } from './profile-menu-logout'
 export function ProfileMenu({ session }: { session: Session }) {
   const user = session.user
   const { client, isLoading } = useTwilioClient()
-  const userAttrs = client?.user.attributes as unknown as UserAttributes
+  const userAttrs = client?.user.attributes as UserAttributes
 
   return (
     <DropdownMenu>
