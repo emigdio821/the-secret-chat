@@ -10,7 +10,7 @@ import { AVATAR_FALLBACK_URL, MESSAGE_PARTICIPANT_QUERY } from '@/lib/constants'
 import { cn, formatDate } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
-import { BlurImage } from '@/components/blur-image'
+import { ImageViewer } from '@/components/image-viewer'
 
 import { MessageActions } from './message-actions'
 
@@ -92,9 +92,7 @@ export default function MessageItem({ session, message }: MessageItemProps) {
             {isGif && (
               <>
                 {body ? (
-                  <div className="relative h-20 w-28 overflow-hidden rounded-lg">
-                    <BlurImage src={body} />
-                  </div>
+                  <ImageViewer url={body} title="GIPHY" />
                 ) : (
                   <Skeleton className="h-20 w-28" />
                 )}
@@ -103,9 +101,7 @@ export default function MessageItem({ session, message }: MessageItemProps) {
             {isRawImage && (
               <>
                 {mediaURL ? (
-                  <div className="relative h-20 w-28 overflow-hidden rounded-lg">
-                    <BlurImage src={mediaURL} />
-                  </div>
+                  <ImageViewer url={mediaURL} title={rawMedia?.filename ?? undefined} />
                 ) : (
                   <Skeleton className="h-20 w-28" />
                 )}
