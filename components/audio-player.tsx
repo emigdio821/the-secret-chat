@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Pause, Play, Square } from 'lucide-react'
 
 import { secsToTime } from '@/lib/utils'
@@ -7,26 +7,27 @@ import { Slider } from '@/components/ui/slider'
 
 export function AudioPlayer({ url }: { url: string }) {
   const audioPlayer = useRef<HTMLAudioElement>(null)
-  const [currentTime, setCurrentTime] = useState<string>('0:00')
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [seekValue, setSeekValue] = useState<number>(0)
-  const [player, setPlayer] = useState<HTMLAudioElement | null>(null)
 
-  const play = async () => {
+  async function handlePlay() {
+    const player = audioPlayer.current
     if (player) {
       await player.play()
       setIsPlaying(true)
     }
   }
 
-  const pause = () => {
+  function handlePause() {
+    const player = audioPlayer.current
     if (player) {
-      audioPlayer.current?.pause()
+      player.pause()
       setIsPlaying(false)
     }
   }
 
-  const stop = () => {
+  function handleStop() {
+    const player = audioPlayer.current
     if (player) {
       player.pause()
       player.currentTime = 0
@@ -40,61 +41,40 @@ export function AudioPlayer({ url }: { url: string }) {
   //   }
   // }
 
-  useEffect(() => {
-    if (audioPlayer.current && !player) {
-      setPlayer(audioPlayer.current)
-    }
-
-    return () => {
-      if (player) {
-        setPlayer(null)
-      }
-    }
-  }, [player])
-
-  const onPlaying = () => {
+  function handlePlaying() {
+    const player = audioPlayer.current
     if (player) {
-      setCurrentTime(secsToTime(player.currentTime))
       setSeekValue((player.currentTime / player.duration) * 100)
       if (player.currentTime === player.duration) {
-        stop()
+        handleStop()
         setIsPlaying(false)
       }
     }
   }
 
   function handleLoadedMetadata() {
-    if (player) {
-      if (player.duration === Infinity) {
-        player.currentTime = 1e101
-        player.ontimeupdate = () => {
-          if (player) {
-            player.ontimeupdate = () => {}
-            player.currentTime = 0
-          }
-        }
+    const player = audioPlayer.current
+    if (player && player.duration === Infinity) {
+      player.currentTime = 1e101
+      player.ontimeupdate = () => {
+        player.ontimeupdate = () => {}
+        player.currentTime = 0
       }
     }
   }
 
   return (
-    <div className="w-32">
-      <audio
-        ref={audioPlayer}
-        onTimeUpdate={onPlaying}
-        onLoadedMetadata={() => {
-          handleLoadedMetadata()
-        }}
-      >
+    <div className="h-20 w-32">
+      <audio ref={audioPlayer} onTimeUpdate={handlePlaying} onLoadedMetadata={handleLoadedMetadata}>
         <track kind="captions" />
         <source src={url} type="audio/webm" />
         Your browser does not support the
         <code>audio</code> element.
       </audio>
-      <div className="flex flex-col gap-2">
+      <div className="flex h-full w-full flex-col justify-between gap-2">
         <div className="flex justify-between gap-2 text-xs">
-          <span>{currentTime}</span>
-          <span>{secsToTime(player?.duration)}</span>
+          <span>{secsToTime(audioPlayer.current?.currentTime)}</span>
+          <span>{secsToTime(audioPlayer.current?.duration)}</span>
         </div>
         <Slider
           step={1}
@@ -103,6 +83,7 @@ export function AudioPlayer({ url }: { url: string }) {
           defaultValue={[0]}
           value={[seekValue]}
           onValueChange={(value) => {
+            const player = audioPlayer.current
             if (player && player.duration !== Infinity) {
               const seekTo = (value[0] / 100) * player.duration
               player.currentTime = seekTo
@@ -112,18 +93,20 @@ export function AudioPlayer({ url }: { url: string }) {
         <div className="flex items-center gap-2">
           <Button
             size="icon"
+            type="button"
             variant="outline"
             className="h-8 w-8 rounded-full"
-            onClick={isPlaying ? pause : play}
+            onClick={isPlaying ? handlePause : handlePlay}
           >
             {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
           </Button>
           <Button
             size="icon"
-            onClick={stop}
+            type="button"
             variant="outline"
-            disabled={!isPlaying}
             className="h-6 w-6"
+            onClick={handleStop}
+            disabled={!isPlaying}
           >
             <Square className="h-2 w-2 fill-foreground" />
           </Button>

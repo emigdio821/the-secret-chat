@@ -122,7 +122,7 @@ export default function MessageItem({ session, message }: MessageItemProps) {
             )}
           </span>
           {message.author === user?.email && (
-            <MessageActions message={message} editMode={!isRawImage && !isGif} />
+            <MessageActions message={message} editMode={!isRawImage && !isGif && !isAudio} />
           )}
         </span>
         <div className="flex flex-col text-[10px] leading-4 text-muted-foreground">

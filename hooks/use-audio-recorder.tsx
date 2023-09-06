@@ -35,8 +35,14 @@ export function useAudioRecorder() {
           }
         }
       } catch (err) {
+        let errMsg = 'Unknown error'
+        if (err instanceof Error) errMsg = err.message
+        console.log('[GET_USER_MEDIA]', errMsg)
         toast.error('Recorder error', {
           description: 'Not enough permissions to record audio, please check your browser config.',
+        })
+        toast.error('Recorder error', {
+          description: errMsg,
         })
       }
     } else {
