@@ -139,7 +139,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                             className="object-cover"
                             src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
                           />
-                          <AvatarFallback className="h-6 w-6 rounded-sm">
+                          <AvatarFallback className="h-20 w-20 rounded-sm">
                             <User className="h-4 w-4" />
                           </AvatarFallback>
                         </Avatar>

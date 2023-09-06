@@ -259,6 +259,14 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
       chat.on('participantLeft', handleParticipantLeft)
       chat.on('participantUpdated', handleUpdatedParticipant)
       chat.on('messageUpdated', handleUpdatedMessage)
+      window.addEventListener('beforeunload', async () => {
+        removeUsersTyping({ removeAll: true })
+        await handleOfflineUser()
+      })
+      window.addEventListener('pagehide', async () => {
+        removeUsersTyping({ removeAll: true })
+        await handleOfflineUser()
+      })
     }
 
     return () => {
@@ -301,7 +309,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     } else {
       void handleUpdateCurrParticipantStatus({ isOnline: true })
     }
-  }, [isIdle, currParticipant, handleUpdateCurrParticipantStatus])
+  }, [isIdle, handleUpdateCurrParticipantStatus])
 
   return (
     <>
