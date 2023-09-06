@@ -143,7 +143,7 @@ export function GifPicker({ trigger, action, isOpen, setOpen }: GifPickerProps) 
                           action(gif.images.fixed_height.url)
                         }}
                       >
-                        <BlurImage src={gif.images.fixed_height.url} />
+                        <BlurImage src={gif.images.fixed_height.url} alt="gif" />
                         <span className="sr-only">GIF</span>
                       </Button>
                     ))}
