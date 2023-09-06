@@ -23,7 +23,7 @@ export function useAudioRecorder() {
         setStream(streamData)
         setRecording(true)
 
-        const media = new MediaRecorder(streamData, { mimeType: 'audio/wav' })
+        const media = new MediaRecorder(streamData)
         const recorder = (mediaRecorder.current = media)
 
         recorder.start(1000)
@@ -38,6 +38,9 @@ export function useAudioRecorder() {
         let errMsg = 'Unknown error'
         if (err instanceof Error) errMsg = err.message
         console.log('[GET_USER_MEDIA]', errMsg)
+
+        setRecording(false)
+        stopRecording()
         // toast.error('Recorder error', {
         //   description: 'Not enough permissions to record audio, please check your browser config.',
         // })
