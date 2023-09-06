@@ -60,6 +60,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
       const formData = new FormData()
       const audioToast = toast.loading('Processing audio...')
       formData.append('file', blob, 'audio-blob')
+      formData.append('contentType', 'audio/wav')
       await chat.sendMessage(formData)
       toast.dismiss(audioToast)
     } catch (err) {

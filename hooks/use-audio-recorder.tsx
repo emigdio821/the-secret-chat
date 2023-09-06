@@ -23,7 +23,7 @@ export function useAudioRecorder() {
         setStream(streamData)
         setRecording(true)
 
-        const media = new MediaRecorder(streamData, { mimeType: 'audio/webm' })
+        const media = new MediaRecorder(streamData, { mimeType: 'audio/wav' })
         const recorder = (mediaRecorder.current = media)
 
         recorder.start(1000)
@@ -38,9 +38,9 @@ export function useAudioRecorder() {
         let errMsg = 'Unknown error'
         if (err instanceof Error) errMsg = err.message
         console.log('[GET_USER_MEDIA]', errMsg)
-        toast.error('Recorder error', {
-          description: 'Not enough permissions to record audio, please check your browser config.',
-        })
+        // toast.error('Recorder error', {
+        //   description: 'Not enough permissions to record audio, please check your browser config.',
+        // })
         toast.error('Recorder error', {
           description: errMsg,
         })
@@ -65,7 +65,7 @@ export function useAudioRecorder() {
         track.stop()
       })
 
-      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
+      const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
       // const audioUrl = URL.createObjectURL(audioBlob)
       setAudioChunks([])
 

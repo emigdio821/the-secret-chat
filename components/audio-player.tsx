@@ -67,7 +67,7 @@ export function AudioPlayer({ url }: { url: string }) {
     <div className="h-20 w-32">
       <audio ref={audioPlayer} onTimeUpdate={handlePlaying} onLoadedMetadata={handleLoadedMetadata}>
         <track kind="captions" />
-        <source src={url} type="audio/webm" />
+        <source src={url} type="audio/wav" />
         Your browser does not support the
         <code>audio</code> element.
       </audio>
