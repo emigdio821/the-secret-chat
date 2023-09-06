@@ -14,7 +14,11 @@ export function formatDate(d: Date) {
   const isToday = date.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)
 
   if (isToday) {
-    return `Today, ${d.getHours()}:${d.getMinutes()}`
+    return `Today, ${new Date(d).toLocaleString([], {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+    })}`
   }
 
   return new Date(d).toLocaleString([], {

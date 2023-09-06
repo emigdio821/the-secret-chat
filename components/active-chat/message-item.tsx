@@ -93,7 +93,7 @@ export default function MessageItem({ session, message }: MessageItemProps) {
             {isGif && (
               <>
                 {body ? (
-                  <ImageViewer url={body} title="GIPHY" />
+                  <ImageViewer url={body} title="GIPHY" errorCb={getMediaUrl} />
                 ) : (
                   <Skeleton className="h-20 w-28" />
                 )}
@@ -109,7 +109,13 @@ export default function MessageItem({ session, message }: MessageItemProps) {
               </>
             )}
             {isAudio && (
-              <>{mediaURL ? <AudioPlayer url={mediaURL} /> : <Skeleton className="h-20 w-32" />}</>
+              <>
+                {mediaURL ? (
+                  <AudioPlayer url={mediaURL} errorCb={getMediaUrl} />
+                ) : (
+                  <Skeleton className="h-20 w-32" />
+                )}
+              </>
             )}
             {!isGif && !isRawImage && !isAudio && (
               <span

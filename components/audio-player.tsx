@@ -5,7 +5,12 @@ import { secsToTime } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 
-export function AudioPlayer({ url }: { url: string }) {
+interface AudioPlayerProps {
+  url: string
+  errorCb: () => Promise<void>
+}
+
+export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
   const audioPlayer = useRef<HTMLAudioElement>(null)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [seekValue, setSeekValue] = useState<number>(0)
@@ -31,6 +36,7 @@ export function AudioPlayer({ url }: { url: string }) {
     if (player) {
       player.pause()
       player.currentTime = 0
+      setSeekValue(0)
       setIsPlaying(false)
     }
   }
@@ -47,7 +53,6 @@ export function AudioPlayer({ url }: { url: string }) {
       setSeekValue((player.currentTime / player.duration) * 100)
       if (player.currentTime === player.duration) {
         handleStop()
-        setIsPlaying(false)
       }
     }
   }
@@ -65,7 +70,12 @@ export function AudioPlayer({ url }: { url: string }) {
 
   return (
     <div className="h-20 w-32">
-      <audio ref={audioPlayer} onTimeUpdate={handlePlaying} onLoadedMetadata={handleLoadedMetadata}>
+      <audio
+        ref={audioPlayer}
+        onError={errorCb}
+        onTimeUpdate={handlePlaying}
+        onLoadedMetadata={handleLoadedMetadata}
+      >
         <track kind="captions" />
         <source src={url} type="audio/wav" />
         Your browser does not support the

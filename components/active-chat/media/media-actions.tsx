@@ -1,6 +1,6 @@
 import { type Conversation } from '@twilio/conversations'
 import { useToggle } from '@uidotdev/usehooks'
-import { ImageIcon, Mic, Paperclip, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
+import { Dot, ImageIcon, Mic, Paperclip, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useAudioRecorder } from '@/hooks/use-audio-recorder'
@@ -71,21 +71,36 @@ export function MediaActions({ chat }: { chat: Conversation }) {
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="h-6 w-6">
             <span className="sr-only">Media actions</span>
             <Paperclip className=" h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="max-w-[180px]">
+        <DropdownMenuContent
+          align="end"
+          className="max-w-[180px]"
+          onEscapeKeyDown={(e) => {
+            if (audioRecorder.isRecording) {
+              e.preventDefault()
+            }
+          }}
+          onInteractOutside={(e) => {
+            if (audioRecorder.isRecording) {
+              e.preventDefault()
+            }
+          }}
+        >
           <DropdownMenuLabel>
             {audioRecorder.isRecording ? (
               <>
                 {audioRecorder.isPaused ? (
                   'Paused'
                 ) : (
-                  <span className="animate-pulse">Recording</span>
+                  <span className="flex animate-pulse items-center gap-1">
+                    Recording <Dot className="h-5 w-5 text-red-400" />
+                  </span>
                 )}
               </>
             ) : (
