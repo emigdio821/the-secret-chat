@@ -1,7 +1,7 @@
 import { useState } from 'react'
+import { useDebouncedValue } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { type Client, type Conversation } from '@twilio/conversations'
-import { useDebounce } from '@uidotdev/usehooks'
 import { MessageSquareDashed, RefreshCcw, Search } from 'lucide-react'
 import { type Session } from 'next-auth'
 
@@ -21,7 +21,7 @@ interface ChatListProps {
 export function MyChats({ client, session }: ChatListProps) {
   const [search, setSearch] = useState('')
   const queryClient = useQueryClient()
-  const debouncedSearch = useDebounce(search, 500)
+  const [debouncedSearch] = useDebouncedValue(search, 500)
   const { data, error, isLoading, refetch } = useQuery([USER_CHATS_QUERY], getChats, {
     select: filterBySearch,
   })

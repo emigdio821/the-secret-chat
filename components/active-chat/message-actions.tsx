@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useToggle } from '@mantine/hooks'
 import { type Message } from '@twilio/conversations'
-import { useToggle } from '@uidotdev/usehooks'
 import { Edit2, MoreVertical, Save, Trash2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -27,9 +27,9 @@ interface MessageActionsProps {
 }
 
 export function MessageActions({ message, editMode }: MessageActionsProps) {
-  const [openedAlert, setOpenedAlert] = useToggle(false)
-  const [isLoading, setLoading] = useToggle(false)
-  const [isEditMode, setEditMode] = useToggle(false)
+  const [openedAlert, setOpenedAlert] = useToggle()
+  const [isLoading, setLoading] = useToggle()
+  const [isEditMode, setEditMode] = useToggle()
   const form = useForm<z.infer<typeof editMessageSchema>>({
     resolver: zodResolver(editMessageSchema),
     defaultValues: {

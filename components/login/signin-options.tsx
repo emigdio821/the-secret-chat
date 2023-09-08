@@ -1,6 +1,6 @@
 'use client'
 
-import { useToggle } from '@uidotdev/usehooks'
+import { useToggle } from '@mantine/hooks'
 import { Github } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'

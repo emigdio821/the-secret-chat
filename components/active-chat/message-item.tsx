@@ -20,7 +20,7 @@ interface MessageItemProps {
   session: Session
 }
 
-export default function MessageItem({ session, message }: MessageItemProps) {
+export function MessageItem({ session, message }: MessageItemProps) {
   const user = session.user
   const [mediaURL, setMediaURL] = useState<string>('')
   const { author, sid, body, dateCreated } = message

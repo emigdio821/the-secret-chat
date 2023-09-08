@@ -1,7 +1,7 @@
 import { type ParticipantAttributes } from '@/types'
+import { useToggle } from '@mantine/hooks'
 import { useQuery } from '@tanstack/react-query'
 import { type Client, type Conversation, type Participant } from '@twilio/conversations'
-import { useToggle } from '@uidotdev/usehooks'
 import { AtSign, Shield, Signal, User, UserX } from 'lucide-react'
 import { type Session } from 'next-auth'
 
@@ -23,8 +23,8 @@ interface ChatParticipantsProps {
 }
 
 export function ChatParticipants({ chat, session, client }: ChatParticipantsProps) {
-  const [openedAlert, setOpenedAlert] = useToggle(false)
-  const [isLoading, setLoading] = useToggle(false)
+  const [openedAlert, setOpenedAlert] = useToggle()
+  const [isLoading, setLoading] = useToggle()
   const { data: participants, isLoading: isLoadingParts } = useQuery(
     [ACTIVE_PARTICIPANTS_QUERY],
     getParticipants,

@@ -1,5 +1,5 @@
+import { useToggle } from '@mantine/hooks'
 import { type Conversation } from '@twilio/conversations'
-import { useToggle } from '@uidotdev/usehooks'
 import { Dot, ImageIcon, Mic, Paperclip, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -17,7 +17,7 @@ import {
 import { GifPicker } from './gif-picker'
 
 export function MediaActions({ chat }: { chat: Conversation }) {
-  const [openedGifDialog, setOpenedGifDialog] = useToggle(false)
+  const [openedGifDialog, setOpenedGifDialog] = useToggle()
   const audioRecorder = useAudioRecorder()
   function handleUploadImage() {
     const fileInput = document.getElementById('file-input')

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
 import { type ChatAttributes, type ParticipantAttributes, type UserAttributes } from '@/types'
+import { useIdle } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   type Client,
@@ -11,7 +12,6 @@ import {
   type Participant,
   type ParticipantUpdateReason,
 } from '@twilio/conversations'
-import { useIdle } from '@uidotdev/usehooks'
 import { Home } from 'lucide-react'
 import { toast } from 'sonner'
 

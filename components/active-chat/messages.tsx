@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useToggle } from '@mantine/hooks'
 import { useQuery } from '@tanstack/react-query'
 import { type Client, type Conversation } from '@twilio/conversations'
-import { useToggle } from '@uidotdev/usehooks'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown, Ghost, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -18,10 +18,11 @@ import { useRainbowGradient } from '@/hooks/use-rainbow-gradient'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { EmojiPicker } from '@/components/emoji-picker'
 import { ChatOnlySkeleton } from '@/components/skeletons'
 
 import { MediaActions } from './media/media-actions'
-import MessageItem from './message-item'
+import { MessageItem } from './message-item'
 import { ChatParticipants } from './participants'
 import { TypingIndicator } from './typing-indicator'
 
@@ -33,7 +34,8 @@ interface MessagesProps {
 export function Messages({ chat, client }: MessagesProps) {
   const msgsContainerRef = useRef<HTMLDivElement>(null)
   const { data: session } = useSession()
-  const [showScrollBottom, setShowScrollBottom] = useToggle(false)
+  const [showScrollBottom, toggleScrollBtn] = useToggle()
+
   const containerBg = useRainbowGradient()
   const usersTyping = useStore((state) => state.usersTyping)
   const { data: messages, isLoading, refetch } = useQuery([ACTIVE_CHAT_MESSAGES_QUERY], getMessages)
@@ -113,11 +115,11 @@ export function Messages({ chat, client }: MessagesProps) {
                       const stDiv = e.currentTarget.scrollTop + e.currentTarget.clientHeight
 
                       if (stDiv < (shDiv * 3) / 4 && !showScrollBottom) {
-                        setShowScrollBottom(true)
+                        toggleScrollBtn(true)
                       }
 
                       if (shDiv === stDiv || (stDiv >= (shDiv * 3) / 4 && showScrollBottom)) {
-                        setShowScrollBottom(false)
+                        toggleScrollBtn(false)
                       }
                     }}
                     style={{ background: containerBg }}
@@ -170,9 +172,26 @@ export function Messages({ chat, client }: MessagesProps) {
                     render={({ field }) => (
                       <FormItem className="w-full flex-1">
                         <div className="relative">
-                          <span className="absolute right-3 flex h-full items-center justify-center">
-                            <MediaActions chat={chat} />
-                          </span>
+                          <div className="absolute right-3 flex h-full gap-1">
+                            <span className="flex h-full items-center justify-center">
+                              <MediaActions chat={chat} />
+                            </span>
+                            <span className="flex h-full items-center justify-center">
+                              <EmojiPicker
+                                callback={(emoji) => {
+                                  if (field.value) {
+                                    form.setValue('message', `${field.value} ${emoji.native}`, {
+                                      shouldValidate: true,
+                                    })
+                                  } else {
+                                    form.setValue('message', emoji.native, {
+                                      shouldValidate: true,
+                                    })
+                                  }
+                                }}
+                              />
+                            </span>
+                          </div>
                           <FormControl>
                             <Input
                               className="pr-12"

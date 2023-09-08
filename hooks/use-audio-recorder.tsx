@@ -1,14 +1,14 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { useToggle } from '@uidotdev/usehooks'
+import { useToggle } from '@mantine/hooks'
 import { toast } from 'sonner'
 
 export function useAudioRecorder() {
   const mediaRecorder = useRef<MediaRecorder>()
   const [stream, setStream] = useState<MediaStream>()
-  const [isRecording, setRecording] = useToggle(false)
-  const [isPaused, setPaused] = useToggle(false)
+  const [isRecording, setRecording] = useToggle()
+  const [isPaused, setPaused] = useToggle()
   const [audioChunks, setAudioChunks] = useState<Blob[]>([])
   const recordingTime = 0
 

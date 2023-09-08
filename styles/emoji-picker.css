@@ -1,0 +1,14 @@
+em-emoji-picker {
+  --font-size: 14px;
+  --font-family: var(--font-sans);
+  --preview-placeholder-size: 16px;
+  --color-border: hsl(var(--border));
+  --border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  --rgb-accent: 136, 125, 176;
+}
+
+.dark em-emoji-picker {
+  --rgb-accent: 180, 173, 205;
+  --rgb-background: 9, 9, 11;
+}
