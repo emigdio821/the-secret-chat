@@ -15,7 +15,7 @@ export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
   const aurioRef = useRef<HTMLAudioElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [sliderValue, setSliderValue] = useState(0)
-  const [duration, setDuration] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
   const [speed, toggleSpeed] = useToggle([1, 2, 3])
 
   async function handlePlay() {
@@ -48,21 +48,25 @@ export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
     const player = aurioRef.current
     if (player) {
       player.playbackRate = speed
-      setSliderValue((player.currentTime / duration) * 100)
-      if (player.currentTime === duration) {
-        handleStop()
-      }
+      setCurrentTime(player.currentTime)
+      setSliderValue((player.currentTime / player.duration) * 100)
+      // if (player.currentTime === duration) {
+      //   handleStop()
+      // }
     }
   }
 
   function handleLoadedMetadata() {
     const player = aurioRef.current
-    if (player && player.duration === Infinity) {
-      player.currentTime = 1e101
-      player.ontimeupdate = () => {
-        player.ontimeupdate = () => {}
-        player.currentTime = 0
-        setDuration(player.duration)
+    if (player) {
+      if (player.duration === Infinity) {
+        player.currentTime = 1e101
+        player.ontimeupdate = () => {
+          if (player) {
+            player.ontimeupdate = () => {}
+            player.currentTime = 0
+          }
+        }
       }
     }
   }
@@ -70,21 +74,21 @@ export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
   return (
     <div className="h-20 w-32">
       <audio
-        src={url}
         ref={aurioRef}
         onError={errorCb}
+        onEnded={handleStop}
         onTimeUpdate={handlePlaying}
         onLoadedMetadata={handleLoadedMetadata}
       >
         <track kind="captions" />
-        {/* <source src={url} type="audio/wav" /> */}
+        <source src={url} type="audio/wav" />
         Your browser does not support the
         <code>audio</code> element.
       </audio>
       <div className="flex h-full w-full flex-col justify-between gap-2">
         <div className="flex justify-between gap-2 text-xs">
-          <span>{secsToTime(aurioRef.current?.currentTime)}</span>
-          <span>{secsToTime(duration)}</span>
+          <span>{secsToTime(currentTime)}</span>
+          <span>{secsToTime(aurioRef.current?.duration)}</span>
         </div>
         <Slider
           step={1}
@@ -95,7 +99,7 @@ export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
           onValueChange={(value) => {
             const player = aurioRef.current
             if (player && player.duration !== Infinity) {
-              const seekTo = (value[0] / 100) * duration
+              const seekTo = (value[0] / 100) * aurioRef.current?.duration
               player.currentTime = seekTo
             }
           }}

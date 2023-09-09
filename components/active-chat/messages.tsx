@@ -35,7 +35,7 @@ export function Messages({ chat, client }: MessagesProps) {
   const msgsContainerRef = useRef<HTMLDivElement>(null)
   const { data: session } = useSession()
   const [showScrollBottom, toggleScrollBtn] = useToggle()
-
+  const [autoScroll, toggleAutoScroll] = useToggle([true, false])
   const containerBg = useRainbowGradient()
   const usersTyping = useStore((state) => state.usersTyping)
   const { data: messages, isLoading, refetch } = useQuery([ACTIVE_CHAT_MESSAGES_QUERY], getMessages)
@@ -94,8 +94,10 @@ export function Messages({ chat, client }: MessagesProps) {
   }, [])
 
   useEffect(() => {
-    scrollBottom()
-  }, [messages, scrollBottom])
+    if (autoScroll) {
+      scrollBottom()
+    }
+  }, [messages, scrollBottom, autoScroll])
 
   return (
     <>
@@ -111,15 +113,28 @@ export function Messages({ chat, client }: MessagesProps) {
                   <div
                     ref={msgsContainerRef}
                     onScroll={(e) => {
-                      const shDiv = e.currentTarget.scrollHeight
-                      const stDiv = e.currentTarget.scrollTop + e.currentTarget.clientHeight
+                      const { scrollHeight, scrollTop, clientHeight } = e.currentTarget
+                      const stDiv = scrollTop + clientHeight
+                      const enabledAutoScroll =
+                        stDiv === scrollHeight || messages.at(-1)?.author === client.user.identity
 
-                      if (stDiv < (shDiv * 3) / 4 && !showScrollBottom) {
+                      if (stDiv < (scrollHeight * 6) / 7 && !showScrollBottom) {
                         toggleScrollBtn(true)
                       }
 
-                      if (shDiv === stDiv || (stDiv >= (shDiv * 3) / 4 && showScrollBottom)) {
+                      if (
+                        scrollHeight === stDiv ||
+                        (stDiv >= (scrollHeight * 6) / 7 && showScrollBottom)
+                      ) {
                         toggleScrollBtn(false)
+                      }
+
+                      if (enabledAutoScroll && !autoScroll) {
+                        toggleAutoScroll(true)
+                      }
+
+                      if (!enabledAutoScroll && autoScroll) {
+                        toggleAutoScroll(false)
                       }
                     }}
                     style={{ background: containerBg }}

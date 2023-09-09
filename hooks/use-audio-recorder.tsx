@@ -1,14 +1,13 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import { useToggle } from '@mantine/hooks'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 export function useAudioRecorder() {
   const mediaRecorder = useRef<MediaRecorder>()
   const [stream, setStream] = useState<MediaStream>()
-  const [isRecording, setRecording] = useToggle()
-  const [isPaused, setPaused] = useToggle()
+  const [isRecording, setRecording] = useState(false)
+  const [isPaused, setPaused] = useState(false)
   const [audioChunks, setAudioChunks] = useState<Blob[]>([])
   const recordingTime = 0
 
@@ -55,7 +54,7 @@ export function useAudioRecorder() {
     }
   }
 
-  function stopRecording() {
+  const stopRecording = useCallback(() => {
     const mediaRecorderActive = mediaRecorder.current
     setRecording(false)
     if (isPaused) {
@@ -74,7 +73,7 @@ export function useAudioRecorder() {
 
       return audioBlob
     }
-  }
+  }, [audioChunks, isPaused, stream])
 
   function togglePauseResume() {
     setPaused(!isPaused)
@@ -84,6 +83,12 @@ export function useAudioRecorder() {
       isPaused ? mediaRecorderActive.resume() : mediaRecorderActive.pause()
     }
   }
+
+  useEffect(() => {
+    return () => {
+      stopRecording()
+    }
+  }, [stopRecording])
 
   return {
     startRecording,
