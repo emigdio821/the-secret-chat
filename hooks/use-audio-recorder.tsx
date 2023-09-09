@@ -4,6 +4,8 @@ import { useRef, useState } from 'react'
 import { useToggle } from '@mantine/hooks'
 import { toast } from 'sonner'
 
+import { AUDIO_FORMAT } from '@/lib/constants'
+
 export function useAudioRecorder() {
   const mediaRecorder = useRef<MediaRecorder>()
   const [stream, setStream] = useState<MediaStream>()
@@ -68,7 +70,7 @@ export function useAudioRecorder() {
         track.stop()
       })
 
-      const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
+      const audioBlob = new Blob(audioChunks, { type: AUDIO_FORMAT })
       // const audioUrl = URL.createObjectURL(audioBlob)
       setAudioChunks([])
 

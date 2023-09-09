@@ -86,7 +86,7 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
               setSearch(e.target.value)
             }}
           />
-          <div className="relative grid h-[420px] grid-cols-2 gap-4 overflow-y-auto rounded-lg p-1 sm:grid-cols-3">
+          <div className="relative grid h-[420px] grid-cols-2 gap-4 overflow-y-auto rounded-lg py-1 sm:grid-cols-3">
             {gifsLoading ? (
               <GifsSkeleton />
             ) : (
@@ -98,7 +98,7 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
                         key={gif.id}
                         type="button"
                         variant="unstyled"
-                        className="h-24 w-full rounded-lg p-0 transition-transform hover:scale-105"
+                        className="h-24 w-full rounded-lg p-0 transition-transform hover:scale-95 focus-visible:scale-95"
                         onClick={(e) => {
                           const parent = e.currentTarget.parentElement
                           if (parent) {

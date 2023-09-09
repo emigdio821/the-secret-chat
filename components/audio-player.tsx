@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react'
 import { useToggle } from '@mantine/hooks'
 import { Pause, Play, Square } from 'lucide-react'
+import { toast } from 'sonner'
 
+import { AUDIO_FORMAT } from '@/lib/constants'
 import { secsToTime } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
@@ -21,8 +23,16 @@ export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
   async function handlePlay() {
     const player = aurioRef.current
     if (player) {
-      await player.play()
-      setIsPlaying(true)
+      try {
+        await player.play()
+        setIsPlaying(true)
+      } catch (err) {
+        let errMsg = 'Unknown error'
+        if (err instanceof Error) errMsg = err.message
+        toast.error('Player error', {
+          description: `Something went wrong, ${errMsg}`,
+        })
+      }
     }
   }
 
@@ -75,13 +85,12 @@ export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
     <div className="h-20 w-32">
       <audio
         ref={aurioRef}
-        onError={errorCb}
         onEnded={handleStop}
         onTimeUpdate={handlePlaying}
         onLoadedMetadata={handleLoadedMetadata}
       >
         <track kind="captions" />
-        <source src={url} type="audio/wav" />
+        <source src={url} type={AUDIO_FORMAT} />
         Your browser does not support the
         <code>audio</code> element.
       </audio>

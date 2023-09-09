@@ -52,16 +52,16 @@ export function MediaActions({ chat }: { chat: Conversation }) {
   }
 
   async function handleSendAudio(blob: Blob) {
+    const audioToast = toast.loading('Processing audio...')
     try {
       const formData = new FormData()
-      const audioToast = toast.loading('Processing audio...')
-      formData.append('file', blob, 'audio-blob')
-      formData.append('contentType', 'audio/wav')
+      formData.append('file', blob, 'audio-blob.mp3')
       await chat.sendMessage(formData)
-      toast.dismiss(audioToast)
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.log('[SEND_AUDIO]', errMessage)
+    } finally {
+      toast.dismiss(audioToast)
     }
   }
 

@@ -12,6 +12,7 @@ const nextConfig = {
       'api.dicebear.com',
       'media.us1.twilio.com',
     ],
+    unoptimized: true,
   },
 }
 
