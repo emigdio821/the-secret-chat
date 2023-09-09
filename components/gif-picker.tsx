@@ -1,11 +1,8 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
-import { Search } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import type * as z from 'zod'
+import { useState } from 'react'
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { GIFS_QUERY } from '@/lib/constants'
-import { searchGifsSchema } from '@/lib/zod-schemas'
 import { useGiphy } from '@/hooks/use-giphy'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,33 +13,28 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { BlurImage } from '@/components/blur-image'
 import { GifsSkeleton } from '@/components/skeletons'
 
 interface GifPickerProps {
   trigger?: React.ReactNode
-  action: (url: string) => void
-  isOpen: boolean
-  setOpen: (isOpen?: boolean) => void
+  callback: (url: string) => void
 }
 
-export function GifPicker({ trigger, action, isOpen, setOpen }: GifPickerProps) {
+export function GifPicker({ trigger, callback }: GifPickerProps) {
   const giphy = useGiphy()
-  const form = useForm<z.infer<typeof searchGifsSchema>>({
-    resolver: zodResolver(searchGifsSchema),
-    defaultValues: {
-      name: '',
+  const [opened, handlers] = useDisclosure()
+  const [search, setSearch] = useState('')
+  const queryClient = useQueryClient()
+  const [debouncedSearch] = useDebouncedValue(search, 500)
+  const { data: gifs, isLoading: gifsLoading } = useQuery(
+    [GIFS_QUERY, debouncedSearch],
+    async () => await getGifs(debouncedSearch),
+    {
+      enabled: opened,
     },
-  })
-  const {
-    data: gifs,
-    isLoading: gifsLoading,
-    refetch,
-  } = useQuery([GIFS_QUERY], async () => await getGifs(form.getValues('name')), {
-    enabled: isOpen,
-  })
+  )
 
   async function getGifs(searchGif: string) {
     try {
@@ -61,28 +53,18 @@ export function GifPicker({ trigger, action, isOpen, setOpen }: GifPickerProps) 
     }
   }
 
-  async function onSubmit() {
-    try {
-      await refetch()
-    } catch (err) {
-      let errMsg = 'Unknown error'
-      if (err instanceof Error) errMsg = err.message
-      console.log('[SEARCH_GIFS]', errMsg)
-    }
-  }
-
   return (
-    <Dialog open={isOpen} onOpenChange={setOpen}>
+    <Dialog
+      open={opened}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          queryClient.removeQueries({ queryKey: [GIFS_QUERY] })
+        }
+        handlers.toggle()
+      }}
+    >
       <DialogTrigger asChild>
-        {trigger ?? (
-          <Button
-            onClick={() => {
-              setOpen(true)
-            }}
-          >
-            Select a GIF
-          </Button>
-        )}
+        {trigger ?? <Button onClick={handlers.open}>Select a GIF</Button>}
       </DialogTrigger>
       <DialogContent
         onOpenAutoFocus={(e) => {
@@ -97,30 +79,13 @@ export function GifPicker({ trigger, action, isOpen, setOpen }: GifPickerProps) 
           <DialogDescription>Pick a GIF from the list below, powered by GIPHY.</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
-              <FormField
-                name="name"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="w-full flex-1">
-                    <FormControl>
-                      <Input
-                        autoComplete="false"
-                        placeholder="What are you looking for?"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" size="icon">
-                <Search className="h-4 w-4" />
-                <span className="sr-only">Search</span>
-              </Button>
-            </form>
-          </Form>
+          <Input
+            autoComplete="false"
+            placeholder="What are you looking for?"
+            onChange={(e) => {
+              setSearch(e.target.value)
+            }}
+          />
           <div className="relative grid h-[420px] grid-cols-2 gap-4 overflow-y-auto rounded-lg p-1 sm:grid-cols-3">
             {gifsLoading ? (
               <GifsSkeleton />
@@ -139,8 +104,8 @@ export function GifPicker({ trigger, action, isOpen, setOpen }: GifPickerProps) 
                           if (parent) {
                             parent.style.pointerEvents = 'none'
                           }
-                          setOpen(false)
-                          action(gif.images.fixed_height.url)
+                          handlers.close()
+                          callback(gif.images.fixed_height.url)
                         }}
                       >
                         <BlurImage src={gif.images.fixed_height.url} alt="gif" />

@@ -1,4 +1,3 @@
-import { useToggle } from '@mantine/hooks'
 import { type Conversation } from '@twilio/conversations'
 import { Dot, ImageIcon, Mic, Paperclip, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
 import { toast } from 'sonner'
@@ -13,11 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-
-import { GifPicker } from './gif-picker'
+import { GifPicker } from '@/components/gif-picker'
 
 export function MediaActions({ chat }: { chat: Conversation }) {
-  const [openedGifDialog, setOpenedGifDialog] = useToggle()
   const audioRecorder = useAudioRecorder()
   function handleUploadImage() {
     const fileInput = document.getElementById('file-input')
@@ -48,7 +45,6 @@ export function MediaActions({ chat }: { chat: Conversation }) {
       await chat.sendMessage(url, {
         gif: true,
       })
-      setOpenedGifDialog(false)
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.log('[SEND_GIF]', errMessage)
@@ -116,16 +112,13 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                     disabled={audioRecorder.isRecording}
                     onSelect={(e) => {
                       e.preventDefault()
-                      setOpenedGifDialog(true)
                     }}
                   >
                     <ImageIcon className="mr-2 h-4 w-4" />
                     GIF
                   </DropdownMenuItem>
                 }
-                action={handleSendGif}
-                isOpen={openedGifDialog}
-                setOpen={setOpenedGifDialog}
+                callback={handleSendGif}
               />
               <DropdownMenuItem onSelect={handleUploadImage} disabled={audioRecorder.isRecording}>
                 <Upload className="mr-2 h-4 w-4" />

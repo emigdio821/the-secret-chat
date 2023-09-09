@@ -32,7 +32,7 @@ export function ProfileMenu({ session }: { session: Session }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="gap-2 pr-1" disabled={!session}>
+        <Button variant="outline" className="h-8 gap-2 pr-1 sm:h-9" disabled={!session}>
           <span className="max-w-[64px] truncate">{getFirstName(user?.name ?? '')}</span>
           {isLoading ? (
             <Skeleton className="h-6 w-6 rounded-sm" />

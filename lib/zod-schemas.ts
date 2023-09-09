@@ -34,10 +34,6 @@ export const editProfileSchema = z.object({
   avatar_url: optionalField,
 })
 
-export const searchGifsSchema = z.object({
-  name: optionalField,
-})
-
 export const editMessageSchema = z.object({
   body: requiredField,
 })

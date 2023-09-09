@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { type UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useDisclosure } from '@mantine/hooks'
 import { type Client } from '@twilio/conversations'
 import { type Session } from 'next-auth'
 import { useForm } from 'react-hook-form'
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { GifPicker } from '@/components/gif-picker'
 import { Loader } from '@/components/icons'
 
 interface EditProfilePopoverProps {
@@ -21,7 +22,7 @@ interface EditProfilePopoverProps {
 }
 
 export function EditProfilePopover({ client, session }: EditProfilePopoverProps) {
-  const [opened, setOpened] = useState(false)
+  const [opened, handlers] = useDisclosure()
   const router = useRouter()
   const userAttrs = client.user.attributes as UserAttributes
   const form = useForm<z.infer<typeof editProfileSchema>>({
@@ -48,7 +49,7 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
 
       await client.user.updateAttributes(attrsPayload)
       router.refresh()
-      setOpened(false)
+      handlers.close()
       form.reset(attrsPayload)
     } catch (err) {
       let errMsg = 'Unknown error'
@@ -61,25 +62,43 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
   }
 
   return (
-    <Popover open={opened} onOpenChange={setOpened}>
+    <Popover
+      open={opened}
+      onOpenChange={(opened) => {
+        if (!form.formState.isSubmitting) {
+          handlers.toggle()
+        }
+        if (!opened) {
+          form.reset()
+        }
+      }}
+    >
       <PopoverTrigger asChild>
         <Button variant="outline">Edit profile</Button>
       </PopoverTrigger>
       <PopoverContent align="start">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
-            <FormField
-              name="avatar_url"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input autoComplete="false" placeholder="Avatar URL" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <span className="flex items-center gap-2">
+              <FormField
+                name="avatar_url"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input autoComplete="false" placeholder="Avatar URL" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <GifPicker
+                trigger={<Button variant="outline">GIF</Button>}
+                callback={(url) => {
+                  form.setValue('avatar_url', url)
+                }}
+              />
+            </span>
             <FormField
               name="name"
               control={form.control}
@@ -109,7 +128,7 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
                 type="button"
                 variant="outline"
                 onClick={() => {
-                  setOpened(false)
+                  handlers.close()
                 }}
               >
                 Close

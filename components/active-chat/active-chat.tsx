@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
 import { type ChatAttributes, type ParticipantAttributes, type UserAttributes } from '@/types'
-import { useIdle } from '@mantine/hooks'
+import { useIdle, useWindowEvent } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   type Client,
@@ -248,6 +248,16 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     [chat, client.user.identity, currParticipant],
   )
 
+  useWindowEvent('beforeunload', async () => {
+    removeUsersTyping({ removeAll: true })
+    await handleOfflineUser()
+  })
+
+  useWindowEvent('pagehide', async () => {
+    removeUsersTyping({ removeAll: true })
+    await handleOfflineUser()
+  })
+
   useEffect(() => {
     if (chat) {
       chat.on('messageAdded', handleMessageAdded)
@@ -259,14 +269,6 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
       chat.on('participantLeft', handleParticipantLeft)
       chat.on('participantUpdated', handleUpdatedParticipant)
       chat.on('messageUpdated', handleUpdatedMessage)
-      window.addEventListener('beforeunload', async () => {
-        removeUsersTyping({ removeAll: true })
-        await handleOfflineUser()
-      })
-      window.addEventListener('pagehide', async () => {
-        removeUsersTyping({ removeAll: true })
-        await handleOfflineUser()
-      })
     }
 
     return () => {
