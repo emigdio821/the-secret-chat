@@ -75,7 +75,7 @@ export function MyChats({ client, session }: ChatListProps) {
             variant="outline"
             onClick={async () => {
               await refetch()
-              await queryClient.refetchQueries({ queryKey: [UNREAD_MSGS_QUERY] })
+              await queryClient.invalidateQueries({ queryKey: [UNREAD_MSGS_QUERY] })
             }}
           >
             <span className="hidden sm:block">Refresh</span>

@@ -105,7 +105,8 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                   <span>Edit</span>
                 </DropdownMenuItem>
               </PopoverTrigger>
-              <PopoverContent>
+              <PopoverContent className="flex flex-col gap-2">
+                <h5 className="text-sm">Edit message</h5>
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -114,6 +115,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                     <FormField
                       name="body"
                       control={form.control}
+                      disabled={form.formState.isSubmitting}
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
@@ -129,7 +131,11 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                     <Button
                       size="icon"
                       type="submit"
-                      disabled={form.formState.isSubmitting || !form.formState.isValid}
+                      disabled={
+                        form.formState.isSubmitting ||
+                        !form.formState.isValid ||
+                        !form.formState.isDirty
+                      }
                     >
                       {form.formState.isSubmitting ? <Loader /> : <Save className="h-4 w-4" />}
                       <span className="sr-only">Save message</span>

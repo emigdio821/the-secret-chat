@@ -28,7 +28,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
       await chat.delete()
       setOpenedAlert(false)
       setLoading(false)
-      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
@@ -46,7 +46,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
       await chat.leave()
       setOpenedLeaveChatAlert(false)
       setLoading(false)
-      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message

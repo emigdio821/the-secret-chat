@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { type UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -24,6 +25,7 @@ interface EditProfilePopoverProps {
 export function EditProfilePopover({ client, session }: EditProfilePopoverProps) {
   const [opened, handlers] = useDisclosure()
   const router = useRouter()
+  const closeBtnRef = useRef<HTMLButtonElement>(null)
   const userAttrs = client.user.attributes as UserAttributes
   const form = useForm<z.infer<typeof editProfileSchema>>({
     resolver: zodResolver(editProfileSchema),
@@ -76,7 +78,13 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
       <PopoverTrigger asChild>
         <Button variant="outline">Edit profile</Button>
       </PopoverTrigger>
-      <PopoverContent align="start">
+      <PopoverContent
+        align="start"
+        onOpenAutoFocus={(e) => {
+          e.preventDefault()
+          closeBtnRef.current?.focus()
+        }}
+      >
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
             <span className="flex items-center gap-2">
@@ -126,6 +134,7 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
             <div className="mt-2 flex items-center justify-end gap-2">
               <Button
                 type="button"
+                ref={closeBtnRef}
                 variant="outline"
                 onClick={() => {
                   handlers.close()

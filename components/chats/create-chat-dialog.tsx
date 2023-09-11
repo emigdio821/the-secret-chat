@@ -77,7 +77,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
         router.push(`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`)
       }
 
-      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
       setOpenedDialog(false)
       form.reset()
     } catch (err) {

@@ -105,8 +105,8 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
 
   const handleParticipantJoined = useCallback(
     async (participant: Participant) => {
-      await queryClient.refetchQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
-      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
 
       toast('Info', {
         description: (
@@ -125,8 +125,8 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
       partAttrs.isOnline = false
 
       await participant.updateAttributes(partAttrs)
-      await queryClient.refetchQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
-      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
 
       if (participant.identity !== client.user.identity) {
         toast('Info', {
@@ -145,7 +145,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     async (message: Message) => {
       try {
         await chat?.updateLastReadMessageIndex(message.index)
-        await queryClient.refetchQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
+        await queryClient.invalidateQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : err
         console.log('[UPDATE_MSGS_INDEX]', errMessage)
@@ -168,7 +168,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
 
   const handleMessageRemoved = useCallback(async () => {
     try {
-      await queryClient.refetchQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.log('[MSG_REMOVED]', errMessage)
@@ -179,7 +179,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     async (data: ParticipantUpdatedData) => {
       try {
         if (data.updateReasons.includes('attributes')) {
-          await queryClient.resetQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+          await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
         }
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : err
@@ -193,7 +193,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     async (participant: Participant) => {
       try {
         addUsersTyping(participant)
-        await queryClient.resetQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+        await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : err
         console.log('[TYPING]', errMessage)
@@ -206,7 +206,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     async (participant: Participant) => {
       try {
         removeUsersTyping({ participant })
-        await queryClient.resetQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+        await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : err
         console.log('[REMOVE_TYPING]', errMessage)

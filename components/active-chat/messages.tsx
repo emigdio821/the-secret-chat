@@ -38,7 +38,11 @@ export function Messages({ chat, client }: MessagesProps) {
   const [autoScroll, toggleAutoScroll] = useToggle([true, false])
   const containerBg = useRainbowGradient()
   const usersTyping = useStore((state) => state.usersTyping)
-  const { data: messages, isLoading, refetch } = useQuery([ACTIVE_CHAT_MESSAGES_QUERY], getMessages)
+  const {
+    data: messages,
+    isLoading,
+    refetch,
+  } = useQuery([ACTIVE_CHAT_MESSAGES_QUERY], getMessages, { keepPreviousData: true })
   const form = useForm<z.infer<typeof sendMessageSchema>>({
     resolver: zodResolver(sendMessageSchema),
     defaultValues: {
@@ -48,14 +52,14 @@ export function Messages({ chat, client }: MessagesProps) {
 
   async function getMessages() {
     try {
-      const messages = await chat.getMessages()
-      const items = messages.items
+      const paginator = await chat.getMessages()
+      const items = paginator.items
 
       if (items.length > 0) {
         await chat.updateLastReadMessageIndex(items[items.length - 1].index)
       }
 
-      return items
+      return paginator
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.log('[GET_MESSAGES]', errMessage)
@@ -74,6 +78,7 @@ export function Messages({ chat, client }: MessagesProps) {
       form.reset()
       await chat.sendMessage(values.message)
       await refetch()
+      toggleAutoScroll(true)
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
@@ -105,7 +110,7 @@ export function Messages({ chat, client }: MessagesProps) {
         <ChatOnlySkeleton />
       ) : (
         <>
-          {messages && session && (
+          {messages?.items && session && (
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-2 sm:flex-row">
                 <ChatParticipants chat={chat} session={session} client={client} />
@@ -115,8 +120,7 @@ export function Messages({ chat, client }: MessagesProps) {
                     onScroll={(e) => {
                       const { scrollHeight, scrollTop, clientHeight } = e.currentTarget
                       const stDiv = scrollTop + clientHeight
-                      const enabledAutoScroll =
-                        stDiv === scrollHeight || messages.at(-1)?.author === client.user.identity
+                      const enabledAutoScroll = stDiv === scrollHeight
 
                       if (stDiv < (scrollHeight * 6) / 7 && !showScrollBottom) {
                         toggleScrollBtn(true)
@@ -140,9 +144,22 @@ export function Messages({ chat, client }: MessagesProps) {
                     style={{ background: containerBg }}
                     className="absolute h-full w-full overflow-y-auto rounded-lg border"
                   >
-                    {messages.length > 0 ? (
+                    {messages.items.length > 0 ? (
                       <div className="flex flex-col gap-2 p-4">
-                        {messages.map((message) => (
+                        {messages.hasPrevPage && (
+                          <Button
+                            disabled
+                            variant="link"
+                            className="self-end"
+                            // onClick={async () => {
+                            //   toggleAutoScroll(false)
+                            //   await refetch()
+                            // }}
+                          >
+                            Load more messages (WIP)
+                          </Button>
+                        )}
+                        {messages.items.map((message) => (
                           <MessageItem key={message.sid} session={session} message={message} />
                         ))}
                       </div>

@@ -38,8 +38,8 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
     try {
       setLoading(true)
       await chat.delete()
-      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
-      await queryClient.refetchQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
       setOpenedAlert(false)
     } catch (err) {
       let errMsg = 'Unknown error'
@@ -60,7 +60,7 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
       await chat.leave()
       setOpenedLeaveChatAlert(false)
       setLoading(false)
-      await queryClient.refetchQueries({ queryKey: [USER_CHATS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message

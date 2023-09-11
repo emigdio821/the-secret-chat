@@ -75,7 +75,7 @@ export function JoinChatDialog({ isLoading, client }: JoinChatDialogProps) {
       }}
     >
       <DialogTrigger asChild>
-        <Button type="button" disabled={isLoading}>
+        <Button type="button" disabled>
           Join chat
         </Button>
       </DialogTrigger>
