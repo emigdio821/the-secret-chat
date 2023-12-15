@@ -22,7 +22,9 @@ export function MyChats({ client, session }: ChatListProps) {
   const [search, setSearch] = useState('')
   const queryClient = useQueryClient()
   const [debouncedSearch] = useDebouncedValue(search, 500)
-  const { data, error, isLoading, refetch } = useQuery([USER_CHATS_QUERY], getChats, {
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: [USER_CHATS_QUERY],
+    queryFn: getChats,
     select: filterBySearch,
   })
 

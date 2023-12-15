@@ -1,5 +1,5 @@
 import { type Conversation } from '@twilio/conversations'
-import { Dot, ImageIcon, Mic, Paperclip, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
+import { ImageIcon, Mic, Paperclip, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useAudioRecorder } from '@/hooks/use-audio-recorder'
@@ -35,7 +35,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
       e.target.value = ''
     } else {
       toast.error('Invalid file type', {
-        description: 'Only jpg, jpeg, png, and gif are supported',
+        description: 'Only jpg, jpeg, png, and gif formats are supported',
       })
     }
   }
@@ -52,6 +52,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
   }
 
   async function handleSendAudio(blob: Blob) {
+    if (blob.size === 0) return
     const audioToast = toast.loading('Processing audio...')
     try {
       const formData = new FormData()
@@ -94,8 +95,8 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                 {audioRecorder.isPaused ? (
                   'Paused'
                 ) : (
-                  <span className="flex animate-pulse items-center gap-1">
-                    Recording <Dot className="h-5 w-5 text-red-400" />
+                  <span className="flex items-center gap-2">
+                    Recording <Mic className="h-4 w-4 animate-pulse text-red-400" />
                   </span>
                 )}
               </>
@@ -144,8 +145,18 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                   audioRecorder.togglePauseResume()
                 }}
               >
-                <Pause className="mr-2 h-4 w-4" />
-                {audioRecorder.isPaused ? 'Resume' : 'Pause'} audio
+                {audioRecorder.isPaused ? (
+                  <>
+                    <Mic className="mr-2 h-4 w-4" />
+                    Resume
+                  </>
+                ) : (
+                  <>
+                    <Pause className="mr-2 h-4 w-4" />
+                    Pause
+                  </>
+                )}{' '}
+                audio
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={(e) => {

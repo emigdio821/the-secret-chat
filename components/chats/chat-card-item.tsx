@@ -25,7 +25,10 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
   const attrs = chat.attributes as ChatDescription
   const partsCount = chat._participants.size
   const isOwner = session.user?.email === createdBy
-  const { data: unreadMsgs } = useQuery([UNREAD_MSGS_QUERY, chat.sid], getUnreadMessages)
+  const { data: unreadMsgs } = useQuery({
+    queryKey: [UNREAD_MSGS_QUERY, chat.sid],
+    queryFn: getUnreadMessages,
+  })
 
   async function getUnreadMessages() {
     try {

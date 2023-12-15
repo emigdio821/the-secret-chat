@@ -29,10 +29,10 @@ export function MessageItem({ session, message }: MessageItemProps) {
   const rawMedia = message.attachedMedia?.[0]
   const isAudio = hasMedia && rawMedia?.contentType.startsWith('audio')
   const isRawImage = hasMedia && rawMedia?.contentType.startsWith('image')
-  const { data: msgParticipant } = useQuery(
-    [MESSAGE_PARTICIPANT_QUERY, message.sid],
-    getMessageParticipant,
-  )
+  const { data: msgParticipant } = useQuery({
+    queryKey: [MESSAGE_PARTICIPANT_QUERY, message.sid],
+    queryFn: getMessageParticipant,
+  })
   const partAttrs = msgParticipant?.attributes as ParticipantAttributes
   const msgAttrs = message.attributes as MessageAttributes
   const isGif = msgAttrs?.gif
@@ -121,6 +121,7 @@ export function MessageItem({ session, message }: MessageItemProps) {
               <span
                 className={cn({
                   'italic text-muted-foreground': !body,
+                  'whitespace-pre-line': body,
                 })}
               >
                 {body ?? 'Empty message'}
@@ -135,7 +136,7 @@ export function MessageItem({ session, message }: MessageItemProps) {
           <span>
             {dateCreated && formatDate(dateCreated)}
             {isGif && ' (via GIPHY)'}
-            {msgAttrs.isEdited && ' (edited)'}
+            {msgAttrs?.isEdited && ' (edited)'}
             {isRawImage && hasMedia && rawMedia?.contentType && ` (${rawMedia?.contentType})`}
           </span>
           {!isAuthor && <span>{partAttrs?.nickname ?? author}</span>}

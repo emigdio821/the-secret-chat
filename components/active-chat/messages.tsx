@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToggle } from '@mantine/hooks'
-import { useQuery } from '@tanstack/react-query'
-import { type Client, type Conversation } from '@twilio/conversations'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { type Client, type Conversation, type Message, type Paginator } from '@twilio/conversations'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowDown, Ghost, Send } from 'lucide-react'
+import { ArrowDown, Ghost, Loader2, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -35,14 +35,18 @@ export function Messages({ chat, client }: MessagesProps) {
   const msgsContainerRef = useRef<HTMLDivElement>(null)
   const { data: session } = useSession()
   const [showScrollBottom, toggleScrollBtn] = useToggle()
+  const [isLoadingPage, toggleLoadingPage] = useToggle()
   const [autoScroll, toggleAutoScroll] = useToggle([true, false])
+  const [currentPaginator, setCurrentPaginator] = useState<Paginator<Message>>()
   const containerBg = useRainbowGradient()
   const usersTyping = useStore((state) => state.usersTyping)
-  const {
-    data: messages,
-    isLoading,
-    refetch,
-  } = useQuery([ACTIVE_CHAT_MESSAGES_QUERY], getMessages, { keepPreviousData: true })
+  const queryClient = useQueryClient()
+
+  const { data: messages, isLoading } = useQuery({
+    queryKey: [ACTIVE_CHAT_MESSAGES_QUERY],
+    queryFn: getMessages,
+    staleTime: Infinity,
+  })
   const form = useForm<z.infer<typeof sendMessageSchema>>({
     resolver: zodResolver(sendMessageSchema),
     defaultValues: {
@@ -51,6 +55,7 @@ export function Messages({ chat, client }: MessagesProps) {
   })
 
   async function getMessages() {
+    console.log('fetch running')
     try {
       const paginator = await chat.getMessages()
       const items = paginator.items
@@ -58,6 +63,8 @@ export function Messages({ chat, client }: MessagesProps) {
       if (items.length > 0) {
         await chat.updateLastReadMessageIndex(items[items.length - 1].index)
       }
+
+      setCurrentPaginator(paginator)
 
       return paginator
     } catch (err) {
@@ -77,7 +84,6 @@ export function Messages({ chat, client }: MessagesProps) {
     try {
       form.reset()
       await chat.sendMessage(values.message)
-      await refetch()
       toggleAutoScroll(true)
     } catch (err) {
       let errMsg = 'Unknown error'
@@ -87,6 +93,33 @@ export function Messages({ chat, client }: MessagesProps) {
       toast.error('Uh oh!', {
         description: 'Something went wrong while sending the message, try again',
       })
+    }
+  }
+
+  async function handleLoadPage() {
+    try {
+      toggleLoadingPage(true)
+      if (!currentPaginator) throw new Error('Paginator not present')
+      const prevPagePaginator = await currentPaginator.prevPage()
+      toggleAutoScroll(false)
+      setCurrentPaginator(prevPagePaginator)
+
+      queryClient.setQueryData([ACTIVE_CHAT_MESSAGES_QUERY], (prev: Paginator<Message>) => {
+        return {
+          ...prev,
+          items: [...prevPagePaginator.items, ...prev.items],
+        }
+      })
+    } catch (err) {
+      let errMsg = 'Unknown error'
+      if (err instanceof Error) errMsg = err.message
+      console.log('[FETCH_PREV_PAGE]', errMsg)
+
+      toast.error('Uh oh!', {
+        description: 'Something went wrong while sending the message, try again',
+      })
+    } finally {
+      toggleLoadingPage(false)
     }
   }
 
@@ -146,17 +179,17 @@ export function Messages({ chat, client }: MessagesProps) {
                   >
                     {messages.items.length > 0 ? (
                       <div className="flex flex-col gap-2 p-4">
-                        {messages.hasPrevPage && (
+                        {currentPaginator?.hasPrevPage && (
                           <Button
-                            disabled
                             variant="link"
-                            className="self-end"
-                            // onClick={async () => {
-                            //   toggleAutoScroll(false)
-                            //   await refetch()
-                            // }}
+                            disabled={isLoadingPage}
+                            className="self-end p-0"
+                            onClick={async () => {
+                              await handleLoadPage()
+                            }}
                           >
-                            Load more messages (WIP)
+                            Load more messages
+                            {isLoadingPage && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
                           </Button>
                         )}
                         {messages.items.map((message) => (
@@ -212,7 +245,7 @@ export function Messages({ chat, client }: MessagesProps) {
                               <EmojiPicker
                                 callback={(emoji) => {
                                   if (field.value) {
-                                    form.setValue('message', `${field.value} ${emoji.native}`, {
+                                    form.setValue('message', `${field.value}${emoji.native}`, {
                                       shouldValidate: true,
                                     })
                                   } else {

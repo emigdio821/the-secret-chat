@@ -18,7 +18,7 @@ export function Providers({ children }: ProvidersProps) {
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <QueryClientProvider client={queryClient}>
           {children}
-          <ReactQueryDevtools toggleButtonProps={{ style: { width: 28, margin: '0 6px' } }} />
+          <ReactQueryDevtools />
           <Toaster
             toastOptions={{
               style: {

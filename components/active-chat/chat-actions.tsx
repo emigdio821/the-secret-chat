@@ -93,29 +93,31 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
             )}
             <DropdownMenuSeparator className="sm:hidden" />
             <AddParticipantDialog chat={chat} client={client} />
-            <ControlledAlertDialog
-              open={openedLeaveChatAlert}
-              isLoading={isLoading}
-              setOpen={setOpenedLeaveChatAlert}
-              action={handleLeaveChat}
-              trigger={
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault()
-                    setOpenedLeaveChatAlert(true)
-                  }}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Leave chat</span>
-                </DropdownMenuItem>
-              }
-              alertMessage={
-                <>
-                  You are about to leave{' '}
-                  <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
-                </>
-              }
-            />
+            {!isAdmin && (
+              <ControlledAlertDialog
+                open={openedLeaveChatAlert}
+                isLoading={isLoading}
+                setOpen={setOpenedLeaveChatAlert}
+                action={handleLeaveChat}
+                trigger={
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault()
+                      setOpenedLeaveChatAlert(true)
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Leave chat</span>
+                  </DropdownMenuItem>
+                }
+                alertMessage={
+                  <>
+                    You are about to leave{' '}
+                    <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
+                  </>
+                }
+              />
+            )}
             {isAdmin && (
               <>
                 <DropdownMenuSeparator />
@@ -139,7 +141,8 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
                   alertMessage={
                     <>
                       This action cannot be undone. This will permanently delete{' '}
-                      <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
+                      <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room and
+                      kick all the participants.
                     </>
                   }
                 />

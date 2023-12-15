@@ -1,10 +1,12 @@
+import { type Metadata } from 'next'
+
 import { siteConfig } from '@/lib/site-config'
 
 interface RootLayoutProps {
   children: React.ReactNode
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: {
     default: 'Login',
     template: `%s · ${siteConfig.name}`,

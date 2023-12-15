@@ -28,13 +28,11 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
   const [search, setSearch] = useState('')
   const queryClient = useQueryClient()
   const [debouncedSearch] = useDebouncedValue(search, 500)
-  const { data: gifs, isLoading: gifsLoading } = useQuery(
-    [GIFS_QUERY, debouncedSearch],
-    async () => await getGifs(debouncedSearch),
-    {
-      enabled: opened,
-    },
-  )
+  const { data: gifs, isLoading: gifsLoading } = useQuery({
+    queryKey: [GIFS_QUERY, debouncedSearch],
+    queryFn: async () => await getGifs(debouncedSearch),
+    enabled: opened,
+  })
 
   async function getGifs(searchGif: string) {
     try {

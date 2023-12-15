@@ -9,6 +9,7 @@ import {
   type Conversation,
   type Message,
   type MessageUpdateReason,
+  type Paginator,
   type Participant,
   type ParticipantUpdateReason,
 } from '@twilio/conversations'
@@ -46,7 +47,10 @@ interface MessageUpdatedData {
 }
 
 export function ActiveChat({ client, chatId }: ActiveChatProps) {
-  const { data: chat, isLoading } = useQuery([ACTIVE_CHAT_QUERY], getCurrentChat)
+  const { data: chat, isLoading } = useQuery({
+    queryKey: [ACTIVE_CHAT_QUERY],
+    queryFn: getCurrentChat,
+  })
   const queryClient = useQueryClient()
   const router = useRouter()
   const addUsersTyping = useStore((state) => state.addUsersTyping)
@@ -124,7 +128,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
       const partAttrs = participant.attributes as ParticipantAttributes
       partAttrs.isOnline = false
 
-      await participant.updateAttributes(partAttrs)
+      // await participant.updateAttributes(partAttrs)
       await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
       await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
 
@@ -145,7 +149,14 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     async (message: Message) => {
       try {
         await chat?.updateLastReadMessageIndex(message.index)
-        await queryClient.invalidateQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
+
+        queryClient.setQueryData([ACTIVE_CHAT_MESSAGES_QUERY], (prev: Paginator<Message>) => {
+          console.log('prev msgs data', prev)
+          return {
+            ...prev,
+            items: [...prev.items, message],
+          }
+        })
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : err
         console.log('[UPDATE_MSGS_INDEX]', errMessage)
@@ -166,21 +177,30 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     [queryClient],
   )
 
-  const handleMessageRemoved = useCallback(async () => {
-    try {
-      await queryClient.invalidateQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
-    } catch (err) {
-      const errMessage = err instanceof Error ? err.message : err
-      console.log('[MSG_REMOVED]', errMessage)
-    }
-  }, [queryClient])
+  const handleMessageRemoved = useCallback(
+    (message: Message) => {
+      try {
+        queryClient.setQueryData([ACTIVE_CHAT_MESSAGES_QUERY], (prev: Paginator<Message>) => {
+          return {
+            ...prev,
+            items: prev.items.filter((msg) => msg.sid !== message.sid),
+          }
+        })
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : err
+        console.log('[MSG_REMOVED]', errMessage)
+      }
+    },
+    [queryClient],
+  )
 
   const handleUpdatedParticipant = useCallback(
     async (data: ParticipantUpdatedData) => {
       try {
-        if (data.updateReasons.includes('attributes')) {
-          await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
-        }
+        await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+        // if (data.updateReasons.includes('attributes')) {
+        //   await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+        // }
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : err
         console.log('[UPDATED_PARTICIPANT]', errMessage)
@@ -219,7 +239,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     try {
       const participant = await chat?.getParticipantByIdentity(client.user.identity)
       const partAttrs = participant?.attributes as ParticipantAttributes
-      partAttrs.isOnline = false
+      if (partAttrs) partAttrs.isOnline = false
 
       await participant?.updateAttributes(partAttrs)
     } catch (err) {

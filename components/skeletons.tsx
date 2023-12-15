@@ -36,7 +36,7 @@ export function UserChatsSkeleton() {
     <>
       <div className="flex gap-2">
         <Skeleton className="h-9 w-24" />
-        <Skeleton className="h-9 w-20" />
+        {/* <Skeleton className="h-9 w-20" /> */}
       </div>
       <div className="my-4 flex items-center justify-between">
         <Skeleton className="h-2 w-20" />

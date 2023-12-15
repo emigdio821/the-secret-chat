@@ -19,17 +19,20 @@ interface Emoji {
 
 interface EmojiPickerProps {
   callback: (emoji: Emoji) => void
+  trigger?: React.ReactNode
 }
 
-export function EmojiPicker({ callback }: EmojiPickerProps) {
+export function EmojiPicker({ callback, trigger }: EmojiPickerProps) {
   const { resolvedTheme } = useTheme()
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button size="icon" variant="ghost" className="h-6 w-6">
-          <SmilePlus className="h-4 w-4" />
-        </Button>
+        {trigger ?? (
+          <Button size="icon" variant="ghost" className="h-6 w-6">
+            <SmilePlus className="h-4 w-4" />
+          </Button>
+        )}
       </PopoverTrigger>
       <PopoverContent className="border-none p-0">
         <Picker

@@ -1,4 +1,4 @@
-import { type Metadata } from 'next'
+import { type Metadata, type Viewport } from 'next'
 
 import { cn } from '@/lib/utils'
 import Footer from '@/components/footer'
@@ -19,10 +19,6 @@ export const metadata: Metadata = {
     template: `%s · ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
-  ],
   authors: [
     {
       name: 'Emigdio Torres',
@@ -36,13 +32,6 @@ export const metadata: Metadata = {
     shortcut: '/images/favicon-16x16.png',
     apple: '/images/apple-touch-icon.png',
   },
-  viewport: {
-    initialScale: 1,
-    minimumScale: 1,
-    maximumScale: 1,
-    height: 'device-height',
-    width: 'device-width',
-  },
   openGraph: {
     title: siteConfig.name,
     description: siteConfig.description,
@@ -54,6 +43,18 @@ export const metadata: Metadata = {
   },
   // robots: '/robots.txt',
   manifest: '/site.webmanifest',
+}
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  height: 'device-height',
+  width: 'device-width',
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {

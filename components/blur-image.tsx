@@ -18,7 +18,7 @@ export function BlurImage({ alt, ...props }: ImageProps) {
           'rounded-[inherit] object-cover duration-700 ease-in-out',
           isLoading ? 'scale-110 blur-2xl grayscale' : 'scale-100 blur-0 grayscale-0',
         )}
-        onLoadingComplete={() => {
+        onLoad={() => {
           setLoading(false)
         }}
         {...props}

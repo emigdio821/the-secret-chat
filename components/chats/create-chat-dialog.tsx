@@ -185,6 +185,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
                       name={field.name}
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      disabled={form.formState.isSubmitting}
                     />
                   </FormControl>
                 </FormItem>

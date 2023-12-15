@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { type Conversation } from '@twilio/conversations'
 import { LogOut, MoreVertical, Trash2 } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 
 import { USER_CHATS_QUERY } from '@/lib/constants'
@@ -20,6 +21,8 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
   const [openedAlert, setOpenedAlert] = useState(false)
   const [openedLeaveChatAlert, setOpenedLeaveChatAlert] = useState(false)
   const [isLoading, setLoading] = useState(false)
+  const { data: session } = useSession()
+  const isAdmin = session?.user?.email === chat.createdBy
   const queryClient = useQueryClient()
 
   async function handleDeleteChat() {
@@ -69,29 +72,31 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
       <DropdownMenuContent align="end" className="max-w-[180px]">
         <DropdownMenuLabel>{chat.friendlyName ?? chat.uniqueName}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <ControlledAlertDialog
-          open={openedLeaveChatAlert}
-          isLoading={isLoading}
-          setOpen={setOpenedLeaveChatAlert}
-          action={handleLeaveChat}
-          trigger={
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault()
-                setOpenedLeaveChatAlert(true)
-              }}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Leave chat</span>
-            </DropdownMenuItem>
-          }
-          alertMessage={
-            <>
-              You are about to leave <span className="font-semibold">{`"${chat.uniqueName}"`}</span>{' '}
-              chat room.
-            </>
-          }
-        />
+        {!isAdmin && (
+          <ControlledAlertDialog
+            open={openedLeaveChatAlert}
+            isLoading={isLoading}
+            setOpen={setOpenedLeaveChatAlert}
+            action={handleLeaveChat}
+            trigger={
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault()
+                  setOpenedLeaveChatAlert(true)
+                }}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Leave chat</span>
+              </DropdownMenuItem>
+            }
+            alertMessage={
+              <>
+                You are about to leave{' '}
+                <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
+              </>
+            }
+          />
+        )}
         <ControlledAlertDialog
           open={openedAlert}
           isLoading={isLoading}
@@ -112,7 +117,8 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
           alertMessage={
             <>
               This action cannot be undone. This will permanently delete{' '}
-              <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
+              <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room and kick all
+              the participants.
             </>
           }
         />

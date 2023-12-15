@@ -22,7 +22,9 @@ export function useTwilioClient() {
     }
   }, [])
 
-  const { data: client, refetch: refetchClient } = useQuery([GET_CLIENT_QUERY], createClient, {
+  const { data: client, refetch: refetchClient } = useQuery({
+    queryKey: [GET_CLIENT_QUERY],
+    queryFn: createClient,
     staleTime: Infinity,
   })
 

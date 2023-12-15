@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToggle } from '@mantine/hooks'
 import { type Message } from '@twilio/conversations'
-import { Edit2, MoreVertical, Save, Trash2 } from 'lucide-react'
+import { Edit2, MoreVertical, Save, SmilePlus, Trash2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type * as z from 'zod'
@@ -15,10 +15,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Textarea } from '@/components/ui/textarea'
 import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
+import { EmojiPicker } from '@/components/emoji-picker'
 import { Loader } from '@/components/icons'
 
 interface MessageActionsProps {
@@ -106,30 +107,37 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                 </DropdownMenuItem>
               </PopoverTrigger>
               <PopoverContent className="flex flex-col gap-2">
-                <h5 className="text-sm">Edit message</h5>
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex w-full flex-row items-center gap-2"
-                  >
-                    <FormField
-                      name="body"
-                      control={form.control}
-                      disabled={form.formState.isSubmitting}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              autoComplete="false"
-                              placeholder={message.body ?? 'Edit your message'}
-                              {...field}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-2">
+                  <Label>Edit message</Label>
+                  <Textarea
+                    autoComplete="false"
+                    className="resize-none"
+                    defaultValue={message.body ?? ''}
+                    placeholder={message.body ?? 'Edit your message'}
+                    {...form.register('body')}
+                  />
+                  <div className="flex items-center justify-end gap-2">
+                    <EmojiPicker
+                      trigger={
+                        <Button variant="secondary">
+                          <SmilePlus className="h-4 w-4" />
+                        </Button>
+                      }
+                      callback={(emoji) => {
+                        const body = form.getValues('body')
+                        if (body) {
+                          form.setValue('body', `${body}${emoji.native}`, {
+                            shouldValidate: true,
+                          })
+                        } else {
+                          form.setValue('body', emoji.native, {
+                            shouldValidate: true,
+                          })
+                        }
+                      }}
                     />
                     <Button
-                      size="icon"
+                      className="self-end"
                       type="submit"
                       disabled={
                         form.formState.isSubmitting ||
@@ -137,11 +145,15 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                         !form.formState.isDirty
                       }
                     >
-                      {form.formState.isSubmitting ? <Loader /> : <Save className="h-4 w-4" />}
-                      <span className="sr-only">Save message</span>
+                      Save
+                      {form.formState.isSubmitting ? (
+                        <Loader className="ml-2" />
+                      ) : (
+                        <Save className="ml-2 h-4 w-4" />
+                      )}
                     </Button>
-                  </form>
-                </Form>
+                  </div>
+                </form>
               </PopoverContent>
             </Popover>
             <DropdownMenuSeparator />
