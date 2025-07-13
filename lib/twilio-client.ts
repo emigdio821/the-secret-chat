@@ -15,7 +15,6 @@ async function getToken() {
 export async function initClient() {
   try {
     const token = await getToken()
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return new Client(token)
   } catch (err) {
     const errMessage = err instanceof Error ? err.message : err

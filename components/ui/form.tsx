@@ -1,6 +1,5 @@
 import * as React from 'react'
-import type * as LabelPrimitive from '@radix-ui/react-label'
-import { Slot } from '@radix-ui/react-slot'
+import { Slot as SlotPrimitive, type Label as LabelPrimitive } from 'radix-ui'
 import {
   Controller,
   FormProvider,
@@ -22,7 +21,6 @@ interface FormFieldContextValue<
   name: TName
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const FormFieldContext = React.createContext<FormFieldContextValue>({} as FormFieldContextValue)
 
 const FormField = <
@@ -65,7 +63,6 @@ interface FormItemContextValue {
   id: string
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const FormItemContext = React.createContext<FormItemContextValue>({} as FormItemContextValue)
 
 const FormItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
@@ -99,13 +96,13 @@ const FormLabel = React.forwardRef<
 FormLabel.displayName = 'FormLabel'
 
 const FormControl = React.forwardRef<
-  React.ElementRef<typeof Slot>,
-  React.ComponentPropsWithoutRef<typeof Slot>
+  React.ElementRef<typeof SlotPrimitive.Slot>,
+  React.ComponentPropsWithoutRef<typeof SlotPrimitive.Slot>
 >(({ ...props }, ref) => {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
   return (
-    <Slot
+    <SlotPrimitive.Slot
       ref={ref}
       id={formItemId}
       aria-describedby={!error ? `${formDescriptionId}` : `${formDescriptionId} ${formMessageId}`}
@@ -126,7 +123,7 @@ const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn('text-sm text-muted-foreground', className)}
+      className={cn('text-muted-foreground text-sm', className)}
       {...props}
     />
   )
@@ -148,7 +145,7 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn('text-xs font-medium text-destructive', className)}
+      className={cn('text-destructive text-xs font-medium', className)}
       {...props}
     >
       {body}

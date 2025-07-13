@@ -77,7 +77,7 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
         </div>
         <NextLink
           // as={`/chat/${chat.sid}`}
-          className={buttonVariants({ variant: 'outline' })}
+          className={buttonVariants({ variant: 'outline-solid' })}
           href={`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`}
         >
           Join

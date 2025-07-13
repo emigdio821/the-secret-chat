@@ -128,7 +128,7 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
                   action={handleDeleteChat}
                   trigger={
                     <DropdownMenuItem
-                      className="!text-destructive"
+                      className="text-destructive!"
                       onSelect={(e) => {
                         e.preventDefault()
                         setOpenedAlert(true)

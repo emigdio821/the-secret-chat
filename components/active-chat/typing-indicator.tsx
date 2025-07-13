@@ -21,7 +21,7 @@ export function TypingIndicator({ participants }: { participants: Participant[] 
       exit={{ opacity: 0, y: -5 }}
       className="flex w-full justify-center"
     >
-      <div className="mx-auto flex items-center gap-1 rounded-b-lg border bg-background/80 px-3 py-2 text-xs backdrop-blur-sm">
+      <div className="mx-auto flex items-center gap-1 rounded-b-lg border bg-background/80 px-3 py-2 text-xs backdrop-blur-xs">
         <Keyboard className="h-4 w-4 animate-pulse" />
         <span>{message}</span>
       </div>

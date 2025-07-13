@@ -359,7 +359,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <NextLink href="/" className={buttonVariants({ variant: 'outline' })}>
+                <NextLink href="/" className={buttonVariants({ variant: 'outline-solid' })}>
                   Home
                   <Home className="ml-2 h-4 w-4" />
                 </NextLink>

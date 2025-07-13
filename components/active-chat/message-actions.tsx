@@ -166,7 +166,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
           action={handleDeleteMessage}
           trigger={
             <DropdownMenuItem
-              className="!text-destructive"
+              className="text-destructive!"
               onSelect={(e) => {
                 e.preventDefault()
                 setOpenedAlert(true)

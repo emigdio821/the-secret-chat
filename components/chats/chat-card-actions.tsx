@@ -104,7 +104,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
           action={handleDeleteChat}
           trigger={
             <DropdownMenuItem
-              className="!text-destructive"
+              className="text-destructive!"
               onSelect={(e) => {
                 e.preventDefault()
                 setOpenedAlert(true)

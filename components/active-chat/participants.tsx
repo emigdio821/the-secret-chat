@@ -191,7 +191,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                               trigger={
                                 <Button
                                   variant="dropdown"
-                                  className="h-full justify-start px-2 py-1.5 !text-destructive"
+                                  className="h-full justify-start px-2 py-1.5 text-destructive!"
                                   onClick={() => {
                                     setOpenedAlert(true)
                                   }}
