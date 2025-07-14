@@ -1,7 +1,7 @@
 import type { ParticipantAttributes } from '@/types'
 import type { Participant } from '@twilio/conversations'
-import { motion } from 'framer-motion'
 import { Keyboard } from 'lucide-react'
+import { motion } from 'motion/react'
 
 export function TypingIndicator({ participants }: { participants: Participant[] }) {
   let message: string = ''
