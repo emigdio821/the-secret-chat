@@ -20,7 +20,7 @@ import {
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 interface AddParticipantDialogProps {
   chat: Conversation
@@ -111,7 +111,11 @@ export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps
             <DialogFooter className="mt-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Add
-                {form.formState.isSubmitting ? <Loader className="ml-2" /> : <UserPlus className="ml-2 h-4 w-4" />}
+                {form.formState.isSubmitting ? (
+                  <Icons.Spinner className="ml-2" />
+                ) : (
+                  <UserPlus className="ml-2 h-4 w-4" />
+                )}
               </Button>
             </DialogFooter>
           </form>

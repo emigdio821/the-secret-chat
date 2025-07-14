@@ -3,7 +3,6 @@ import { useDebouncedValue } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Client, Conversation } from '@twilio/conversations'
 import { MessageSquareDashed, RefreshCcw, Search } from 'lucide-react'
-import type { Session } from 'next-auth'
 import { UNREAD_MSGS_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
 import { sortArray } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -13,10 +12,9 @@ import { ChatCardItem } from './chat-card-item'
 
 interface ChatListProps {
   client: Client
-  session: Session
 }
 
-export function MyChats({ client, session }: ChatListProps) {
+export function MyChats({ client }: ChatListProps) {
   const [search, setSearch] = useState('')
   const queryClient = useQueryClient()
   const [debouncedSearch] = useDebouncedValue(search, 500)
@@ -95,21 +93,17 @@ export function MyChats({ client, session }: ChatListProps) {
       </div>
       {isLoading ? (
         <ChatsSkeleton />
+      ) : data && data.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {data.map((chat) => (
+            <ChatCardItem key={chat.sid} chat={chat} />
+          ))}
+        </div>
       ) : (
-        <>
-          {data && data.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {data.map((chat) => (
-                <ChatCardItem key={chat.sid} chat={chat} session={session} />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border p-4 text-sm">
-              <MessageSquareDashed className="h-4 w-4" />
-              <span>{search ? 'No chats found' : 'No chats yet'}</span>
-            </div>
-          )}
-        </>
+        <div className="flex flex-col items-center justify-center gap-2 rounded-lg border p-4 text-sm">
+          <MessageSquareDashed className="h-4 w-4" />
+          <span>{search ? 'No chats found' : 'No chats yet'}</span>
+        </div>
       )}
     </div>
   )

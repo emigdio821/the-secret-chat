@@ -3,12 +3,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useToggle } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Client, Conversation, Message, Paginator } from '@twilio/conversations'
-import { ArrowDown, Ghost, Loader2, Send } from 'lucide-react'
+import { ArrowDown, Ghost, Send } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import type * as z from 'zod'
+import type { z } from 'zod'
 import { ACTIVE_CHAT_MESSAGES_QUERY } from '@/lib/constants'
 import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
@@ -19,6 +19,7 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { EmojiPicker } from '@/components/emoji-picker'
 import { ChatOnlySkeleton } from '@/components/skeletons'
+import { Icons } from '../icons'
 import { MediaActions } from './media/media-actions'
 import { MessageItem } from './message-item'
 import { ChatParticipants } from './participants'
@@ -30,8 +31,8 @@ interface MessagesProps {
 }
 
 export function Messages({ chat, client }: MessagesProps) {
-  const msgsContainerRef = useRef<HTMLDivElement>(null)
   const { data: session } = useSession()
+  const msgsContainerRef = useRef<HTMLDivElement>(null)
   const [showScrollBottom, toggleScrollBtn] = useToggle()
   const [isLoadingPage, toggleLoadingPage] = useToggle()
   const [autoScroll, toggleAutoScroll] = useToggle([true, false])
@@ -184,7 +185,7 @@ export function Messages({ chat, client }: MessagesProps) {
                           }}
                         >
                           Load more messages
-                          {isLoadingPage && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                          {isLoadingPage && <Icons.Spinner className="size-4" />}
                         </Button>
                       )}
                       {messages.items.map((message) => (

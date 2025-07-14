@@ -17,10 +17,10 @@ import {
 import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
 
 export function ChatCardActions({ chat }: { chat: Conversation }) {
+  const { data: session } = useSession()
   const [openedAlert, setOpenedAlert] = useState(false)
   const [openedLeaveChatAlert, setOpenedLeaveChatAlert] = useState(false)
   const [isLoading, setLoading] = useState(false)
-  const { data: session } = useSession()
   const isAdmin = session?.user?.email === chat.createdBy
   const queryClient = useQueryClient()
 

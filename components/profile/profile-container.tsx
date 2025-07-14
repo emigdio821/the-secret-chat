@@ -37,7 +37,7 @@ export function ProfileContainer({ session }: { session: Session }) {
                 <AvatarImage
                   className="object-cover"
                   alt={client.user.identity}
-                  src={(userAttrs?.avatar_url || session.user?.image) ?? AVATAR_FALLBACK_URL}
+                  src={(userAttrs?.avatar_url || session?.user?.image) ?? AVATAR_FALLBACK_URL}
                 />
                 <AvatarFallback className="h-28 w-28 rounded-lg">
                   <User className="h-6 w-6" />
@@ -45,7 +45,7 @@ export function ProfileContainer({ session }: { session: Session }) {
               </Avatar>
               <CardDescription className="my-4">Here you&apos;ll find basic info. about your account.</CardDescription>
               <h3 className="text-xl font-semibold">
-                {(userAttrs?.name || session.user?.name) ?? client?.user.identity}
+                {(userAttrs?.name || session?.user?.name) ?? client?.user.identity}
               </h3>
               <div className="mb-4">
                 <p className="flex items-center gap-1 text-sm font-medium">
@@ -57,7 +57,7 @@ export function ProfileContainer({ session }: { session: Session }) {
                   {(userAttrs?.nickname || client.user.friendlyName) ?? 'Nickname not yet set'}
                 </p>
               </div>
-              <EditProfilePopover client={client} session={session} />
+              {session?.user && <EditProfilePopover client={client} user={session?.user} />}
             </CardContent>
           </>
         )

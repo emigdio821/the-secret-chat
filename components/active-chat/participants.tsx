@@ -2,7 +2,7 @@ import type { ParticipantAttributes } from '@/types'
 import { useToggle } from '@mantine/hooks'
 import { useQuery } from '@tanstack/react-query'
 import type { Client, Conversation, Participant } from '@twilio/conversations'
-import { AtSign, Signal, User, UserX } from 'lucide-react'
+import { AtSign, Signal, UserIcon, UserX } from 'lucide-react'
 import type { Session } from 'next-auth'
 import { ACTIVE_PARTICIPANTS_QUERY, AVATAR_FALLBACK_URL } from '@/lib/constants'
 import { cn, sortArray } from '@/lib/utils'
@@ -91,7 +91,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                     <PopoverTrigger asChild>
                       <Button
                         variant="ghost"
-                        disabled={!session}
+                        disabled={!user}
                         className={cn('gap-2 px-1 sm:w-full sm:justify-start', {
                           'opacity-50': !partAttrs?.isOnline,
                         })}
@@ -104,7 +104,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                               src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
                             />
                             <AvatarFallback className="h-6 w-6 rounded-sm">
-                              <User className="h-4 w-4" />
+                              <UserIcon className="size-4" />
                             </AvatarFallback>
                           </Avatar>
                           <span
@@ -133,7 +133,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                           src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
                         />
                         <AvatarFallback className="h-20 w-20 rounded-sm">
-                          <User className="h-4 w-4" />
+                          <UserIcon className="size-4" />
                         </AvatarFallback>
                       </Avatar>
                       {partAttrs?.name && (
@@ -152,7 +152,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                       </DropdownMenuLabel>
                       {partAttrs?.nickname && (
                         <DropdownMenuLabel className="flex items-center gap-2 py-0 font-normal">
-                          <User className="h-4 w-4" />
+                          <UserIcon className="size-4" />
                           {partAttrs?.nickname}
                         </DropdownMenuLabel>
                       )}

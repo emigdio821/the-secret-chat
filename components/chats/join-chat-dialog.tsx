@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 interface JoinChatDialogProps {
   isLoading: boolean
@@ -104,7 +104,7 @@ export function JoinChatDialog({ client }: JoinChatDialogProps) {
             <DialogFooter className="mt-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Join
-                {form.formState.isSubmitting && <Loader className="ml-2" />}
+                {form.formState.isSubmitting && <Icons.Spinner className="ml-2" />}
               </Button>
             </DialogFooter>
           </form>

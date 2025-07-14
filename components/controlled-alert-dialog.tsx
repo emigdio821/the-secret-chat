@@ -10,7 +10,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 interface AlertDialogProps {
   open: boolean
@@ -57,7 +57,7 @@ export function ControlledAlertDialog({ open, action, trigger, setOpen, isLoadin
             }}
           >
             Continue
-            {isLoading && <Loader className="ml-2" />}
+            {isLoading && <Icons.Spinner />}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

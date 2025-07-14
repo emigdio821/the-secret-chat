@@ -19,7 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea'
 import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
 import { EmojiPicker } from '@/components/emoji-picker'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 interface MessageActionsProps {
   message: Message
@@ -141,7 +141,11 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                       disabled={form.formState.isSubmitting || !form.formState.isValid || !form.formState.isDirty}
                     >
                       Save
-                      {form.formState.isSubmitting ? <Loader className="ml-2" /> : <Save className="ml-2 h-4 w-4" />}
+                      {form.formState.isSubmitting ? (
+                        <Icons.Spinner className="ml-2" />
+                      ) : (
+                        <Save className="ml-2 h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </form>

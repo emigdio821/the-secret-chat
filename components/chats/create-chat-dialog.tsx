@@ -25,7 +25,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 interface CreateChatDialogProps {
   isLoading: boolean
@@ -178,7 +178,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
             <DialogFooter className="mt-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Create
-                {form.formState.isSubmitting && <Loader className="ml-2" />}
+                {form.formState.isSubmitting && <Icons.Spinner className="ml-2" />}
               </Button>
             </DialogFooter>
           </form>

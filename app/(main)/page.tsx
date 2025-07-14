@@ -1,11 +1,10 @@
 import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { siteConfig } from '@/lib/site-config'
 import { MyChatsContainer } from '@/components/chats/my-chats-container'
 
 export default async function MainPage() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   if (!session) {
     redirect('/login')
@@ -21,7 +20,7 @@ export default async function MainPage() {
       </h3>
       <p className="text-muted-foreground text-sm">Start chatting now</p>
       <section className="mt-4">
-        <MyChatsContainer session={session} />
+        <MyChatsContainer />
       </section>
     </>
   )

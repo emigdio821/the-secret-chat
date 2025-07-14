@@ -1,64 +1,34 @@
-import { type AuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import GithubProvider from 'next-auth/providers/github'
+import NextAuth from 'next-auth'
+import type { Provider } from 'next-auth/providers'
+import Credentials from 'next-auth/providers/credentials'
+import GitHub from 'next-auth/providers/github'
 
-export const authOptions: AuthOptions = {
-  providers: [
-    GithubProvider({
-      clientId: process.env.GITHUB_ID as string,
-      clientSecret: process.env.GITHUB_SECRET as string,
-      authorization: {
-        params: {
-          scope: 'user:email',
-        },
-      },
-    }),
-    CredentialsProvider({
-      name: 'Credentials',
+const providers: Provider[] = [GitHub]
+
+if (process.env.NODE_ENV !== 'production') {
+  providers.push(
+    Credentials({
       credentials: {
         username: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
-        const user = {
+      authorize(credentials) {
+        const testUser = {
           id: '1',
           name: 'Emigdio Torres',
           email: 'emigdio@dev.com',
         }
-        const user2 = {
-          id: '2',
-          name: 'Lorenzo Rodríguez',
-          email: 'lorenzo@dev.com',
-        }
-        const user3 = {
-          id: '3',
-          name: 'Lu Rodríguez',
-          email: 'lupencia@test.com',
-        }
-        const isDevUser = credentials?.username === 'admin' && credentials.password === 'admin'
-        const isDevUser2 = credentials?.username === 'admin2' && credentials.password === 'admin2'
-        const isDevUser3 = credentials?.username === 'admin3' && credentials.password === 'admin3'
 
-        if (isDevUser) {
-          return user
+        if (credentials?.username === 'admin' && credentials.password === 'admin') {
+          return testUser
         }
-        if (isDevUser2) {
-          return user2
-        }
-        if (isDevUser3) {
-          return user3
-        }
+
         return null
       },
     }),
-  ],
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: '/login',
-  },
-  callbacks: {
-    async jwt({ token }) {
-      return token
-    },
-  },
+  )
 }
+
+export const { auth, handlers, signIn, signOut } = NextAuth({
+  providers,
+})

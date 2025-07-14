@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { MessageAttributes, ParticipantAttributes } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import type { Message } from '@twilio/conversations'
-import { User } from 'lucide-react'
+import { UserIcon } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { Session } from 'next-auth'
 import { AVATAR_FALLBACK_URL, MESSAGE_PARTICIPANT_QUERY } from '@/lib/constants'
@@ -18,10 +18,10 @@ interface MessageItemProps {
   session: Session
 }
 
-export function MessageItem({ session, message }: MessageItemProps) {
-  const user = session.user
+export function MessageItem({ message, session }: MessageItemProps) {
   const [mediaURL, setMediaURL] = useState<string>('')
   const { author, sid, body, dateCreated } = message
+  const user = session.user
   const isAuthor = author === user?.email
   const hasMedia = message.type === 'media'
   const rawMedia = message.attachedMedia?.[0]
@@ -70,12 +70,12 @@ export function MessageItem({ session, message }: MessageItemProps) {
           alt={`${user?.name}`}
           src={
             isAuthor
-              ? ((partAttrs?.avatar_url || session.user?.image) ?? AVATAR_FALLBACK_URL)
+              ? ((partAttrs?.avatar_url || user.image) ?? AVATAR_FALLBACK_URL)
               : partAttrs?.avatar_url || AVATAR_FALLBACK_URL
           }
         />
         <AvatarFallback className="h-6 w-6 rounded-lg">
-          <User className="h-4 w-4" />
+          <UserIcon className="size-4" />
         </AvatarFallback>
       </Avatar>
       <motion.div
@@ -88,29 +88,20 @@ export function MessageItem({ session, message }: MessageItemProps) {
       >
         <span className="flex justify-between gap-2">
           <span>
-            {isGif && (
-              <>
-                {body ? (
-                  <ImageViewer url={body} title="GIPHY" errorCb={getMediaUrl} />
-                ) : (
-                  <Skeleton className="h-20 w-28" />
-                )}
-              </>
-            )}
-            {isRawImage && (
-              <>
-                {mediaURL ? (
-                  <ImageViewer url={mediaURL} title={rawMedia?.filename ?? undefined} />
-                ) : (
-                  <Skeleton className="h-20 w-28" />
-                )}
-              </>
-            )}
-            {isAudio && (
-              <>
-                {mediaURL ? <AudioPlayer url={mediaURL} errorCb={getMediaUrl} /> : <Skeleton className="h-20 w-32" />}
-              </>
-            )}
+            {isGif &&
+              (body ? (
+                <ImageViewer url={body} title="GIPHY" errorCb={getMediaUrl} />
+              ) : (
+                <Skeleton className="h-20 w-28" />
+              ))}
+            {isRawImage &&
+              (mediaURL ? (
+                <ImageViewer url={mediaURL} title={rawMedia?.filename ?? undefined} />
+              ) : (
+                <Skeleton className="h-20 w-28" />
+              ))}
+            {isAudio &&
+              (mediaURL ? <AudioPlayer url={mediaURL} errorCb={getMediaUrl} /> : <Skeleton className="h-20 w-32" />)}
             {!isGif && !isRawImage && !isAudio && (
               <span
                 className={cn({

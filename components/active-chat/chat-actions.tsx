@@ -25,10 +25,10 @@ interface ChatActionsProps {
 
 export default function ChatActions({ chat, client }: ChatActionsProps) {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
   const [openedAlert, setOpenedAlert] = useState(false)
   const [openedLeaveChatAlert, setOpenedLeaveChatAlert] = useState(false)
   const [isLoading, setLoading] = useState(false)
-  const { data: session } = useSession()
   const isAdmin = session?.user?.email === chat.createdBy
   const chatAttrs = chat.attributes as ChatAttributes
 

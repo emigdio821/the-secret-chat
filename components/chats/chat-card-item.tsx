@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import type { Conversation } from '@twilio/conversations'
 import { MessageSquare, Shield, User } from 'lucide-react'
 import { motion } from 'motion/react'
-import type { Session } from 'next-auth'
+import { useSession } from 'next-auth/react'
 import { UNREAD_MSGS_QUERY } from '@/lib/constants'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,18 +11,18 @@ import { ChatCardActions } from './chat-card-actions'
 
 interface ChatCardItemProps {
   chat: Conversation
-  session: Session
 }
 
 interface ChatDescription {
   description?: string
 }
 
-export function ChatCardItem({ chat, session }: ChatCardItemProps) {
+export function ChatCardItem({ chat }: ChatCardItemProps) {
+  const { data: session } = useSession()
   const { createdBy } = chat
   const attrs = chat.attributes as ChatDescription
   const partsCount = chat._participants.size
-  const isOwner = session.user?.email === createdBy
+  const isOwner = session?.user?.email === createdBy
   const { data: unreadMsgs } = useQuery({
     queryKey: [UNREAD_MSGS_QUERY, chat.sid],
     queryFn: getUnreadMessages,
