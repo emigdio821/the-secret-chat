@@ -1,21 +1,20 @@
 import { useCallback, useEffect, useState } from 'react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/navigation'
-import { type ChatAttributes, type ParticipantAttributes, type UserAttributes } from '@/types'
+import type { ChatAttributes, ParticipantAttributes, UserAttributes } from '@/types'
 import { useIdle, useWindowEvent } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import {
-  type Client,
-  type Conversation,
-  type Message,
-  type MessageUpdateReason,
-  type Paginator,
-  type Participant,
-  type ParticipantUpdateReason,
+import type {
+  Client,
+  Conversation,
+  Message,
+  MessageUpdateReason,
+  Paginator,
+  Participant,
+  ParticipantUpdateReason,
 } from '@twilio/conversations'
 import { Home } from 'lucide-react'
 import { toast } from 'sonner'
-
 import {
   ACTIVE_CHAT_MESSAGES_QUERY,
   ACTIVE_CHAT_QUERY,
@@ -28,7 +27,6 @@ import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Messages } from '@/components/active-chat/messages'
 import { FullChatSkeleton } from '@/components/skeletons'
-
 import ChatActions from './chat-actions'
 
 interface ActiveChatProps {
@@ -97,8 +95,8 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
       toast('Info', {
         description: (
           <>
-            <span className="font-semibold">{chat.friendlyName ?? chat.uniqueName}</span> chat room
-            was removed by the admin or you were removed from it.
+            <span className="font-semibold">{chat.friendlyName ?? chat.uniqueName}</span> chat room was removed by the
+            admin or you were removed from it.
           </>
         ),
       })
@@ -195,7 +193,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   )
 
   const handleUpdatedParticipant = useCallback(
-    async (data: ParticipantUpdatedData) => {
+    async (_data: ParticipantUpdatedData) => {
       try {
         await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
         // if (data.updateReasons.includes('attributes')) {
@@ -337,36 +335,30 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     <>
       {isLoading ? (
         <FullChatSkeleton />
-      ) : (
+      ) : chat ? (
         <>
-          {chat ? (
-            <>
-              <div className="hidden justify-between gap-2 sm:flex">
-                <div>
-                  <h3 className="text-lg font-semibold">{chat.friendlyName}</h3>
-                  <h5 className="mb-4 text-sm text-muted-foreground">{chatAttrs?.description}</h5>
-                </div>
-                <ChatActions chat={chat} client={client} />
-              </div>
-              <Messages chat={chat} client={client} />
-            </>
-          ) : (
-            <Card className="mx-auto max-w-sm">
-              <CardHeader>
-                <CardTitle>Chat not found</CardTitle>
-                <CardDescription>
-                  Seems like this chat no longer exists or you are not participating on it
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <NextLink href="/" className={buttonVariants({ variant: 'outline-solid' })}>
-                  Home
-                  <Home className="ml-2 h-4 w-4" />
-                </NextLink>
-              </CardContent>
-            </Card>
-          )}
+          <div className="hidden justify-between gap-2 sm:flex">
+            <div>
+              <h3 className="text-lg font-semibold">{chat.friendlyName}</h3>
+              <h5 className="text-muted-foreground mb-4 text-sm">{chatAttrs?.description}</h5>
+            </div>
+            <ChatActions chat={chat} client={client} />
+          </div>
+          <Messages chat={chat} client={client} />
         </>
+      ) : (
+        <Card className="mx-auto max-w-sm">
+          <CardHeader>
+            <CardTitle>Chat not found</CardTitle>
+            <CardDescription>Seems like this chat no longer exists or you are not participating on it</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <NextLink href="/" className={buttonVariants({ variant: 'default' })}>
+              Home
+              <Home className="ml-2 h-4 w-4" />
+            </NextLink>
+          </CardContent>
+        </Card>
       )}
     </>
   )

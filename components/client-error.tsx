@@ -1,6 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { RefreshCcw } from 'lucide-react'
-
 import { GET_CLIENT_QUERY } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 

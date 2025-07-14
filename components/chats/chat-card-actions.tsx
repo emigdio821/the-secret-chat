@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { type Conversation } from '@twilio/conversations'
+import type { Conversation } from '@twilio/conversations'
 import { LogOut, MoreVertical, Trash2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-
 import { USER_CHATS_QUERY } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import {
@@ -91,8 +90,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
             }
             alertMessage={
               <>
-                You are about to leave{' '}
-                <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
+                You are about to leave <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
               </>
             }
           />
@@ -117,8 +115,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
           alertMessage={
             <>
               This action cannot be undone. This will permanently delete{' '}
-              <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room and kick all
-              the participants.
+              <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room and kick all the participants.
             </>
           }
         />

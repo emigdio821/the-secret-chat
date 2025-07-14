@@ -3,11 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { type Client } from '@twilio/conversations'
+import type { Client } from '@twilio/conversations'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import type * as z from 'zod'
-
+import type { z } from 'zod'
 import { joinChatRoomSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
@@ -28,7 +27,7 @@ interface JoinChatDialogProps {
   client: Client
 }
 
-export function JoinChatDialog({ isLoading, client }: JoinChatDialogProps) {
+export function JoinChatDialog({ client }: JoinChatDialogProps) {
   const [openedDialog, setOpenedDialog] = useState(false)
   const router = useRouter()
 

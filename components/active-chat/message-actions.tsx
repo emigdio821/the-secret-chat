@@ -1,11 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToggle } from '@mantine/hooks'
-import { type Message } from '@twilio/conversations'
+import type { Message } from '@twilio/conversations'
 import { Edit2, MoreVertical, Save, SmilePlus, Trash2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type * as z from 'zod'
-
 import { editMessageSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
@@ -139,18 +138,10 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                     <Button
                       className="self-end"
                       type="submit"
-                      disabled={
-                        form.formState.isSubmitting ||
-                        !form.formState.isValid ||
-                        !form.formState.isDirty
-                      }
+                      disabled={form.formState.isSubmitting || !form.formState.isValid || !form.formState.isDirty}
                     >
                       Save
-                      {form.formState.isSubmitting ? (
-                        <Loader className="ml-2" />
-                      ) : (
-                        <Save className="ml-2 h-4 w-4" />
-                      )}
+                      {form.formState.isSubmitting ? <Loader className="ml-2" /> : <Save className="ml-2 h-4 w-4" />}
                     </Button>
                   </div>
                 </form>

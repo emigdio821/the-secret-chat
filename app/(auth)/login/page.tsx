@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
-
 import { authOptions } from '@/lib/auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { LoginForm } from '@/components/login/form'

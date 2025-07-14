@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { type ChatAttributes } from '@/types'
+import type { ChatAttributes } from '@/types'
 import { useQueryClient } from '@tanstack/react-query'
-import { type Client, type Conversation } from '@twilio/conversations'
+import type { Client, Conversation } from '@twilio/conversations'
 import { LogOut, MoreVertical, Trash2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-
 import { ACTIVE_PARTICIPANTS_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,7 +16,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
-
 import { AddParticipantDialog } from './add-participant-dialog'
 
 interface ChatActionsProps {
@@ -83,9 +81,7 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="max-w-[180px]">
-            <DropdownMenuLabel className="sm:hidden">
-              {chat.friendlyName ?? 'Chat'}
-            </DropdownMenuLabel>
+            <DropdownMenuLabel className="sm:hidden">{chat.friendlyName ?? 'Chat'}</DropdownMenuLabel>
             {chatAttrs?.description && (
               <DropdownMenuLabel className="pt-0 text-xs font-normal sm:hidden">
                 {chatAttrs?.description}
@@ -112,8 +108,7 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
                 }
                 alertMessage={
                   <>
-                    You are about to leave{' '}
-                    <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
+                    You are about to leave <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
                   </>
                 }
               />
@@ -141,8 +136,8 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
                   alertMessage={
                     <>
                       This action cannot be undone. This will permanently delete{' '}
-                      <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room and
-                      kick all the participants.
+                      <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room and kick all the
+                      participants.
                     </>
                   }
                 />

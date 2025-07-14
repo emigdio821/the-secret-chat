@@ -4,7 +4,6 @@ import { useToggle } from '@mantine/hooks'
 import { Github } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'
-
 import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/icons'
 
@@ -30,11 +29,7 @@ export function SignInOptions() {
   return (
     <Button variant="outline" disabled={isLoading} onClick={handleSignIn}>
       Continue with Github
-      {isLoading ? (
-        <Loader className="ml-2" barsClassName="bg-primary" />
-      ) : (
-        <Github className="ml-2 h-4 w-4" />
-      )}
+      {isLoading ? <Loader className="ml-2" barsClassName="bg-primary" /> : <Github className="ml-2 h-4 w-4" />}
     </Button>
   )
 }

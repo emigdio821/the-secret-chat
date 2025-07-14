@@ -2,7 +2,6 @@ import { useRef, useState } from 'react'
 import { useToggle } from '@mantine/hooks'
 import { Pause, Play, Square } from 'lucide-react'
 import { toast } from 'sonner'
-
 import { AUDIO_FORMAT } from '@/lib/constants'
 import { secsToTime } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -13,7 +12,7 @@ interface AudioPlayerProps {
   errorCb: () => Promise<void>
 }
 
-export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
+export function AudioPlayer({ url }: AudioPlayerProps) {
   const aurioRef = useRef<HTMLAudioElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [sliderValue, setSliderValue] = useState(0)
@@ -83,12 +82,7 @@ export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
 
   return (
     <div className="h-20 w-32">
-      <audio
-        ref={aurioRef}
-        onEnded={handleStop}
-        onTimeUpdate={handlePlaying}
-        onLoadedMetadata={handleLoadedMetadata}
-      >
+      <audio ref={aurioRef} onEnded={handleStop} onTimeUpdate={handlePlaying} onLoadedMetadata={handleLoadedMetadata}>
         <track kind="captions" />
         <source src={url} type={AUDIO_FORMAT} />
         Your browser does not support the
@@ -108,8 +102,10 @@ export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
           onValueChange={(value) => {
             const player = aurioRef.current
             if (player && player.duration !== Infinity) {
-              const seekTo = (value[0] / 100) * aurioRef.current?.duration
-              player.currentTime = seekTo
+              if (aurioRef.current) {
+                const seekTo = (value[0] / 100) * aurioRef.current?.duration
+                player.currentTime = seekTo
+              }
             }
           }}
         />
@@ -131,7 +127,7 @@ export function AudioPlayer({ url, errorCb }: AudioPlayerProps) {
             onClick={handleStop}
             disabled={!isPlaying}
           >
-            <Square className="h-2 w-2 fill-foreground" />
+            <Square className="fill-foreground h-2 w-2" />
           </Button>
           <Button
             size="icon"

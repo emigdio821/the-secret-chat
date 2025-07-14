@@ -1,14 +1,12 @@
 import NextLink from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import { type Conversation } from '@twilio/conversations'
+import type { Conversation } from '@twilio/conversations'
 import { motion } from 'framer-motion'
 import { MessageSquare, Shield, User } from 'lucide-react'
-import { type Session } from 'next-auth'
-
+import type { Session } from 'next-auth'
 import { UNREAD_MSGS_QUERY } from '@/lib/constants'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-
 import { ChatCardActions } from './chat-card-actions'
 
 interface ChatCardItemProps {
@@ -47,7 +45,7 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
           <span className="relative flex items-center gap-1">
             <CardTitle className="text-base">{chat.friendlyName ?? chat.uniqueName}</CardTitle>
             {unreadMsgs && unreadMsgs > 0 ? (
-              <span className="flex items-center gap-1 rounded-lg border px-1 py-px text-xs font-semibold text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-1 rounded-lg border px-1 py-px text-xs font-semibold">
                 <MessageSquare className="h-3 w-3" />
                 <motion.span
                   key={unreadMsgs}
@@ -66,18 +64,18 @@ export function ChatCardItem({ chat, session }: ChatCardItemProps) {
       </CardHeader>
       <CardFooter className="mt-auto justify-between">
         <div>
-          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <span className="text-muted-foreground flex items-center gap-1 text-xs">
             <User className="h-3 w-3" />
             {partsCount}
           </span>
-          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <span className="text-muted-foreground flex items-center gap-1 text-xs">
             <Shield className="h-3 w-3" />
             {createdBy}
           </span>
         </div>
         <NextLink
           // as={`/chat/${chat.sid}`}
-          className={buttonVariants({ variant: 'outline-solid' })}
+          className={buttonVariants({ variant: 'default' })}
           href={`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`}
         >
           Join

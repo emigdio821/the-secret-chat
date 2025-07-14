@@ -21,14 +21,7 @@ interface AlertDialogProps {
   isLoading?: boolean
 }
 
-export function ControlledAlertDialog({
-  open,
-  action,
-  trigger,
-  setOpen,
-  isLoading,
-  alertMessage,
-}: AlertDialogProps) {
+export function ControlledAlertDialog({ open, action, trigger, setOpen, isLoading, alertMessage }: AlertDialogProps) {
   return (
     <AlertDialog
       open={open}

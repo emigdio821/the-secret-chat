@@ -1,10 +1,9 @@
 'use client'
 
 import NextLink from 'next/link'
-import { type UserAttributes } from '@/types'
+import type { UserAttributes } from '@/types'
 import { Github, User } from 'lucide-react'
-import { type Session } from 'next-auth'
-
+import type { Session } from 'next-auth'
 import { AVATAR_FALLBACK_URL } from '@/lib/constants'
 import { siteConfig } from '@/lib/site-config'
 import { getFirstName } from '@/lib/utils'
@@ -21,7 +20,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
-
 import { Logout } from './profile-menu-logout'
 
 export function ProfileMenu({ session }: { session: Session }) {
@@ -51,9 +49,7 @@ export function ProfileMenu({ session }: { session: Session }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-[180px]">
-        <DropdownMenuLabel>
-          {(userAttrs?.name || session.user?.name) ?? client?.user.identity}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel>{(userAttrs?.name || session.user?.name) ?? client?.user.identity}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <NextLink href="/profile">
