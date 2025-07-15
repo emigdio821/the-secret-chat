@@ -18,7 +18,7 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider enableSystem disableTransitionOnChange attribute="class" defaultTheme="system">
           {children}
           <Toaster
             expand

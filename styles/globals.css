@@ -2,6 +2,8 @@
 @import '@radix-ui/colors/mauve-dark.css' layer(base);
 @import '@radix-ui/colors/tomato.css' layer(base);
 @import '@radix-ui/colors/tomato-dark.css' layer(base);
+@import '@radix-ui/colors/iris.css' layer(base);
+@import '@radix-ui/colors/iris-dark.css' layer(base);
 
 @import 'tailwindcss';
 @import 'tw-animate-css';
@@ -50,7 +52,7 @@
   --card-foreground: var(--mauve-12);
   --popover: var(--mauve-1);
   --popover-foreground: var(--mauve-12);
-  --primary: var(--mauve-12);
+  --primary: var(--iris-10);
   --primary-foreground: var(--mauve-1);
   --secondary: var(--mauve-4);
   --secondary-foreground: var(--mauve-12);
@@ -80,7 +82,7 @@
   --card-foreground: var(--mauve-12);
   --popover: var(--mauve-2);
   --popover-foreground: var(--mauve-12);
-  --primary: var(--mauve-11);
+  --primary: var(--iris-11);
   --primary-foreground: var(--mauve-1);
   --secondary: var(--mauve-4);
   --secondary-foreground: var(--mauve-12);

@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from 'next'
+import { fontSans } from '@/config/fonts'
 import { cn } from '@/lib/utils'
-import Footer from '@/components/footer'
 import { Providers } from '@/components/providers'
 import '@/styles/globals.css'
-import { fontSans } from '@/lib/fonts'
-import { siteConfig } from '@/lib/site-config'
+import { siteConfig } from '@/config/site'
 
 interface RootLayoutProps {
   children: React.ReactNode
@@ -15,41 +14,23 @@ export const metadata: Metadata = {
     default: siteConfig.name,
     template: `%s · ${siteConfig.name}`,
   },
+  keywords: siteConfig.keywords,
   description: siteConfig.description,
-  authors: [
-    {
-      name: 'Emigdio Torres',
-      url: siteConfig.url,
-    },
-  ],
-  metadataBase: new URL(siteConfig.url),
   creator: 'Emigdio Torres',
-  icons: {
-    icon: '/images/favicon.ico',
-    shortcut: '/images/favicon-16x16.png',
-    apple: '/images/apple-touch-icon.png',
-  },
-  openGraph: {
-    title: siteConfig.name,
-    description: siteConfig.description,
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    locale: 'en-US',
-    type: 'website',
-    images: siteConfig.ogUrl,
-  },
-  manifest: '/site.webmanifest',
+  icons: siteConfig.icons,
+  openGraph: siteConfig.og,
+  metadataBase: new URL(siteConfig.url),
+  twitter: siteConfig.ogTwitter,
 }
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
   ],
   initialScale: 1,
-  minimumScale: 1,
   maximumScale: 1,
-  height: 'device-height',
+  viewportFit: 'cover',
   width: 'device-width',
 }
 
@@ -58,12 +39,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body
-          className={cn('bg-background relative flex min-h-screen flex-col font-sans antialiased', fontSans.variable)}
-        >
+        <body className={cn('antialiased', fontSans.className, fontSans.variable)}>
           <Providers>
-            <main>{children}</main>
-            <Footer />
+            <main className="relative flex min-h-dvh flex-col">{children}</main>
           </Providers>
         </body>
       </html>
