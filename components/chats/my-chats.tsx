@@ -56,7 +56,7 @@ export function MyChats({ client }: ChatListProps) {
           }}
         >
           Re-fetch chats
-          <RefreshCcw className="ml-2 h-4 w-4" />
+          <RefreshCcw className="ml-2 size-4" />
         </Button>
       </div>
     )
@@ -75,10 +75,10 @@ export function MyChats({ client }: ChatListProps) {
             }}
           >
             <span className="hidden sm:block">Refresh</span>
-            <RefreshCcw className="h-4 w-4 sm:ml-2" />
+            <RefreshCcw className="size-4 sm:ml-2" />
           </Button>
           <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2" />
             <Input
               disabled={isLoading}
               className="w-40 pl-9"
@@ -101,7 +101,7 @@ export function MyChats({ client }: ChatListProps) {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center gap-2 rounded-lg border p-4 text-sm">
-          <MessageSquareDashed className="h-4 w-4" />
+          <MessageSquareDashed className="size-4" />
           <span>{search ? 'No chats found' : 'No chats yet'}</span>
         </div>
       )}

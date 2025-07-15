@@ -13,7 +13,6 @@ import type {
   Participant,
   ParticipantUpdateReason,
 } from '@twilio/conversations'
-import { Home } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   ACTIVE_CHAT_MESSAGES_QUERY,
@@ -355,7 +354,6 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
           <CardContent>
             <NextLink href="/" className={buttonVariants({ variant: 'default' })}>
               Home
-              <Home className="ml-2 h-4 w-4" />
             </NextLink>
           </CardContent>
         </Card>

@@ -22,7 +22,7 @@ export function TypingIndicator({ participants }: { participants: Participant[] 
       className="flex w-full justify-center"
     >
       <div className="bg-background/80 mx-auto flex items-center gap-1 rounded-b-lg border px-3 py-2 text-xs backdrop-blur-xs">
-        <Keyboard className="h-4 w-4 animate-pulse" />
+        <Keyboard className="size-4 animate-pulse" />
         <span>{message}</span>
       </div>
     </motion.div>

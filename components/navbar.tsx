@@ -1,5 +1,4 @@
 import NextLink from 'next/link'
-import { Ghost } from 'lucide-react'
 import { siteConfig } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
@@ -18,7 +17,6 @@ export function Navbar() {
             'h-auto p-0 transition-opacity hover:opacity-80',
           )}
         >
-          <Ghost className="mr-2 h-4 w-4" />
           <h5 className="text-sm font-semibold sm:text-base">{siteConfig.name}</h5>
         </NextLink>
         <ProfileMenu />

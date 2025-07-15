@@ -194,7 +194,7 @@ export function Messages({ chat, client }: MessagesProps) {
                     </div>
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
-                      <Ghost className="h-5 w-5" />
+                      <Ghost className="size-5" />
                       No messages yet
                     </div>
                   )}
@@ -210,9 +210,9 @@ export function Messages({ chat, client }: MessagesProps) {
                       initial={{ opacity: 0, y: 5 }}
                       exit={{ opacity: 0, y: 5 }}
                       onClick={scrollBottom}
-                      className={cn(buttonVariants({ size: 'icon' }), 'absolute right-4 bottom-4 h-6 w-6 rounded-full')}
+                      className={cn(buttonVariants({ size: 'icon' }), 'absolute right-4 bottom-4 size-6 rounded-full')}
                     >
-                      <ArrowDown className="h-3 w-3" />
+                      <ArrowDown className="size-3" />
                       <span className="sr-only">Scroll bottom</span>
                     </motion.button>
                   )}
@@ -261,7 +261,7 @@ export function Messages({ chat, client }: MessagesProps) {
                   )}
                 />
                 <Button size="icon" type="submit" disabled={form.formState.isSubmitting || !form.formState.isValid}>
-                  <Send className="h-4 w-4" />
+                  <Send className="size-4" />
                   <span className="sr-only">Send message</span>
                 </Button>
               </form>

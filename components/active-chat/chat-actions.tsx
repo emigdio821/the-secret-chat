@@ -75,9 +75,9 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
       {session && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-6 w-6">
+            <Button variant="ghost" size="icon" className="size-6">
               <span className="sr-only">Chat menu</span>
-              <MoreVertical className="h-4 w-4" />
+              <MoreVertical className="size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="max-w-[180px]">
@@ -102,7 +102,7 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
                       setOpenedLeaveChatAlert(true)
                     }}
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="mr-2 size-4" />
                     <span>Leave chat</span>
                   </DropdownMenuItem>
                 }
@@ -129,7 +129,7 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
                         setOpenedAlert(true)
                       }}
                     >
-                      <Trash2 className="mr-2 h-4 w-4" />
+                      <Trash2 className="mr-2 size-4" />
                       <span>Delete chat</span>
                     </DropdownMenuItem>
                   }

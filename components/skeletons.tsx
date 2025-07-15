@@ -62,11 +62,11 @@ export function ProfileSekelton() {
         <Skeleton className="h-3 w-36" />
         <div className="mt-2 flex flex-col gap-1">
           <div className="flex items-center gap-1">
-            <Skeleton className="h-4 w-4" />
+            <Skeleton className="size-4" />
             <Skeleton className="h-2 w-32" />
           </div>
           <div className="flex items-center gap-1">
-            <Skeleton className="h-4 w-4" />
+            <Skeleton className="size-4" />
             <Skeleton className="h-2 w-28" />
           </div>
         </div>
@@ -83,35 +83,35 @@ export function ChatOnlySkeleton() {
         <div className="h-16 w-full rounded-lg border sm:h-[420px] sm:w-36">
           <div className="flex h-full w-full flex-row items-center gap-1 p-4 sm:flex-col sm:items-start">
             <div className="flex h-8 items-center gap-1">
-              <Skeleton className="h-5 w-5 rounded-sm" />
+              <Skeleton className="size-5 rounded-sm" />
               <Skeleton className="h-2 w-10" />
             </div>
             <div className="flex h-8 items-center gap-1">
-              <Skeleton className="h-5 w-5 rounded-sm" />
+              <Skeleton className="size-5 rounded-sm" />
               <Skeleton className="h-2 w-[72px]" />
             </div>
             <div className="flex h-8 items-center gap-1">
-              <Skeleton className="h-5 w-5 rounded-sm" />
+              <Skeleton className="size-5 rounded-sm" />
               <Skeleton className="h-2 w-[72px]" />
             </div>
           </div>
         </div>
         <div className="flex h-[420px] w-full flex-col gap-2 rounded-lg border p-4 sm:flex-1">
           <div className="flex gap-2">
-            <Skeleton className="h-6 w-6 rounded-lg" />
+            <Skeleton className="size-6 rounded-lg" />
             <Skeleton className="h-16 w-28" />
           </div>
           <div className="flex gap-2">
-            <Skeleton className="h-6 w-6 rounded-lg" />
+            <Skeleton className="size-6 rounded-lg" />
             <Skeleton className="h-16 w-28" />
           </div>
           <div className="flex gap-2">
-            <Skeleton className="h-6 w-6 rounded-lg" />
+            <Skeleton className="size-6 rounded-lg" />
             <Skeleton className="h-16 w-32" />
           </div>
           <div className="mt-auto flex gap-2 self-end">
             <Skeleton className="h-16 w-32" />
-            <Skeleton className="h-6 w-6 rounded-lg" />
+            <Skeleton className="size-6 rounded-lg" />
           </div>
         </div>
       </div>

@@ -33,16 +33,16 @@ export function ProfileMenu() {
         <Button variant="outline" className="h-8 gap-2 pr-1 sm:h-9" disabled={!session}>
           <span className="max-w-[64px] truncate">{getFirstName(session?.user?.name ?? '')}</span>
           {isLoading || status === 'loading' ? (
-            <Skeleton className="h-6 w-6 rounded-sm" />
+            <Skeleton className="size-6 rounded-sm" />
           ) : (
-            <Avatar className="h-6 w-6 rounded-sm">
+            <Avatar className="size-6 rounded-sm">
               <AvatarImage
                 className="object-cover"
                 alt={`${session?.user?.name}`}
                 src={(userAttrs?.avatar_url || session?.user?.image) ?? AVATAR_FALLBACK_URL}
               />
-              <AvatarFallback className="h-6 w-6 rounded-sm">
-                <User className="h-4 w-4" />
+              <AvatarFallback className="size-6 rounded-sm">
+                <User className="size-4" />
               </AvatarFallback>
             </Avatar>
           )}
@@ -54,13 +54,13 @@ export function ProfileMenu() {
         <DropdownMenuGroup>
           <NextLink href="/profile">
             <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
+              <User className="mr-2 size-4" />
               <span>Profile</span>
             </DropdownMenuItem>
           </NextLink>
           <NextLink href={siteConfig.links.sourceCode} target="_blank">
             <DropdownMenuItem>
-              <Github className="mr-2 h-4 w-4" />
+              <Github className="mr-2 size-4" />
               <span>Source</span>
             </DropdownMenuItem>
           </NextLink>

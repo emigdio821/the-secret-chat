@@ -1,4 +1,4 @@
-import { SmilePlus } from 'lucide-react'
+import { SmilePlusIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import '@/styles/emoji-picker.css'
 import { Button } from '@/components/ui/button'
@@ -25,8 +25,8 @@ export function EmojiPicker({ callback, trigger }: EmojiPickerProps) {
     <Popover>
       <PopoverTrigger asChild>
         {trigger ?? (
-          <Button size="icon" variant="ghost" className="h-6 w-6">
-            <SmilePlus className="h-4 w-4" />
+          <Button size="icon" variant="ghost" className="size-6">
+            <SmilePlusIcon className="size-4" />
           </Button>
         )}
       </PopoverTrigger>

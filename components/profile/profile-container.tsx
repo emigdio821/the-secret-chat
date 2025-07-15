@@ -40,7 +40,7 @@ export function ProfileContainer({ session }: { session: Session }) {
                   src={(userAttrs?.avatar_url || session?.user?.image) ?? AVATAR_FALLBACK_URL}
                 />
                 <AvatarFallback className="h-28 w-28 rounded-lg">
-                  <User className="h-6 w-6" />
+                  <User className="size-6" />
                 </AvatarFallback>
               </Avatar>
               <CardDescription className="my-4">Here you&apos;ll find basic info. about your account.</CardDescription>
@@ -49,11 +49,11 @@ export function ProfileContainer({ session }: { session: Session }) {
               </h3>
               <div className="mb-4">
                 <p className="flex items-center gap-1 text-sm font-medium">
-                  <AtSign className="h-4 w-4" />
+                  <AtSign className="size-4" />
                   {client.user.identity}
                 </p>
                 <p className="flex items-center gap-1 text-sm font-medium">
-                  <User className="h-4 w-4" />
+                  <User className="size-4" />
                   {(userAttrs?.nickname || client.user.friendlyName) ?? 'Nickname not yet set'}
                 </p>
               </div>

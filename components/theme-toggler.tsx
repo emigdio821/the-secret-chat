@@ -1,6 +1,6 @@
 'use client'
 
-import { Moon, Sun } from 'lucide-react'
+import { MoonIcon, SunIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,9 +20,9 @@ export function ThemeToggler() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-6 w-6">
-          <Sun className="block h-[1em] w-[1em] dark:hidden" />
-          <Moon className="hidden h-[1em] w-[1em] dark:block" />
+        <Button variant="ghost" size="icon" className="size-6">
+          <MoonIcon className="block h-[1em] w-[1em] dark:hidden" />
+          <SunIcon className="hidden h-[1em] w-[1em] dark:block" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>

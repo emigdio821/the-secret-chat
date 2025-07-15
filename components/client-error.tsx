@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { RefreshCcw } from 'lucide-react'
+import { RefreshCcwIcon } from 'lucide-react'
 import { GET_CLIENT_QUERY } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 
@@ -19,7 +19,7 @@ export function ClientError({ errorMsg }: { errorMsg?: string }) {
         }}
       >
         Reload client
-        <RefreshCcw className="ml-2 h-4 w-4" />
+        <RefreshCcwIcon className="ml-2 size-4" />
       </Button>
     </div>
   )

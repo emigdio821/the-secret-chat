@@ -63,9 +63,9 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-6 w-6">
+        <Button variant="ghost" size="icon" className="size-6">
           <span className="sr-only">Chat menu</span>
-          <MoreVertical className="h-4 w-4" />
+          <MoreVertical className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-[180px]">
@@ -84,7 +84,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
                   setOpenedLeaveChatAlert(true)
                 }}
               >
-                <LogOut className="mr-2 h-4 w-4" />
+                <LogOut className="mr-2 size-4" />
                 <span>Leave chat</span>
               </DropdownMenuItem>
             }
@@ -108,7 +108,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
                 setOpenedAlert(true)
               }}
             >
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="mr-2 size-4" />
               <span>Delete chat</span>
             </DropdownMenuItem>
           }

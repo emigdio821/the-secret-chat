@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useToggle } from '@mantine/hooks'
-import { Pause, Play, Square } from 'lucide-react'
+import { PauseIcon, PlayIcon, SquareIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { AUDIO_FORMAT } from '@/lib/constants'
 import { secsToTime } from '@/lib/utils'
@@ -114,26 +114,26 @@ export function AudioPlayer({ url }: AudioPlayerProps) {
             size="icon"
             type="button"
             variant="outline"
-            className="h-8 w-8 rounded-full"
+            className="size-8 rounded-full"
             onClick={isPlaying ? handlePause : handlePlay}
           >
-            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            {isPlaying ? <PauseIcon className="size-4" /> : <PlayIcon className="size-4" />}
           </Button>
           <Button
             size="icon"
             type="button"
             variant="outline"
-            className="h-6 w-6"
+            className="size-6"
             onClick={handleStop}
             disabled={!isPlaying}
           >
-            <Square className="fill-foreground h-2 w-2" />
+            <SquareIcon className="fill-foreground size-2" />
           </Button>
           <Button
             size="icon"
             type="button"
             variant="outline"
-            className="h-6 w-6 text-xs"
+            className="size-6 text-xs"
             onClick={() => {
               toggleSpeed()
             }}

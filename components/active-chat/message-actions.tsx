@@ -76,9 +76,9 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
       }}
     >
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-5 w-5">
+        <Button variant="ghost" size="icon" className="size-5">
           <span className="sr-only">Chat menu</span>
-          <MoreVertical className="h-3 w-3" />
+          <MoreVertical className="size-3" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-[180px]">
@@ -101,7 +101,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                     setEditMode(true)
                   }}
                 >
-                  <Edit2 className="mr-2 h-4 w-4" />
+                  <Edit2 className="mr-2 size-4" />
                   <span>Edit</span>
                 </DropdownMenuItem>
               </PopoverTrigger>
@@ -119,7 +119,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                     <EmojiPicker
                       trigger={
                         <Button variant="secondary">
-                          <SmilePlus className="h-4 w-4" />
+                          <SmilePlus className="size-4" />
                         </Button>
                       }
                       callback={(emoji) => {
@@ -144,7 +144,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                       {form.formState.isSubmitting ? (
                         <Icons.Spinner className="ml-2" />
                       ) : (
-                        <Save className="ml-2 h-4 w-4" />
+                        <Save className="ml-2 size-4" />
                       )}
                     </Button>
                   </div>
@@ -167,7 +167,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                 setOpenedAlert(true)
               }}
             >
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="mr-2 size-4" />
               <span>Delete</span>
             </DropdownMenuItem>
           }

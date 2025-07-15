@@ -96,20 +96,20 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                           'opacity-50': !partAttrs?.isOnline,
                         })}
                       >
-                        <div className="relative h-5 w-5 rounded-sm">
+                        <div className="relative size-5 rounded-sm">
                           <Avatar className="h-full w-full rounded-[inherit]">
                             <AvatarImage
                               alt={`${user?.name}`}
                               className="object-cover"
                               src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
                             />
-                            <AvatarFallback className="h-6 w-6 rounded-sm">
+                            <AvatarFallback className="size-6 rounded-sm">
                               <UserIcon className="size-4" />
                             </AvatarFallback>
                           </Avatar>
                           <span
                             className={cn(
-                              'border-card absolute -right-[2px] -bottom-[2px] h-2 w-2 rounded-full border bg-zinc-400',
+                              'border-card absolute -right-[2px] -bottom-[2px] size-2 rounded-full border bg-zinc-400',
                               {
                                 'bg-green-400': partAttrs?.isOnline,
                               },
@@ -147,7 +147,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                           'pb-0': partAttrs?.nickname,
                         })}
                       >
-                        <AtSign className="h-4 w-4" />
+                        <AtSign className="size-4" />
                         <span className="break-all">{participant.identity}</span>
                       </DropdownMenuLabel>
                       {partAttrs?.nickname && (
@@ -157,7 +157,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                         </DropdownMenuLabel>
                       )}
                       <DropdownMenuLabel className="flex items-center gap-2 pt-0 font-normal">
-                        <Signal className="h-4 w-4" />
+                        <Signal className="size-4" />
                         {partAttrs?.isOnline ? 'Online' : 'Offline'}
                       </DropdownMenuLabel>
                       {isAdmin && participant.identity !== user?.email && (
@@ -171,7 +171,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                                 variant="dropdown"
                                 className="h-full justify-start px-2 py-1.5"
                               >
-                                <Shield className="mr-2 h-4 w-4" />
+                                <Shield className="mr-2 size-4" />
                                 <span>Make admin</span>
                               </Button> */}
                             <ControlledAlertDialog
@@ -188,7 +188,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                                     setOpenedAlert(true)
                                   }}
                                 >
-                                  <UserX className="mr-2 h-4 w-4" />
+                                  <UserX className="mr-2 size-4" />
                                   <span>Kick</span>
                                 </Button>
                               }

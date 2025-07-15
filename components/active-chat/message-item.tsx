@@ -64,7 +64,7 @@ export function MessageItem({ message, session }: MessageItemProps) {
         'flex-row-reverse self-end': isAuthor,
       })}
     >
-      <Avatar className="h-6 w-6 self-start rounded-lg">
+      <Avatar className="size-6 self-start rounded-lg">
         <AvatarImage
           className="object-cover"
           alt={`${user?.name}`}
@@ -74,7 +74,7 @@ export function MessageItem({ message, session }: MessageItemProps) {
               : partAttrs?.avatar_url || AVATAR_FALLBACK_URL
           }
         />
-        <AvatarFallback className="h-6 w-6 rounded-lg">
+        <AvatarFallback className="size-6 rounded-lg">
           <UserIcon className="size-4" />
         </AvatarFallback>
       </Avatar>

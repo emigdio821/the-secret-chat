@@ -74,7 +74,7 @@ export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps
             setOpenedDialog(true)
           }}
         >
-          <UserPlus className="mr-2 h-4 w-4" />
+          <UserPlus className="mr-2 size-4" />
           Add participant
         </DropdownMenuItem>
       </DialogTrigger>
@@ -114,7 +114,7 @@ export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps
                 {form.formState.isSubmitting ? (
                   <Icons.Spinner className="ml-2" />
                 ) : (
-                  <UserPlus className="ml-2 h-4 w-4" />
+                  <UserPlus className="ml-2 size-4" />
                 )}
               </Button>
             </DialogFooter>

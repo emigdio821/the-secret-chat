@@ -46,7 +46,7 @@ export function ChatCardItem({ chat }: ChatCardItemProps) {
             <CardTitle className="text-base">{chat.friendlyName ?? chat.uniqueName}</CardTitle>
             {unreadMsgs && unreadMsgs > 0 ? (
               <span className="text-muted-foreground flex items-center gap-1 rounded-lg border px-1 py-px text-xs font-semibold">
-                <MessageSquare className="h-3 w-3" />
+                <MessageSquare className="size-3" />
                 <motion.span
                   key={unreadMsgs}
                   className="text-xs"
@@ -65,11 +65,11 @@ export function ChatCardItem({ chat }: ChatCardItemProps) {
       <CardFooter className="mt-auto justify-between">
         <div>
           <span className="text-muted-foreground flex items-center gap-1 text-xs">
-            <User className="h-3 w-3" />
+            <User className="size-3" />
             {partsCount}
           </span>
           <span className="text-muted-foreground flex items-center gap-1 text-xs">
-            <Shield className="h-3 w-3" />
+            <Shield className="size-3" />
             {createdBy}
           </span>
         </div>
