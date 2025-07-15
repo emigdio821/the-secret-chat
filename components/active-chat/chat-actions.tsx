@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { ChatAttributes } from '@/types'
 import { useQueryClient } from '@tanstack/react-query'
 import type { Client, Conversation } from '@twilio/conversations'
-import { LogOut, MoreVertical, Trash2 } from 'lucide-react'
+import { LogOut, MoreHorizontalIcon, Trash2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { ACTIVE_PARTICIPANTS_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
@@ -75,9 +75,9 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
       {session && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="size-6">
+            <Button variant="ghost" size="icon">
               <span className="sr-only">Chat menu</span>
-              <MoreVertical className="size-4" />
+              <MoreHorizontalIcon className="size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="max-w-[180px]">
@@ -123,7 +123,7 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
                   action={handleDeleteChat}
                   trigger={
                     <DropdownMenuItem
-                      className="text-destructive!"
+                      variant="destructive"
                       onSelect={(e) => {
                         e.preventDefault()
                         setOpenedAlert(true)

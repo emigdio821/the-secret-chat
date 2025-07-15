@@ -1,0 +1,40 @@
+'use client'
+
+import { RotateCwIcon } from 'lucide-react'
+import { useUserChats } from '@/hooks/chat/use-user-chats'
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuSkeleton,
+} from '@/components/ui/sidebar'
+import { NavChatsItem } from './nav-chats-item'
+
+export function NavChats() {
+  const { data: chats, error, isLoading, refetch } = useUserChats('')
+
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Chats</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {isLoading &&
+            Array.from(Array(4).keys()).map((n) => <SidebarMenuSkeleton key={`${n}-chats-skeleton`} showIcon />)}
+          {error && (
+            <SidebarMenuButton onClick={() => refetch()}>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">Refetch folders</span>
+              </div>
+              <RotateCwIcon className="ml-auto size-4" />
+            </SidebarMenuButton>
+          )}
+          {chats?.map((chat) => (
+            <NavChatsItem key={chat.sid} chat={chat} />
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  )
+}

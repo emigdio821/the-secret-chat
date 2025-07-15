@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 
 function TypographyH4({ className, ...props }: React.ComponentProps<'h4'>) {
-  return <h4 className={cn('scroll-m-20 text-xl font-semibold tracking-tight', className)} {...props} />
+  return <h4 className={cn('scroll-m-20 text-lg font-semibold tracking-tight sm:text-xl', className)} {...props} />
 }
 
 function InlineCode({ className, ...props }: React.ComponentProps<'code'>) {

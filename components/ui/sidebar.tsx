@@ -540,7 +540,7 @@ function SidebarMenuAction({
         'after:absolute after:-inset-2 md:after:hidden',
         'peer-data-[size=sm]/menu-button:top-1',
         'peer-data-[size=default]/menu-button:top-1.5',
-        'peer-data-[size=lg]/menu-button:top-2.5',
+        'peer-data-[size=lg]/menu-button:top-3.5',
         'group-data-[collapsible=icon]:hidden',
         'data-[state=open]:bg-sidebar-accent',
         'peer-data-[active=true]/menu-button:hover:bg-highlight',
@@ -564,7 +564,7 @@ function SidebarMenuBadge({ className, ...props }: React.ComponentProps<'div'>) 
         'peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[active=true]/menu-button:text-sidebar-accent-foreground',
         'peer-data-[size=sm]/menu-button:top-1',
         'peer-data-[size=default]/menu-button:top-1.5',
-        'peer-data-[size=lg]/menu-button:top-2.5',
+        'peer-data-[size=lg]/menu-button:top-3.5',
         'group-data-[collapsible=icon]:hidden',
         className,
       )}

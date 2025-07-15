@@ -32,4 +32,5 @@ export type MessageAttributes = {
 
 export interface ChatAttributes {
   description?: string
+  chatLogoUrl?: string
 }

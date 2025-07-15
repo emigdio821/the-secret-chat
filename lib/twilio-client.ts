@@ -1,4 +1,6 @@
 import { Client } from '@twilio/conversations'
+import { toast } from 'sonner'
+import { useTwilioClientStore } from './stores/twilio-client.store'
 
 async function getToken() {
   try {
@@ -12,13 +14,56 @@ async function getToken() {
   }
 }
 
-export async function initClient() {
+let twilioInstance: Client | null = null
+
+async function refreshTwilioInstance() {
+  const token = await getToken()
+  await twilioInstance?.updateToken(token)
+}
+
+export async function initTwilioClient() {
+  const setError = useTwilioClientStore.getState().setError
+  const setClient = useTwilioClientStore.getState().setClient
+  const setLoading = useTwilioClientStore.getState().setLoading
+
   try {
+    console.log('Initializing client', twilioInstance)
+    if (twilioInstance) return twilioInstance
+
+    console.log('There was no instance, creating one...')
+
     const token = await getToken()
-    return new Client(token)
+    twilioInstance = new Client(token)
+
+    // Optional: Listen to token expiry events
+    twilioInstance.on('tokenAboutToExpire', () => {
+      toast('Client status', {
+        duration: Infinity,
+        description: 'Client token is about to expire',
+        action: {
+          label: 'Refresh',
+          onClick: async () => {
+            toast.promise(refreshTwilioInstance, {
+              loading: 'Refreshing token...',
+              success: 'Token has been refreshed',
+              error: 'Something went wrong',
+            })
+          },
+        },
+      })
+    })
+
+    twilioInstance.on('tokenExpired', async () => {
+      await refreshTwilioInstance()
+    })
+
+    setClient(twilioInstance)
+
+    return twilioInstance
   } catch (err) {
-    const errMessage = err instanceof Error ? err.message : err
-    console.log('[INIT_CLIENT]', errMessage)
-    return await Promise.reject(errMessage)
+    const errMsg = err instanceof Error ? err.message : 'Unable to create twilio client at this time, try again'
+    setError(errMsg)
+  } finally {
+    setLoading(false)
   }
 }

@@ -4,8 +4,8 @@ import type { UserAttributes } from '@/types'
 import { AtSign, User } from 'lucide-react'
 import type { Session } from 'next-auth'
 import { AVATAR_FALLBACK_URL } from '@/lib/constants'
+import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
 import { useRainbowGradient } from '@/hooks/use-rainbow-gradient'
-import { useTwilioClient } from '@/hooks/use-twilio-client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ClientError } from '@/components/client-error'
@@ -14,7 +14,9 @@ import { EditProfilePopover } from './edit-profile-popover'
 
 export function ProfileContainer({ session }: { session: Session }) {
   const bg = useRainbowGradient()
-  const { error, isLoading, client } = useTwilioClient()
+  const client = useTwilioClientStore((state) => state.client)
+  const error = useTwilioClientStore((state) => state.error)
+  const loading = useTwilioClientStore((state) => state.loading)
 
   if (error) {
     return <ClientError />
@@ -24,7 +26,7 @@ export function ProfileContainer({ session }: { session: Session }) {
 
   return (
     <Card style={{ background: bg }}>
-      {isLoading ? (
+      {loading ? (
         <ProfileSekelton />
       ) : (
         client && (

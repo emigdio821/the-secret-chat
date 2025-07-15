@@ -5,7 +5,7 @@ import { EyeIcon, EyeOffIcon, SearchIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from './button'
 
-function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
+function Input({ className, children, type, ...props }: React.ComponentProps<'input'>) {
   const [typeState, setTypeState] = React.useState(type)
   const isPassword = type === 'password'
   const isSearch = type === 'search'
@@ -42,6 +42,7 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
           {typeState === 'password' ? <EyeIcon className="size-4" /> : <EyeOffIcon className="size-4" />}
         </Button>
       )}
+      {children}
     </div>
   )
 }

@@ -89,7 +89,7 @@ export function secsToTime(nTime?: number) {
   const theTime = nTime
   const mins = Math.floor(theTime / 60)
   const secs = Math.floor(theTime % 60)
-  let formattedSecs
+  let formattedSecs: string
   if (secs < 10) {
     formattedSecs = `0${String(secs)}`
     return `${mins}:${formattedSecs}`

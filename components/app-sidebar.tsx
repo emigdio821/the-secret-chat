@@ -1,8 +1,11 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
 import { GhostIcon } from 'lucide-react'
 import { siteConfig } from '@/config/site'
+import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
+import { initTwilioClient } from '@/lib/twilio-client'
 import {
   Sidebar,
   SidebarContent,
@@ -11,12 +14,23 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSkeleton,
   SidebarRail,
 } from '@/components/ui/sidebar'
+import { NavChats } from './navs/chats/nav-chats'
 import { NavUser } from './navs/nav-user'
 import { Input } from './ui/input'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const twilioClient = useTwilioClientStore((state) => state.client)
+  const isClientLoading = useTwilioClientStore((state) => state.loading)
+
+  useEffect(() => {
+    if (!twilioClient) {
+      initTwilioClient()
+    }
+  }, [twilioClient])
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -45,6 +59,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {/* <NavFolders />
         <NavTags /> */}
+
+        {isClientLoading ? (
+          <div>
+            <SidebarMenuSkeleton className="w-20" />
+            <SidebarMenuSkeleton />
+          </div>
+        ) : (
+          <NavChats />
+        )}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

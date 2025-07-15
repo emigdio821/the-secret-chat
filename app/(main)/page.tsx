@@ -11,7 +11,6 @@ export default async function MainPage() {
 
   return (
     <section className="flex h-full items-center justify-center">
-      {/* <MyChatsContainer /> */}
       <GhostIcon className="text-muted-foreground size-12" />
     </section>
   )

@@ -71,7 +71,11 @@ export function MediaActions({ chat }: { chat: Conversation }) {
     <>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-6">
+          <Button
+            size="icon"
+            variant="unstyled"
+            className="text-muted-foreground hover:text-foreground data-[state=open]:text-foreground"
+          >
             <span className="sr-only">Media actions</span>
             <Paperclip className="size-4" />
           </Button>
