@@ -108,7 +108,7 @@ export function ChatCardActions({ chat }: { chat: Conversation }) {
                 setOpenedAlert(true)
               }}
             >
-              <Trash2 className="mr-2 size-4" />
+              <Trash2 className="size-4" />
               <span>Delete chat</span>
             </DropdownMenuItem>
           }

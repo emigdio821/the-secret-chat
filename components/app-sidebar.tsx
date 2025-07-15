@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { debounce } from 'lodash'
 import { GhostIcon } from 'lucide-react'
 import { siteConfig } from '@/config/site'
+import { useSearchChatsInputStore } from '@/lib/stores/search-chats-input.store'
 import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
 import { initTwilioClient } from '@/lib/twilio-client'
 import {
@@ -14,22 +16,32 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSkeleton,
   SidebarRail,
 } from '@/components/ui/sidebar'
 import { NavChats } from './navs/chats/nav-chats'
 import { NavUser } from './navs/nav-user'
 import { Input } from './ui/input'
+import { Skeleton } from './ui/skeleton'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const twilioClient = useTwilioClientStore((state) => state.client)
   const isClientLoading = useTwilioClientStore((state) => state.loading)
+  const searchValue = useSearchChatsInputStore((state) => state.search)
+  const setSearchValue = useSearchChatsInputStore((state) => state.setSearch)
+  const [search, setSearch] = useState(searchValue)
 
   useEffect(() => {
     if (!twilioClient) {
       initTwilioClient()
     }
   }, [twilioClient])
+
+  const handleSearch = useCallback(
+    debounce((value: string) => {
+      setSearchValue(value)
+    }, 300),
+    [],
+  )
 
   return (
     <Sidebar {...props}>
@@ -51,8 +63,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
         <SidebarMenu>
           <SidebarMenuItem>
-            {/* TODO: Implement this */}
-            <Input type="search" name="search-chats" placeholder="Search chats" className="h-8" />
+            <Input
+              type="search"
+              className="h-8"
+              value={search}
+              name="search-chats"
+              placeholder="Search chats"
+              onChange={(e) => {
+                setSearch(e.currentTarget.value)
+                handleSearch(e.currentTarget.value)
+              }}
+            />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -61,9 +82,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavTags /> */}
 
         {isClientLoading ? (
-          <div>
-            <SidebarMenuSkeleton className="w-20" />
-            <SidebarMenuSkeleton />
+          <div className="p-2">
+            <div className="flex h-8 items-center">
+              <Skeleton className="h-2 w-16" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <Skeleton className="h-12" />
+              <Skeleton className="h-12" />
+              <Skeleton className="h-12" />
+            </div>
           </div>
         ) : (
           <NavChats />

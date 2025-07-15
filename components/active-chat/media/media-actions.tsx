@@ -1,6 +1,6 @@
 import { useId } from 'react'
 import type { Conversation } from '@twilio/conversations'
-import { ImageIcon, Mic, Paperclip, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
+import { ImageIcon, MicIcon, PaperclipIcon, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAudioRecorder } from '@/hooks/use-audio-recorder'
 import { Button } from '@/components/ui/button'
@@ -74,10 +74,10 @@ export function MediaActions({ chat }: { chat: Conversation }) {
           <Button
             size="icon"
             variant="unstyled"
+            aria-label="Media actions"
             className="text-muted-foreground hover:text-foreground data-[state=open]:text-foreground"
           >
-            <span className="sr-only">Media actions</span>
-            <Paperclip className="size-4" />
+            <PaperclipIcon className="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -100,7 +100,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                 'Paused'
               ) : (
                 <span className="flex items-center gap-2">
-                  Recording <Mic className="size-4 animate-pulse text-red-400" />
+                  Recording <MicIcon className="size-4 animate-pulse text-red-400" />
                 </span>
               )
             ) : (
@@ -118,14 +118,14 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                       e.preventDefault()
                     }}
                   >
-                    <ImageIcon className="mr-2 size-4" />
+                    <ImageIcon className="size-4" />
                     GIF
                   </DropdownMenuItem>
                 }
                 callback={handleSendGif}
               />
               <DropdownMenuItem onSelect={handleUploadImage} disabled={audioRecorder.isRecording}>
-                <Upload className="mr-2 size-4" />
+                <Upload className="size-4" />
                 Upload image
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -135,13 +135,24 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                 }}
                 disabled={audioRecorder.isRecording}
               >
-                <Mic className="mr-2 size-4" />
+                <MicIcon className="size-4" />
                 Record audio
               </DropdownMenuItem>
             </>
           )}
           {audioRecorder.isRecording && (
             <>
+              <DropdownMenuItem
+                variant="destructive"
+                onSelect={(e) => {
+                  e.preventDefault()
+                  audioRecorder.stopRecording()
+                }}
+              >
+                <Trash2 className="size-4" />
+                Cancel audio
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onSelect={(e) => {
                   e.preventDefault()
@@ -150,25 +161,16 @@ export function MediaActions({ chat }: { chat: Conversation }) {
               >
                 {audioRecorder.isPaused ? (
                   <>
-                    <Mic className="mr-2 size-4" />
+                    <MicIcon className="size-4" />
                     Resume
                   </>
                 ) : (
                   <>
-                    <Pause className="mr-2 size-4" />
+                    <Pause className="size-4" />
                     Pause
                   </>
                 )}{' '}
                 audio
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={(e) => {
-                  e.preventDefault()
-                  audioRecorder.stopRecording()
-                }}
-              >
-                <Trash2 className="mr-2 size-4" />
-                Cancel audio
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={async () => {
@@ -178,7 +180,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                   }
                 }}
               >
-                <SendHorizonal className="mr-2 size-4" />
+                <SendHorizonal className="size-4" />
                 Send audio
               </DropdownMenuItem>
             </>

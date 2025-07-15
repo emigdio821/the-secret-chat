@@ -16,12 +16,12 @@ export function TypingIndicator({ participants }: { participants: Participant[] 
   }
   return (
     <motion.div
-      animate={{ opacity: 1, y: 0 }}
-      initial={{ opacity: 0, y: -5 }}
-      exit={{ opacity: 0, y: -5 }}
+      initial={{ y: 5, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: -5, opacity: 0 }}
       className="flex w-full justify-center"
     >
-      <div className="bg-background/80 mx-auto flex items-center gap-1 rounded-b-lg border px-3 py-2 text-xs backdrop-blur-xs">
+      <div className="dark:bg-input/50 bg-background mx-auto flex items-center gap-1 rounded-lg border px-3 py-2 text-xs backdrop-blur-xs">
         <Keyboard className="size-4 animate-pulse" />
         <span>{message}</span>
       </div>

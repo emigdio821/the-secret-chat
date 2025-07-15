@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { ChatAttributes } from '@/types'
 import { useQueryClient } from '@tanstack/react-query'
 import type { Client, Conversation } from '@twilio/conversations'
-import { LogOut, MoreHorizontalIcon, Trash2 } from 'lucide-react'
+import { Edit2Icon, InfoIcon, LogOut, MoreHorizontalIcon, Trash2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { ACTIVE_PARTICIPANTS_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
@@ -89,6 +89,15 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
             )}
             <DropdownMenuSeparator className="sm:hidden" />
             <AddParticipantDialog chat={chat} client={client} />
+            {/* TODO: Implement this */}
+            <DropdownMenuItem disabled>
+              <Edit2Icon className="size-4" />
+              Edit chat
+            </DropdownMenuItem>
+            <DropdownMenuItem disabled>
+              <InfoIcon className="size-4" />
+              Chat details
+            </DropdownMenuItem>
             {!isAdmin && (
               <ControlledAlertDialog
                 open={openedLeaveChatAlert}
@@ -129,7 +138,7 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
                         setOpenedAlert(true)
                       }}
                     >
-                      <Trash2 className="mr-2 size-4" />
+                      <Trash2 className="size-4" />
                       <span>Delete chat</span>
                     </DropdownMenuItem>
                   }

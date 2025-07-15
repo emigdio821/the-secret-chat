@@ -74,7 +74,7 @@ export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps
             setOpenedDialog(true)
           }}
         >
-          <UserPlus className="mr-2 size-4" />
+          <UserPlus className="size-4" />
           Add participant
         </DropdownMenuItem>
       </DialogTrigger>
@@ -111,11 +111,7 @@ export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps
             <DialogFooter className="mt-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Add
-                {form.formState.isSubmitting ? (
-                  <Icons.Spinner className="ml-2" />
-                ) : (
-                  <UserPlus className="ml-2 size-4" />
-                )}
+                {form.formState.isSubmitting && <Icons.Spinner className="ml-2" />}
               </Button>
             </DialogFooter>
           </form>

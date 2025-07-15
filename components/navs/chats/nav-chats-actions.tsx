@@ -1,5 +1,5 @@
 import type { Conversation } from '@twilio/conversations'
-import { MoreHorizontalIcon } from 'lucide-react'
+import { Edit2Icon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,9 +27,14 @@ export function NavChatsActions({ chat }: NavFolderActionsProps) {
           {chat.friendlyName || chat.uniqueName}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Delete</DropdownMenuItem>
+        <DropdownMenuItem>
+          <Edit2Icon className="size-4" />
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem variant="destructive">
+          <Trash2Icon className="size-4" />
+          Delete
+        </DropdownMenuItem>
         {/* <AlertActionDialog
           destructive
           title="Delete folder?"

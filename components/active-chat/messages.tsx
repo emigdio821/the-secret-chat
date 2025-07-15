@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import type { Conversation, Message, Paginator } from '@twilio/conversations'
+import { throttle } from 'lodash'
 import { ArrowDownIcon, GhostIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useSession } from 'next-auth/react'
@@ -25,15 +26,15 @@ export function Messages({ chat }: MessagesProps) {
   const msgsContainerRef = useRef<HTMLDivElement>(null)
   const autoScroll = useChatAutoScrollStore((state) => state.autoScroll)
   const setAutoScroll = useChatAutoScrollStore((state) => state.setAutoScroll)
-  const [isLoadingPage, toggleLoadingPage] = useState(false)
-  const [showScrollBottom, toggleScrollBtn] = useState(false)
+  const [isLoadingPage, setIsLoadingPage] = useState(false)
+  const [showScrollBottom, setShowScrollBottom] = useState(false)
   const { data: messages, isLoading } = useChatMessages(chat)
   const usersTyping = useStore((state) => state.usersTyping)
   const queryClient = useQueryClient()
 
-  async function handleLoadPage() {
+  const handleLoadPage = useCallback(async () => {
     try {
-      toggleLoadingPage(true)
+      setIsLoadingPage(true)
       if (!messages) throw new Error('Paginator not present')
       const prevPagePaginator = await messages.prevPage()
       setAutoScroll(false)
@@ -45,31 +46,46 @@ export function Messages({ chat }: MessagesProps) {
         }
       })
     } catch (err) {
-      let errMsg = 'Unknown error'
-      if (err instanceof Error) errMsg = err.message
-      console.log('[FETCH_PREV_PAGE]', errMsg)
+      const errMsg = err instanceof Error ? err.message : 'Unknown error'
+      console.error('[FETCH_PREV_PAGE]', errMsg)
 
       toast.error('Uh oh!', {
-        description: 'Something went wrong while sending the message, try again',
+        description: 'Something went wrong while loading previous messages, try again',
       })
     } finally {
-      toggleLoadingPage(false)
+      setIsLoadingPage(false)
     }
-  }
+  }, [messages, queryClient, setAutoScroll])
 
   const scrollBottom = useCallback(() => {
-    const msgsContainerEl = msgsContainerRef.current
-
-    if (msgsContainerEl) {
-      msgsContainerEl.scrollTo({ top: msgsContainerEl.scrollHeight, behavior: 'smooth' })
+    const el = msgsContainerRef.current
+    if (el) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
     }
   }, [])
 
+  const handleScroll = useCallback(() => {
+    const container = msgsContainerRef.current
+    if (!container) return
+
+    const { scrollTop, scrollHeight, clientHeight } = container
+    const scrollBottomPosition = scrollTop + clientHeight
+
+    const isBelowHalf = scrollBottomPosition < scrollHeight * 0.5
+    setShowScrollBottom(isBelowHalf)
+
+    const atBottom = scrollBottomPosition >= scrollHeight
+    if (atBottom && !autoScroll) setAutoScroll(true)
+    else if (!atBottom && autoScroll) setAutoScroll(false)
+  }, [autoScroll, setAutoScroll])
+
+  const throttledScroll = useMemo(() => throttle(handleScroll, 300), [handleScroll])
+
   useEffect(() => {
-    if (autoScroll && messages) {
+    if (autoScroll && messages?.items.length) {
       scrollBottom()
     }
-  }, [scrollBottom, autoScroll, messages])
+  }, [scrollBottom, autoScroll, messages?.items])
 
   return (
     <>
@@ -83,27 +99,7 @@ export function Messages({ chat }: MessagesProps) {
             <div className="relative h-full w-full">
               <div
                 ref={msgsContainerRef}
-                onScroll={(e) => {
-                  const { scrollHeight, scrollTop, clientHeight } = e.currentTarget
-                  const stDiv = scrollTop + clientHeight
-                  const enabledAutoScroll = stDiv === scrollHeight
-
-                  if (stDiv < (scrollHeight * 6) / 7 && !showScrollBottom) {
-                    toggleScrollBtn(true)
-                  }
-
-                  if (scrollHeight === stDiv || (stDiv >= (scrollHeight * 6) / 7 && showScrollBottom)) {
-                    toggleScrollBtn(false)
-                  }
-
-                  if (enabledAutoScroll && !autoScroll) {
-                    setAutoScroll(true)
-                  }
-
-                  if (!enabledAutoScroll && autoScroll) {
-                    setAutoScroll(false)
-                  }
-                }}
+                onScroll={throttledScroll}
                 className="absolute h-full w-full overflow-y-auto rounded-lg shadow-xs"
               >
                 {messages.items.length > 0 ? (
@@ -132,18 +128,20 @@ export function Messages({ chat }: MessagesProps) {
                   </div>
                 )}
               </div>
+
               <AnimatePresence>
                 {usersTyping.length > 0 && <TypingIndicator participants={usersTyping} />}
               </AnimatePresence>
-              <AnimatePresence>
+
+              <AnimatePresence initial={false}>
                 {showScrollBottom && (
-                  <Button size="icon" className="absolute right-4 bottom-4 size-6" asChild>
+                  <Button size="icon" className="absolute right-4 bottom-4 size-6 transition-colors" asChild>
                     <motion.button
                       type="button"
-                      animate={{ opacity: 1, y: 0 }}
-                      initial={{ opacity: 0, y: -5 }}
-                      exit={{ opacity: 0, y: -5 }}
                       onClick={scrollBottom}
+                      initial={{ y: 5, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -5, opacity: 0 }}
                     >
                       <ArrowDownIcon className="size-3" />
                       <span className="sr-only">Scroll bottom</span>
