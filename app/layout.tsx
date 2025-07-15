@@ -38,7 +38,6 @@ export const metadata: Metadata = {
     type: 'website',
     images: siteConfig.ogUrl,
   },
-  // robots: '/robots.txt',
   manifest: '/site.webmanifest',
 }
 
