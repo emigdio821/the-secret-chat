@@ -2,9 +2,11 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { CircleAlertIcon, CircleCheckIcon, InfoIcon, TriangleAlertIcon } from 'lucide-react'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
-import { Toaster } from 'sonner'
+import { Toaster } from '@/components/ui/sonner'
+import { Icons } from './icons'
 
 interface ProvidersProps {
   children: React.ReactNode
@@ -15,22 +17,22 @@ const queryClient = new QueryClient()
 export function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
-          <ReactQueryDevtools />
           <Toaster
-            toastOptions={{
-              style: {
-                background: 'hsl(var(--background))',
-                color: 'hsl(var(--foreground))',
-                border: '1px solid hsl(var(--border))',
-                fontFamily: 'var(--font-sans)',
-              },
+            expand
+            icons={{
+              error: <CircleAlertIcon className="size-4" />,
+              warning: <TriangleAlertIcon className="size-4" />,
+              info: <InfoIcon className="size-4" />,
+              success: <CircleCheckIcon className="size-4" />,
+              loading: <Icons.Spinner />,
             }}
           />
-        </QueryClientProvider>
-      </ThemeProvider>
+        </ThemeProvider>
+        <ReactQueryDevtools />
+      </QueryClientProvider>
     </SessionProvider>
   )
 }

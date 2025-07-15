@@ -1,7 +1,6 @@
-import { type Conversation } from '@twilio/conversations'
+import type { Conversation } from '@twilio/conversations'
 import { ImageIcon, Mic, Paperclip, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
 import { toast } from 'sonner'
-
 import { useAudioRecorder } from '@/hooks/use-audio-recorder'
 import { Button } from '@/components/ui/button'
 import {
@@ -72,7 +71,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="h-6 w-6">
             <span className="sr-only">Media actions</span>
-            <Paperclip className=" h-4 w-4" />
+            <Paperclip className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -182,13 +181,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      <input
-        type="file"
-        id="file-input"
-        accept="image/*"
-        className="hidden"
-        onChange={handleUploadImg}
-      />
+      <input type="file" id="file-input" accept="image/*" className="hidden" onChange={handleUploadImg} />
     </>
   )
 }

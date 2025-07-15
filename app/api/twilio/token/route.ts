@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/non-nullable-type-assertion-style */
-import { NextResponse, type NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+import { NextResponse } from 'next/server'
 import twilio from 'twilio'
+import { auth } from '@/lib/auth'
 
-export async function GET(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
-
-  if (!token?.email) {
+export async function GET() {
+  const session = await auth()
+  if (!session?.user?.email) {
     return new Response('Unauthorized', { status: 401 })
   }
 
@@ -17,7 +15,7 @@ export async function GET(req: NextRequest) {
     process.env.TWILIO_API_KEY as string,
     process.env.TWILIO_API_SECRET as string,
     {
-      identity: token.email,
+      identity: session.user.email,
       ttl: 86400,
     },
   )

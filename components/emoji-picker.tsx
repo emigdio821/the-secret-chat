@@ -1,10 +1,6 @@
-import data from '@emoji-mart/data'
-import Picker from '@emoji-mart/react'
 import { SmilePlus } from 'lucide-react'
 import { useTheme } from 'next-themes'
-
 import '@/styles/emoji-picker.css'
-
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
@@ -35,13 +31,14 @@ export function EmojiPicker({ callback, trigger }: EmojiPickerProps) {
         )}
       </PopoverTrigger>
       <PopoverContent className="border-none p-0">
-        <Picker
+        {/* <Picker
           data={data}
           onEmojiSelect={(emoji: Emoji) => {
             callback(emoji)
           }}
           theme={resolvedTheme}
-        />
+        /> */}
+        WIP...
       </PopoverContent>
     </Popover>
   )

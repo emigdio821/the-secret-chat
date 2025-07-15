@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-
 import { GIFS_QUERY } from '@/lib/constants'
 import { useGiphy } from '@/hooks/use-giphy'
 import { Button } from '@/components/ui/button'
@@ -36,14 +35,13 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
 
   async function getGifs(searchGif: string) {
     try {
-      let gifs
       if (searchGif) {
-        gifs = await giphy.search(searchGif, { limit: 50 })
+        const gifs = await giphy.search(searchGif, { limit: 50 })
+        return gifs.data
       } else {
-        gifs = await giphy.trending({ offset: 0, limit: 50 })
+        const gifs = await giphy.trending({ offset: 0, limit: 50 })
+        return gifs.data
       }
-
-      return gifs.data
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.log('[GET_GIFS]', errMessage)
@@ -61,9 +59,7 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
         handlers.toggle()
       }}
     >
-      <DialogTrigger asChild>
-        {trigger ?? <Button onClick={handlers.open}>Select a GIF</Button>}
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger ?? <Button onClick={handlers.open}>Select a GIF</Button>}</DialogTrigger>
       <DialogContent
         onOpenAutoFocus={(e) => {
           e.preventDefault()
@@ -87,34 +83,28 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
           <div className="relative grid h-[420px] grid-cols-2 gap-4 overflow-y-auto rounded-lg py-1 sm:grid-cols-3">
             {gifsLoading ? (
               <GifsSkeleton />
+            ) : gifs && gifs?.length > 0 ? (
+              gifs.map((gif) => (
+                <Button
+                  key={gif.id}
+                  type="button"
+                  variant="unstyled"
+                  className="h-24 w-full rounded-lg p-0 transition-transform hover:scale-95 focus-visible:scale-95"
+                  onClick={(e) => {
+                    const parent = e.currentTarget.parentElement
+                    if (parent) {
+                      parent.style.pointerEvents = 'none'
+                    }
+                    handlers.close()
+                    callback(gif.images.fixed_height.url)
+                  }}
+                >
+                  <BlurImage src={gif.images.fixed_height.url} alt="gif" />
+                  <span className="sr-only">GIF</span>
+                </Button>
+              ))
             ) : (
-              <>
-                {gifs && gifs?.length > 0 ? (
-                  <>
-                    {gifs.map((gif) => (
-                      <Button
-                        key={gif.id}
-                        type="button"
-                        variant="unstyled"
-                        className="h-24 w-full rounded-lg p-0 transition-transform hover:scale-95 focus-visible:scale-95"
-                        onClick={(e) => {
-                          const parent = e.currentTarget.parentElement
-                          if (parent) {
-                            parent.style.pointerEvents = 'none'
-                          }
-                          handlers.close()
-                          callback(gif.images.fixed_height.url)
-                        }}
-                      >
-                        <BlurImage src={gif.images.fixed_height.url} alt="gif" />
-                        <span className="sr-only">GIF</span>
-                      </Button>
-                    ))}
-                  </>
-                ) : (
-                  <span className="text-sm">No GIFs found</span>
-                )}
-              </>
+              <span className="text-sm">No GIFs found</span>
             )}
           </div>
         </div>

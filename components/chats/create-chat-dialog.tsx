@@ -2,14 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { type UserAttributes } from '@/types'
+import type { UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
-import { type Client } from '@twilio/conversations'
+import type { Client } from '@twilio/conversations'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import type * as z from 'zod'
-
+import type { z } from 'zod'
 import { USER_CHATS_QUERY } from '@/lib/constants'
 import { createChatRoomSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
@@ -22,19 +21,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 interface CreateChatDialogProps {
   isLoading: boolean
@@ -130,15 +121,10 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
                 return (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        maxLength={40}
-                        autoComplete="false"
-                        placeholder="Chat name"
-                        {...field}
-                      />
+                      <Input maxLength={40} autoComplete="false" placeholder="Chat name" {...field} />
                     </FormControl>
                     {charsLength >= 30 && (
-                      <p className="text-xs text-muted-foreground">{charsLength} / 40 characters</p>
+                      <p className="text-muted-foreground text-xs">{charsLength} / 40 characters</p>
                     )}
                     <FormMessage />
                   </FormItem>
@@ -162,9 +148,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
                       />
                     </FormControl>
                     {charsLength >= 80 && (
-                      <p className="text-xs text-muted-foreground">
-                        {charsLength} / 100 characters
-                      </p>
+                      <p className="text-muted-foreground text-xs">{charsLength} / 100 characters</p>
                     )}
                     <FormMessage />
                   </FormItem>
@@ -194,7 +178,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
             <DialogFooter className="mt-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Create
-                {form.formState.isSubmitting && <Loader className="ml-2" />}
+                {form.formState.isSubmitting && <Icons.Spinner className="ml-2" />}
               </Button>
             </DialogFooter>
           </form>

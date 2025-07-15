@@ -54,18 +54,18 @@ export function ProfileSekelton() {
   return (
     <>
       <CardHeader>
-        <Skeleton className="mb-2 mt-1 h-3 w-20" />
+        <Skeleton className="mt-1 mb-2 h-3 w-20" />
       </CardHeader>
       <CardContent>
         <Skeleton className="h-28 w-28 rounded-lg" />
-        <Skeleton className="mb-8 mt-6 h-2 w-1/2" />
+        <Skeleton className="mt-6 mb-8 h-2 w-1/2" />
         <Skeleton className="h-3 w-36" />
         <div className="mt-2 flex flex-col gap-1">
           <div className="flex items-center gap-1">
             <Skeleton className="h-4 w-4" />
             <Skeleton className="h-2 w-32" />
           </div>
-          <div className="flex items-center gap-1 ">
+          <div className="flex items-center gap-1">
             <Skeleton className="h-4 w-4" />
             <Skeleton className="h-2 w-28" />
           </div>

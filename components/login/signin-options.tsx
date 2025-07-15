@@ -1,40 +1,35 @@
 'use client'
 
-import { useToggle } from '@mantine/hooks'
-import { Github } from 'lucide-react'
+import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'
-
 import { Button } from '@/components/ui/button'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 export function SignInOptions() {
-  const [isLoading, setLoading] = useToggle()
+  const [isLoading, setLoading] = useState(false)
 
   async function handleSignIn() {
     try {
       setLoading(true)
       await signIn('github', {
-        callbackUrl: '/',
+        redirectTo: '/',
       })
     } catch (err) {
       setLoading(false)
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[LOGIN]', errMessage)
+      console.log('[signin]', errMessage)
+
       toast.error('Uh oh!', {
-        description: 'Something went wrong while signing in, try again',
+        description: 'Unable to signin now, try again',
       })
     }
   }
 
   return (
-    <Button variant="outline" disabled={isLoading} onClick={handleSignIn}>
+    <Button variant="outline" className="w-full" disabled={isLoading} onClick={handleSignIn}>
+      {isLoading ? <Icons.Spinner className="size-4" /> : <Icons.Github className="size-4" />}
       Continue with Github
-      {isLoading ? (
-        <Loader className="ml-2" barsClassName="bg-primary" />
-      ) : (
-        <Github className="ml-2 h-4 w-4" />
-      )}
     </Button>
   )
 }

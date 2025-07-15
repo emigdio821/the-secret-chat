@@ -1,7 +1,6 @@
 import type { Participant } from '@twilio/conversations'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-
 import { envClient } from '@/lib/zod-schemas'
 
 export function cn(...inputs: ClassValue[]) {

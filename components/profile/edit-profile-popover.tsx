@@ -1,28 +1,27 @@
 import { useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { type UserAttributes } from '@/types'
+import type { UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useDisclosure } from '@mantine/hooks'
-import { type Client } from '@twilio/conversations'
-import { type Session } from 'next-auth'
+import type { Client } from '@twilio/conversations'
+import type { User } from 'next-auth'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import type * as z from 'zod'
-
+import type { z } from 'zod'
 import { editProfileSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { GifPicker } from '@/components/gif-picker'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 interface EditProfilePopoverProps {
   client: Client
-  session: Session
+  user: User
 }
 
-export function EditProfilePopover({ client, session }: EditProfilePopoverProps) {
+export function EditProfilePopover({ client, user }: EditProfilePopoverProps) {
   const [opened, handlers] = useDisclosure()
   const router = useRouter()
   const closeBtnRef = useRef<HTMLButtonElement>(null)
@@ -30,9 +29,9 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
   const form = useForm<z.infer<typeof editProfileSchema>>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
-      name: (userAttrs?.name || session.user?.name) ?? '',
+      name: (userAttrs?.name || user.name) ?? '',
       nickname: (userAttrs?.nickname || client.user.friendlyName) ?? '',
-      avatar_url: (userAttrs?.avatar_url || session.user?.image) ?? '',
+      avatar_url: (userAttrs?.avatar_url || user.image) ?? '',
     },
   })
 
@@ -44,9 +43,9 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
 
       const attrsPayload: UserAttributes = {
         isOnline: false,
-        name: (values.name || userAttrs?.name || session.user?.name) ?? '',
+        name: (values.name || userAttrs?.name || user.name) ?? '',
         nickname: (values.nickname || userAttrs?.nickname || client.user.friendlyName) ?? '',
-        avatar_url: (values.avatar_url || session.user?.image) ?? '',
+        avatar_url: (values.avatar_url || user.image) ?? '',
       }
 
       await client.user.updateAttributes(attrsPayload)
@@ -144,7 +143,7 @@ export function EditProfilePopover({ client, session }: EditProfilePopoverProps)
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Save
-                {form.formState.isSubmitting && <Loader className="ml-2" />}
+                {form.formState.isSubmitting && <Icons.Spinner className="ml-2" />}
               </Button>
             </div>
           </form>

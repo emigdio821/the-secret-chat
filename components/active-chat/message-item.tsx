@@ -1,18 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
-import { type MessageAttributes, type ParticipantAttributes } from '@/types'
+import type { MessageAttributes, ParticipantAttributes } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { type Message } from '@twilio/conversations'
-import { motion } from 'framer-motion'
-import { User } from 'lucide-react'
-import { type Session } from 'next-auth'
-
+import type { Message } from '@twilio/conversations'
+import { UserIcon } from 'lucide-react'
+import { motion } from 'motion/react'
+import type { Session } from 'next-auth'
 import { AVATAR_FALLBACK_URL, MESSAGE_PARTICIPANT_QUERY } from '@/lib/constants'
 import { cn, formatDate } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AudioPlayer } from '@/components/audio-player'
 import { ImageViewer } from '@/components/image-viewer'
-
 import { MessageActions } from './message-actions'
 
 interface MessageItemProps {
@@ -20,10 +18,10 @@ interface MessageItemProps {
   session: Session
 }
 
-export function MessageItem({ session, message }: MessageItemProps) {
-  const user = session.user
+export function MessageItem({ message, session }: MessageItemProps) {
   const [mediaURL, setMediaURL] = useState<string>('')
   const { author, sid, body, dateCreated } = message
+  const user = session.user
   const isAuthor = author === user?.email
   const hasMedia = message.type === 'media'
   const rawMedia = message.attachedMedia?.[0]
@@ -72,55 +70,42 @@ export function MessageItem({ session, message }: MessageItemProps) {
           alt={`${user?.name}`}
           src={
             isAuthor
-              ? (partAttrs?.avatar_url || session.user?.image) ?? AVATAR_FALLBACK_URL
+              ? ((partAttrs?.avatar_url || user.image) ?? AVATAR_FALLBACK_URL)
               : partAttrs?.avatar_url || AVATAR_FALLBACK_URL
           }
         />
         <AvatarFallback className="h-6 w-6 rounded-lg">
-          <User className="h-4 w-4" />
+          <UserIcon className="size-4" />
         </AvatarFallback>
       </Avatar>
       <motion.div
         key={sid}
         animate={{ opacity: 1, x: 0 }}
         initial={{ opacity: 0, x: isAuthor ? 20 : -20 }}
-        className={cn('flex flex-col gap-2 rounded-lg border bg-card/60 px-3 py-2 text-sm', {
+        className={cn('bg-card/60 flex flex-col gap-2 rounded-lg border px-3 py-2 text-sm', {
           'bg-muted/60': !isAuthor,
         })}
       >
         <span className="flex justify-between gap-2">
           <span>
-            {isGif && (
-              <>
-                {body ? (
-                  <ImageViewer url={body} title="GIPHY" errorCb={getMediaUrl} />
-                ) : (
-                  <Skeleton className="h-20 w-28" />
-                )}
-              </>
-            )}
-            {isRawImage && (
-              <>
-                {mediaURL ? (
-                  <ImageViewer url={mediaURL} title={rawMedia?.filename ?? undefined} />
-                ) : (
-                  <Skeleton className="h-20 w-28" />
-                )}
-              </>
-            )}
-            {isAudio && (
-              <>
-                {mediaURL ? (
-                  <AudioPlayer url={mediaURL} errorCb={getMediaUrl} />
-                ) : (
-                  <Skeleton className="h-20 w-32" />
-                )}
-              </>
-            )}
+            {isGif &&
+              (body ? (
+                <ImageViewer url={body} title="GIPHY" errorCb={getMediaUrl} />
+              ) : (
+                <Skeleton className="h-20 w-28" />
+              ))}
+            {isRawImage &&
+              (mediaURL ? (
+                <ImageViewer url={mediaURL} title={rawMedia?.filename ?? undefined} />
+              ) : (
+                <Skeleton className="h-20 w-28" />
+              ))}
+            {isAudio &&
+              (mediaURL ? <AudioPlayer url={mediaURL} errorCb={getMediaUrl} /> : <Skeleton className="h-20 w-32" />)}
             {!isGif && !isRawImage && !isAudio && (
               <span
                 className={cn({
-                  'italic text-muted-foreground': !body,
+                  'text-muted-foreground italic': !body,
                   'whitespace-pre-line': body,
                 })}
               >
@@ -132,7 +117,7 @@ export function MessageItem({ session, message }: MessageItemProps) {
             <MessageActions message={message} editMode={!isRawImage && !isGif && !isAudio} />
           )}
         </span>
-        <div className="flex flex-col text-[10px] leading-4 text-muted-foreground">
+        <div className="text-muted-foreground flex flex-col text-[10px] leading-4">
           <span>
             {dateCreated && formatDate(dateCreated)}
             {isGif && ' (via GIPHY)'}

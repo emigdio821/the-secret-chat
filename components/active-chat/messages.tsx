@@ -2,14 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToggle } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { type Client, type Conversation, type Message, type Paginator } from '@twilio/conversations'
-import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowDown, Ghost, Loader2, Send } from 'lucide-react'
+import type { Client, Conversation, Message, Paginator } from '@twilio/conversations'
+import { ArrowDown, Ghost, Send } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import type * as z from 'zod'
-
+import type { z } from 'zod'
 import { ACTIVE_CHAT_MESSAGES_QUERY } from '@/lib/constants'
 import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
@@ -20,7 +19,7 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { EmojiPicker } from '@/components/emoji-picker'
 import { ChatOnlySkeleton } from '@/components/skeletons'
-
+import { Icons } from '../icons'
 import { MediaActions } from './media/media-actions'
 import { MessageItem } from './message-item'
 import { ChatParticipants } from './participants'
@@ -32,8 +31,8 @@ interface MessagesProps {
 }
 
 export function Messages({ chat, client }: MessagesProps) {
-  const msgsContainerRef = useRef<HTMLDivElement>(null)
   const { data: session } = useSession()
+  const msgsContainerRef = useRef<HTMLDivElement>(null)
   const [showScrollBottom, toggleScrollBtn] = useToggle()
   const [isLoadingPage, toggleLoadingPage] = useToggle()
   const [autoScroll, toggleAutoScroll] = useToggle([true, false])
@@ -135,154 +134,140 @@ export function Messages({ chat, client }: MessagesProps) {
     if (autoScroll) {
       scrollBottom()
     }
-  }, [messages, scrollBottom, autoScroll])
+  }, [scrollBottom, autoScroll])
 
   return (
     <>
       {isLoading ? (
         <ChatOnlySkeleton />
       ) : (
-        <>
-          {messages?.items && session && (
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <ChatParticipants chat={chat} session={session} client={client} />
-                <div className="relative h-[420px] w-full sm:flex-1">
-                  <div
-                    ref={msgsContainerRef}
-                    onScroll={(e) => {
-                      const { scrollHeight, scrollTop, clientHeight } = e.currentTarget
-                      const stDiv = scrollTop + clientHeight
-                      const enabledAutoScroll = stDiv === scrollHeight
+        messages?.items &&
+        session && (
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <ChatParticipants chat={chat} session={session} client={client} />
+              <div className="relative h-[420px] w-full sm:flex-1">
+                <div
+                  ref={msgsContainerRef}
+                  onScroll={(e) => {
+                    const { scrollHeight, scrollTop, clientHeight } = e.currentTarget
+                    const stDiv = scrollTop + clientHeight
+                    const enabledAutoScroll = stDiv === scrollHeight
 
-                      if (stDiv < (scrollHeight * 6) / 7 && !showScrollBottom) {
-                        toggleScrollBtn(true)
-                      }
+                    if (stDiv < (scrollHeight * 6) / 7 && !showScrollBottom) {
+                      toggleScrollBtn(true)
+                    }
 
-                      if (
-                        scrollHeight === stDiv ||
-                        (stDiv >= (scrollHeight * 6) / 7 && showScrollBottom)
-                      ) {
-                        toggleScrollBtn(false)
-                      }
+                    if (scrollHeight === stDiv || (stDiv >= (scrollHeight * 6) / 7 && showScrollBottom)) {
+                      toggleScrollBtn(false)
+                    }
 
-                      if (enabledAutoScroll && !autoScroll) {
-                        toggleAutoScroll(true)
-                      }
+                    if (enabledAutoScroll && !autoScroll) {
+                      toggleAutoScroll(true)
+                    }
 
-                      if (!enabledAutoScroll && autoScroll) {
-                        toggleAutoScroll(false)
-                      }
-                    }}
-                    style={{ background: containerBg }}
-                    className="absolute h-full w-full overflow-y-auto rounded-lg border"
-                  >
-                    {messages.items.length > 0 ? (
-                      <div className="flex flex-col gap-2 p-4">
-                        {currentPaginator?.hasPrevPage && (
-                          <Button
-                            variant="link"
-                            disabled={isLoadingPage}
-                            className="self-end p-0"
-                            onClick={async () => {
-                              await handleLoadPage()
-                            }}
-                          >
-                            Load more messages
-                            {isLoadingPage && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-                          </Button>
-                        )}
-                        {messages.items.map((message) => (
-                          <MessageItem key={message.sid} session={session} message={message} />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
-                        <Ghost className="h-5 w-5" />
-                        No messages yet
-                      </div>
-                    )}
-                  </div>
-                  <AnimatePresence>
-                    {usersTyping.length > 0 && <TypingIndicator participants={usersTyping} />}
-                  </AnimatePresence>
-                  <AnimatePresence>
-                    {showScrollBottom && (
-                      <motion.button
-                        type="button"
-                        animate={{ opacity: 1, y: 0 }}
-                        initial={{ opacity: 0, y: 5 }}
-                        exit={{ opacity: 0, y: 5 }}
-                        onClick={scrollBottom}
-                        className={cn(
-                          buttonVariants({ size: 'icon' }),
-                          'absolute bottom-4 right-4 h-6 w-6 rounded-full',
-                        )}
-                      >
-                        <ArrowDown className="h-3 w-3" />
-                        <span className="sr-only">Scroll bottom</span>
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="flex w-full flex-row items-center gap-2"
+                    if (!enabledAutoScroll && autoScroll) {
+                      toggleAutoScroll(false)
+                    }
+                  }}
+                  style={{ background: containerBg }}
+                  className="absolute h-full w-full overflow-y-auto rounded-lg border"
                 >
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem className="w-full flex-1">
-                        <div className="relative">
-                          <div className="absolute right-3 flex h-full gap-1">
-                            <span className="flex h-full items-center justify-center">
-                              <MediaActions chat={chat} />
-                            </span>
-                            <span className="flex h-full items-center justify-center">
-                              <EmojiPicker
-                                callback={(emoji) => {
-                                  if (field.value) {
-                                    form.setValue('message', `${field.value}${emoji.native}`, {
-                                      shouldValidate: true,
-                                    })
-                                  } else {
-                                    form.setValue('message', emoji.native, {
-                                      shouldValidate: true,
-                                    })
-                                  }
-                                }}
-                              />
-                            </span>
-                          </div>
-                          <FormControl>
-                            <Input
-                              className="pr-12"
-                              autoComplete="false"
-                              onKeyDown={handleUserTyping}
-                              placeholder="Type your message"
-                              {...field}
-                            />
-                          </FormControl>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    size="icon"
-                    type="submit"
-                    disabled={form.formState.isSubmitting || !form.formState.isValid}
-                  >
-                    <Send className="h-4 w-4" />
-                    <span className="sr-only">Send message</span>
-                  </Button>
-                </form>
-              </Form>
+                  {messages.items.length > 0 ? (
+                    <div className="flex flex-col gap-2 p-4">
+                      {currentPaginator?.hasPrevPage && (
+                        <Button
+                          variant="link"
+                          disabled={isLoadingPage}
+                          className="self-end p-0"
+                          onClick={async () => {
+                            await handleLoadPage()
+                          }}
+                        >
+                          Load more messages
+                          {isLoadingPage && <Icons.Spinner className="size-4" />}
+                        </Button>
+                      )}
+                      {messages.items.map((message) => (
+                        <MessageItem key={message.sid} session={session} message={message} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
+                      <Ghost className="h-5 w-5" />
+                      No messages yet
+                    </div>
+                  )}
+                </div>
+                <AnimatePresence>
+                  {usersTyping.length > 0 && <TypingIndicator participants={usersTyping} />}
+                </AnimatePresence>
+                <AnimatePresence>
+                  {showScrollBottom && (
+                    <motion.button
+                      type="button"
+                      animate={{ opacity: 1, y: 0 }}
+                      initial={{ opacity: 0, y: 5 }}
+                      exit={{ opacity: 0, y: 5 }}
+                      onClick={scrollBottom}
+                      className={cn(buttonVariants({ size: 'icon' }), 'absolute right-4 bottom-4 h-6 w-6 rounded-full')}
+                    >
+                      <ArrowDown className="h-3 w-3" />
+                      <span className="sr-only">Scroll bottom</span>
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
-          )}
-        </>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-row items-center gap-2">
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem className="w-full flex-1">
+                      <div className="relative">
+                        <div className="absolute right-3 flex h-full gap-1">
+                          <span className="flex h-full items-center justify-center">
+                            <MediaActions chat={chat} />
+                          </span>
+                          <span className="flex h-full items-center justify-center">
+                            <EmojiPicker
+                              callback={(emoji) => {
+                                if (field.value) {
+                                  form.setValue('message', `${field.value}${emoji.native}`, {
+                                    shouldValidate: true,
+                                  })
+                                } else {
+                                  form.setValue('message', emoji.native, {
+                                    shouldValidate: true,
+                                  })
+                                }
+                              }}
+                            />
+                          </span>
+                        </div>
+                        <FormControl>
+                          <Input
+                            className="pr-12"
+                            autoComplete="false"
+                            onKeyDown={handleUserTyping}
+                            placeholder="Type your message"
+                            {...field}
+                          />
+                        </FormControl>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <Button size="icon" type="submit" disabled={form.formState.isSubmitting || !form.formState.isValid}>
+                  <Send className="h-4 w-4" />
+                  <span className="sr-only">Send message</span>
+                </Button>
+              </form>
+            </Form>
+          </div>
+        )
       )}
     </>
   )

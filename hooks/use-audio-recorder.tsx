@@ -3,11 +3,10 @@
 import { useRef, useState } from 'react'
 import { useToggle } from '@mantine/hooks'
 import { toast } from 'sonner'
-
 import { AUDIO_FORMAT } from '@/lib/constants'
 
 export function useAudioRecorder() {
-  const mediaRecorder = useRef<MediaRecorder>()
+  const mediaRecorder = useRef<MediaRecorder>(null)
   const [stream, setStream] = useState<MediaStream>()
   const [isRecording, setRecording] = useToggle()
   const [isPaused, setPaused] = useToggle()
@@ -26,7 +25,8 @@ export function useAudioRecorder() {
         setRecording(true)
 
         const media = new MediaRecorder(streamData)
-        const recorder = (mediaRecorder.current = media)
+        mediaRecorder.current = media
+        const recorder = mediaRecorder.current
 
         recorder.start(1000)
         recorder.ondataavailable = (e) => {

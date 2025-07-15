@@ -1,4 +1,4 @@
-import { type InitialState } from '@/types'
+import type { InitialState } from '@/types'
 import { create } from 'zustand'
 
 export const useStore = create<InitialState>((set) => ({
@@ -31,8 +31,7 @@ export const useStore = create<InitialState>((set) => ({
   removeUsersTyping: ({ participant, removeAll = false }) => {
     set((state) => ({
       ...state,
-      usersTyping:
-        removeAll || !participant ? [] : state.usersTyping.filter((p) => p.sid !== participant.sid),
+      usersTyping: removeAll || !participant ? [] : state.usersTyping.filter((p) => p.sid !== participant.sid),
     }))
   },
 }))

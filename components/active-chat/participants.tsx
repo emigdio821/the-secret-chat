@@ -1,10 +1,9 @@
-import { type ParticipantAttributes } from '@/types'
+import type { ParticipantAttributes } from '@/types'
 import { useToggle } from '@mantine/hooks'
 import { useQuery } from '@tanstack/react-query'
-import { type Client, type Conversation, type Participant } from '@twilio/conversations'
-import { AtSign, Signal, User, UserX } from 'lucide-react'
-import { type Session } from 'next-auth'
-
+import type { Client, Conversation, Participant } from '@twilio/conversations'
+import { AtSign, Signal, UserIcon, UserX } from 'lucide-react'
+import type { Session } from 'next-auth'
 import { ACTIVE_PARTICIPANTS_QUERY, AVATAR_FALLBACK_URL } from '@/lib/constants'
 import { cn, sortArray } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -13,7 +12,6 @@ import { DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdo
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
-
 import ChatActions from './chat-actions'
 
 interface ChatParticipantsProps {
@@ -92,9 +90,8 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
-                        size="xs"
                         variant="ghost"
-                        disabled={!session}
+                        disabled={!user}
                         className={cn('gap-2 px-1 sm:w-full sm:justify-start', {
                           'opacity-50': !partAttrs?.isOnline,
                         })}
@@ -107,12 +104,12 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                               src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
                             />
                             <AvatarFallback className="h-6 w-6 rounded-sm">
-                              <User className="h-4 w-4" />
+                              <UserIcon className="size-4" />
                             </AvatarFallback>
                           </Avatar>
                           <span
                             className={cn(
-                              'absolute -bottom-[2px] -right-[2px] h-2 w-2 rounded-full border border-card bg-zinc-400',
+                              'border-card absolute -right-[2px] -bottom-[2px] h-2 w-2 rounded-full border bg-zinc-400',
                               {
                                 'bg-green-400': partAttrs?.isOnline,
                               },
@@ -120,15 +117,11 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                           />
                         </div>
                         <span className="max-w-[72px] truncate">
-                          {participant.isTyping ? (
-                            'Typing...'
-                          ) : (
-                            <>
-                              {participant.identity === user?.email
-                                ? 'You'
-                                : partAttrs?.nickname || participant.identity}
-                            </>
-                          )}
+                          {participant.isTyping
+                            ? 'Typing...'
+                            : participant.identity === user?.email
+                              ? 'You'
+                              : partAttrs?.nickname || participant.identity}
                         </span>
                       </Button>
                     </PopoverTrigger>
@@ -140,7 +133,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                           src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL}
                         />
                         <AvatarFallback className="h-20 w-20 rounded-sm">
-                          <User className="h-4 w-4" />
+                          <UserIcon className="size-4" />
                         </AvatarFallback>
                       </Avatar>
                       {partAttrs?.name && (
@@ -159,7 +152,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                       </DropdownMenuLabel>
                       {partAttrs?.nickname && (
                         <DropdownMenuLabel className="flex items-center gap-2 py-0 font-normal">
-                          <User className="h-4 w-4" />
+                          <UserIcon className="size-4" />
                           {partAttrs?.nickname}
                         </DropdownMenuLabel>
                       )}
@@ -190,8 +183,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                               }}
                               trigger={
                                 <Button
-                                  variant="dropdown"
-                                  className="h-full justify-start px-2 py-1.5 !text-destructive"
+                                  className="text-destructive! h-full justify-start px-2 py-1.5"
                                   onClick={() => {
                                     setOpenedAlert(true)
                                   }}

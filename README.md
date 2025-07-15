@@ -21,14 +21,17 @@ NEXT_PUBLIC_TWILIO_CHANNEL_ADMIN=
 ```
 
 #### Install the dependencies
+
 ```bash
 pnpm install
 ```
 
 #### Run the dev server
+
 ```bash
 pnpm dev
 ```
+
 <br/>
 
 The project runs on **localhost:3000** by default

@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { type UserAttributes } from '@/types'
+import type { UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { type Client, type Conversation } from '@twilio/conversations'
+import type { Client, Conversation } from '@twilio/conversations'
 import { UserPlus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import type * as z from 'zod'
-
+import type { z } from 'zod'
 import { addParticipantSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,7 +20,7 @@ import {
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 interface AddParticipantDialogProps {
   chat: Conversation
@@ -53,8 +52,7 @@ export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps
       if (err instanceof Error) errMsg = err.message
       console.log('[ADD_PARTICIPANT_DIALOG]', errMsg)
       toast.error('Uh oh!', {
-        description:
-          'Something went wrong while adding the participant, please check the id (email) and try again',
+        description: 'Something went wrong while adding the participant, please check the id (email) and try again',
       })
     }
   }
@@ -100,15 +98,10 @@ export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps
                 return (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        maxLength={40}
-                        autoComplete="false"
-                        placeholder="Participant id (email)"
-                        {...field}
-                      />
+                      <Input maxLength={40} autoComplete="false" placeholder="Participant id (email)" {...field} />
                     </FormControl>
                     {charsLength >= 30 && (
-                      <p className="text-xs text-muted-foreground">{charsLength} / 40 characters</p>
+                      <p className="text-muted-foreground text-xs">{charsLength} / 40 characters</p>
                     )}
                     <FormMessage />
                   </FormItem>
@@ -119,7 +112,7 @@ export function AddParticipantDialog({ chat, client }: AddParticipantDialogProps
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Add
                 {form.formState.isSubmitting ? (
-                  <Loader className="ml-2" />
+                  <Icons.Spinner className="ml-2" />
                 ) : (
                   <UserPlus className="ml-2 h-4 w-4" />
                 )}

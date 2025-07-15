@@ -1,5 +1,4 @@
-import { type Client } from '@twilio/conversations'
-
+import type { Client } from '@twilio/conversations'
 import { CreateChatDialog } from './chats/create-chat-dialog'
 
 // import { JoinChatDialog } from './chats/join-chat-dialog'

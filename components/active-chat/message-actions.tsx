@@ -1,11 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToggle } from '@mantine/hooks'
-import { type Message } from '@twilio/conversations'
+import type { Message } from '@twilio/conversations'
 import { Edit2, MoreVertical, Save, SmilePlus, Trash2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type * as z from 'zod'
-
 import { editMessageSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,7 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea'
 import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
 import { EmojiPicker } from '@/components/emoji-picker'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 interface MessageActionsProps {
   message: Message
@@ -139,15 +138,11 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                     <Button
                       className="self-end"
                       type="submit"
-                      disabled={
-                        form.formState.isSubmitting ||
-                        !form.formState.isValid ||
-                        !form.formState.isDirty
-                      }
+                      disabled={form.formState.isSubmitting || !form.formState.isValid || !form.formState.isDirty}
                     >
                       Save
                       {form.formState.isSubmitting ? (
-                        <Loader className="ml-2" />
+                        <Icons.Spinner className="ml-2" />
                       ) : (
                         <Save className="ml-2 h-4 w-4" />
                       )}
@@ -166,7 +161,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
           action={handleDeleteMessage}
           trigger={
             <DropdownMenuItem
-              className="!text-destructive"
+              className="text-destructive!"
               onSelect={(e) => {
                 e.preventDefault()
                 setOpenedAlert(true)

@@ -1,24 +1,20 @@
 import { useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { type Client, type Conversation } from '@twilio/conversations'
+import type { Client, Conversation } from '@twilio/conversations'
 import { MessageSquareDashed, RefreshCcw, Search } from 'lucide-react'
-import { type Session } from 'next-auth'
-
 import { UNREAD_MSGS_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
 import { sortArray } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ChatsSkeleton } from '@/components/skeletons'
-
 import { ChatCardItem } from './chat-card-item'
 
 interface ChatListProps {
   client: Client
-  session: Session
 }
 
-export function MyChats({ client, session }: ChatListProps) {
+export function MyChats({ client }: ChatListProps) {
   const [search, setSearch] = useState('')
   const queryClient = useQueryClient()
   const [debouncedSearch] = useDebouncedValue(search, 500)
@@ -45,9 +41,7 @@ export function MyChats({ client, session }: ChatListProps) {
     const searchText = debouncedSearch.trim()
     if (!searchText || !search) return chats
 
-    return chats?.filter(
-      (chat) => chat.uniqueName?.toLowerCase().includes(searchText.toLocaleLowerCase()),
-    )
+    return chats?.filter((chat) => chat.uniqueName?.toLowerCase().includes(searchText.toLocaleLowerCase()))
   }
 
   if (error) {
@@ -84,7 +78,7 @@ export function MyChats({ client, session }: ChatListProps) {
             <RefreshCcw className="h-4 w-4 sm:ml-2" />
           </Button>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
             <Input
               disabled={isLoading}
               className="w-40 pl-9"
@@ -99,21 +93,17 @@ export function MyChats({ client, session }: ChatListProps) {
       </div>
       {isLoading ? (
         <ChatsSkeleton />
+      ) : data && data.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {data.map((chat) => (
+            <ChatCardItem key={chat.sid} chat={chat} />
+          ))}
+        </div>
       ) : (
-        <>
-          {data && data.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {data.map((chat) => (
-                <ChatCardItem key={chat.sid} chat={chat} session={session} />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border p-4 text-sm">
-              <MessageSquareDashed className="h-4 w-4" />
-              <span>{search ? 'No chats found' : 'No chats yet'}</span>
-            </div>
-          )}
-        </>
+        <div className="flex flex-col items-center justify-center gap-2 rounded-lg border p-4 text-sm">
+          <MessageSquareDashed className="h-4 w-4" />
+          <span>{search ? 'No chats found' : 'No chats yet'}</span>
+        </div>
       )}
     </div>
   )

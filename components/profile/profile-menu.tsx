@@ -1,10 +1,9 @@
 'use client'
 
 import NextLink from 'next/link'
-import { type UserAttributes } from '@/types'
+import type { UserAttributes } from '@/types'
 import { Github, User } from 'lucide-react'
-import { type Session } from 'next-auth'
-
+import { useSession } from 'next-auth/react'
 import { AVATAR_FALLBACK_URL } from '@/lib/constants'
 import { siteConfig } from '@/lib/site-config'
 import { getFirstName } from '@/lib/utils'
@@ -21,27 +20,26 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
-
 import { Logout } from './profile-menu-logout'
 
-export function ProfileMenu({ session }: { session: Session }) {
-  const user = session.user
+export function ProfileMenu() {
   const { client, isLoading } = useTwilioClient()
+  const { data: session, status } = useSession()
   const userAttrs = client?.user.attributes as UserAttributes
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="h-8 gap-2 pr-1 sm:h-9" disabled={!session}>
-          <span className="max-w-[64px] truncate">{getFirstName(user?.name ?? '')}</span>
-          {isLoading ? (
+          <span className="max-w-[64px] truncate">{getFirstName(session?.user?.name ?? '')}</span>
+          {isLoading || status === 'loading' ? (
             <Skeleton className="h-6 w-6 rounded-sm" />
           ) : (
             <Avatar className="h-6 w-6 rounded-sm">
               <AvatarImage
-                alt={`${user?.name}`}
                 className="object-cover"
-                src={(userAttrs?.avatar_url || session.user?.image) ?? AVATAR_FALLBACK_URL}
+                alt={`${session?.user?.name}`}
+                src={(userAttrs?.avatar_url || session?.user?.image) ?? AVATAR_FALLBACK_URL}
               />
               <AvatarFallback className="h-6 w-6 rounded-sm">
                 <User className="h-4 w-4" />
@@ -51,9 +49,7 @@ export function ProfileMenu({ session }: { session: Session }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-[180px]">
-        <DropdownMenuLabel>
-          {(userAttrs?.name || session.user?.name) ?? client?.user.identity}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel>{(userAttrs?.name || session?.user?.name) ?? client?.user.identity}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <NextLink href="/profile">

@@ -3,11 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { type Client } from '@twilio/conversations'
+import type { Client } from '@twilio/conversations'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import type * as z from 'zod'
-
+import type { z } from 'zod'
 import { joinChatRoomSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,14 +20,14 @@ import {
 } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Loader } from '@/components/icons'
+import { Icons } from '@/components/icons'
 
 interface JoinChatDialogProps {
   isLoading: boolean
   client: Client
 }
 
-export function JoinChatDialog({ isLoading, client }: JoinChatDialogProps) {
+export function JoinChatDialog({ client }: JoinChatDialogProps) {
   const [openedDialog, setOpenedDialog] = useState(false)
   const router = useRouter()
 
@@ -105,7 +104,7 @@ export function JoinChatDialog({ isLoading, client }: JoinChatDialogProps) {
             <DialogFooter className="mt-4">
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 Join
-                {form.formState.isSubmitting && <Loader className="ml-2" />}
+                {form.formState.isSubmitting && <Icons.Spinner className="ml-2" />}
               </Button>
             </DialogFooter>
           </form>
