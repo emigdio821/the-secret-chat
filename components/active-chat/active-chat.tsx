@@ -4,7 +4,7 @@ import type { ChatAttributes } from '@/types'
 import { useQueryClient } from '@tanstack/react-query'
 import type { Client, Conversation } from '@twilio/conversations'
 import { ArrowLeftIcon, GhostIcon } from 'lucide-react'
-import { ACTIVE_CHAT_MESSAGES_QUERY, ACTIVE_CHAT_QUERY } from '@/lib/constants'
+import { ACTIVE_CHAT_MESSAGES_QUERY, ACTIVE_CHAT_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
 import { useCurrentChat } from '@/hooks/chat/use-current-chat'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -28,12 +28,13 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   }, [queryClient])
 
   const handleUpdatedChat = useCallback(
-    ({ conversation, updateReasons }: { conversation: Conversation; updateReasons: string[] }) => {
+    async ({ conversation, updateReasons }: { conversation: Conversation; updateReasons: string[] }) => {
       const relevantUpdates = ['attributes', 'friendlyName']
       const shouldUpdate = updateReasons.some((reason) => relevantUpdates.includes(reason))
       if (!shouldUpdate) return
 
       const newCovo = Object.create(conversation)
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
       queryClient.setQueryData([ACTIVE_CHAT_QUERY, chatId], newCovo)
     },
     [chatId, queryClient],

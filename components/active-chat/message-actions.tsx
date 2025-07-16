@@ -52,12 +52,11 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
       setEditMode(false)
       form.reset(values)
     } catch (err) {
-      let errMsg = 'Unknown error'
-      if (err instanceof Error) errMsg = err.message
-      console.log('[EDIT_CHAT_MSG]', errMsg)
+      const errMsg = err instanceof Error ? err.message : err
+      console.log('[edit_chat_message]', errMsg)
 
       toast.error('Uh oh!', {
-        description: 'Something went wrong while editing your message, try again',
+        description: 'Unable to edit the message at this time, try again.',
       })
     }
   }

@@ -19,9 +19,9 @@ interface MessageItemProps {
 }
 
 export function MessageItem({ message, session }: MessageItemProps) {
+  const user = session.user
   const [mediaURL, setMediaURL] = useState<string>('')
   const { author, sid, body, dateCreated } = message
-  const user = session.user
   const isAuthor = author === user?.email
   const hasMedia = message.type === 'media'
   const rawMedia = message.attachedMedia?.[0]
