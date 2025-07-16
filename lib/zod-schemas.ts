@@ -59,3 +59,9 @@ export const envClient = clientEnvSchema.parse({
   NEXT_PUBLIC_TWILIO_CHANNEL_ADMIN: process.env.NEXT_PUBLIC_TWILIO_CHANNEL_ADMIN,
   NEXT_PUBLIC_GIPHY_API_KEY: process.env.NEXT_PUBLIC_GIPHY_API_KEY,
 })
+
+export const editChatSchema = z.object({
+  friendlyName: requiredField,
+  chatLogoUrl: optionalField,
+  description: optionalField.max(100, 'The max length is 100 characters'),
+})

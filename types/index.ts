@@ -30,7 +30,7 @@ export type MessageAttributes = {
   isEdited?: boolean
 } & JSONValue
 
-export interface ChatAttributes {
+export type ChatAttributes = {
   description?: string
   chatLogoUrl?: string
-}
+} & JSONValue

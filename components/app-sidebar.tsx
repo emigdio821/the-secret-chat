@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { debounce } from 'lodash'
 import { GhostIcon } from 'lucide-react'
@@ -26,9 +26,15 @@ import { Skeleton } from './ui/skeleton'
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const twilioClient = useTwilioClientStore((state) => state.client)
   const isClientLoading = useTwilioClientStore((state) => state.loading)
-  const searchValue = useSearchChatsInputStore((state) => state.search)
-  const setSearchValue = useSearchChatsInputStore((state) => state.setSearch)
-  const [search, setSearch] = useState(searchValue)
+  const searchStoreValue = useSearchChatsInputStore((state) => state.search)
+  const setSearchStoreValue = useSearchChatsInputStore((state) => state.setSearch)
+  const [searchInputVal, setSearchInputVal] = useState(searchStoreValue)
+
+  const debouncedSearch = useMemo(() => {
+    return debounce((val: string) => {
+      setSearchStoreValue(val)
+    }, 300)
+  }, [setSearchStoreValue])
 
   useEffect(() => {
     if (!twilioClient) {
@@ -36,12 +42,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
   }, [twilioClient])
 
-  const handleSearch = useCallback(
-    debounce((value: string) => {
-      setSearchValue(value)
-    }, 300),
-    [],
-  )
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel()
+    }
+  }, [debouncedSearch])
+
+  useEffect(() => {
+    if (searchStoreValue) {
+      setSearchInputVal(searchStoreValue)
+    }
+  }, [searchStoreValue])
 
   return (
     <Sidebar {...props}>
@@ -66,21 +77,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <Input
               type="search"
               className="h-8"
-              value={search}
               name="search-chats"
+              value={searchInputVal}
               placeholder="Search chats"
               onChange={(e) => {
-                setSearch(e.currentTarget.value)
-                handleSearch(e.currentTarget.value)
+                const value = e.currentTarget.value
+                setSearchInputVal(value)
+                debouncedSearch(value)
               }}
             />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {/* <NavFolders />
-        <NavTags /> */}
-
         {isClientLoading ? (
           <div className="p-2">
             <div className="flex h-8 items-center">

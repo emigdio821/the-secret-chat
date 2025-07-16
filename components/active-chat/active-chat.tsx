@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react'
-import NextLink from 'next/link'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { ChatAttributes, ParticipantAttributes } from '@/types'
 import { useIdle, useWindowEvent } from '@mantine/hooks'
@@ -13,6 +13,7 @@ import type {
   Participant,
   ParticipantUpdateReason,
 } from '@twilio/conversations'
+import { ArrowLeftIcon, GhostIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   ACTIVE_CHAT_MESSAGES_QUERY,
@@ -23,10 +24,10 @@ import {
 } from '@/lib/constants'
 import { useStore } from '@/lib/store'
 import { useCurrentChat } from '@/hooks/chat/use-current-chat'
-import { buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Messages } from '@/components/active-chat/messages'
-import { FullChatSkeleton } from '@/components/skeletons'
+import { Loader } from '../loader'
 import { TypographyH4 } from '../ui/typography'
 import ChatActions from './chat-actions'
 
@@ -51,7 +52,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   const { data: chat, isLoading } = useCurrentChat(chatId)
   const addUsersTyping = useStore((state) => state.addUsersTyping)
   const removeUsersTyping = useStore((state) => state.removeUsersTyping)
-  const chatAttrs = chat?.attributes as ChatAttributes
+  const chatAttrs = chat?.attributes as ChatAttributes | undefined
   const isIdle = useIdle(300000)
 
   const handleChatRemoved = useCallback(
@@ -295,11 +296,13 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     }
   }, [isIdle, handleUpdateCurrParticipantStatus])
 
+  if (isLoading) {
+    return <Loader msg="Loading chat..." />
+  }
+
   return (
     <>
-      {isLoading ? (
-        <FullChatSkeleton />
-      ) : chat ? (
+      {chat ? (
         <>
           <div className="flex items-center justify-between gap-2">
             <div>
@@ -311,16 +314,22 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
           <Messages chat={chat} />
         </>
       ) : (
-        <Card className="mx-auto max-w-sm">
-          <CardHeader>
-            <CardTitle>Chat not found</CardTitle>
-            <CardDescription>Seems like this chat no longer exists or you are not participating on it</CardDescription>
+        <Card>
+          <CardHeader className="flex flex-col items-center justify-center">
+            <CardTitle className="mb-4">
+              <GhostIcon className="size-6" />
+            </CardTitle>
+            <TypographyH4>Chat not found</TypographyH4>
+            <CardDescription>This chat no longer exists or you are not participating on it</CardDescription>
           </CardHeader>
-          <CardContent>
-            <NextLink href="/" className={buttonVariants({ variant: 'default' })}>
-              Home
-            </NextLink>
-          </CardContent>
+          <CardFooter className="justify-center">
+            <Button variant="outline" asChild>
+              <Link href="/">
+                <ArrowLeftIcon className="size-4" />
+                Home
+              </Link>
+            </Button>
+          </CardFooter>
         </Card>
       )}
     </>

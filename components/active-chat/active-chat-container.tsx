@@ -2,7 +2,7 @@
 
 import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
 import { ClientError } from '@/components/client-error'
-import { FullChatSkeleton } from '@/components/skeletons'
+import { Loader } from '../loader'
 import { ActiveChat } from './active-chat'
 
 interface ActiveChatContainerProps {
@@ -18,5 +18,7 @@ export function ActiveChatContainer({ chatId }: ActiveChatContainerProps) {
     return <ClientError />
   }
 
-  return <>{loading ? <FullChatSkeleton /> : client && <ActiveChat client={client} chatId={chatId} />}</>
+  return (
+    <>{loading ? <Loader msg="Retrieving client..." /> : client && <ActiveChat client={client} chatId={chatId} />}</>
+  )
 }

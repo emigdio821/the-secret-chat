@@ -11,8 +11,8 @@ import { useStore } from '@/lib/store'
 import { useChatAutoScrollStore } from '@/lib/stores/chat-autoscroll.store'
 import { useChatMessages } from '@/hooks/chat/use-chat-messages'
 import { Button } from '@/components/ui/button'
-import { ChatOnlySkeleton } from '@/components/skeletons'
 import { Icons } from '../icons'
+import { Loader } from '../loader'
 import { ActiveChatBottomActions } from './bottom-actions'
 import { MessageItem } from './message-item'
 import { TypingIndicator } from './typing-indicator'
@@ -71,7 +71,7 @@ export function Messages({ chat }: MessagesProps) {
     const { scrollTop, scrollHeight, clientHeight } = container
     const scrollBottomPosition = scrollTop + clientHeight
 
-    const isBelowHalf = scrollBottomPosition < scrollHeight * 0.5
+    const isBelowHalf = scrollBottomPosition < scrollHeight * 0.85
     setShowScrollBottom(isBelowHalf)
 
     const atBottom = scrollBottomPosition >= scrollHeight
@@ -87,72 +87,71 @@ export function Messages({ chat }: MessagesProps) {
     }
   }, [scrollBottom, autoScroll, messages?.items])
 
+  if (isLoading) {
+    return <Loader msg="Retrieving chat messages..." />
+  }
+
   return (
     <>
-      {isLoading ? (
-        <ChatOnlySkeleton />
-      ) : (
-        messages?.items &&
-        session && (
-          <div className="flex h-full flex-col gap-4">
-            {/* <ChatParticipants chat={chat} session={session} client={client} /> */}
-            <div className="relative h-full w-full">
-              <div
-                ref={msgsContainerRef}
-                onScroll={throttledScroll}
-                className="absolute h-full w-full overflow-y-auto rounded-lg shadow-xs"
-              >
-                {messages.items.length > 0 ? (
-                  <div className="flex flex-col gap-2 p-4">
-                    {messages?.hasPrevPage && (
-                      <Button
-                        variant="link"
-                        disabled={isLoadingPage}
-                        className="self-end p-0"
-                        onClick={async () => {
-                          await handleLoadPage()
-                        }}
-                      >
-                        Load more messages
-                        {isLoadingPage && <Icons.Spinner className="size-4" />}
-                      </Button>
-                    )}
-                    {messages.items.map((message) => (
-                      <MessageItem key={message.sid} session={session} message={message} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
-                    <GhostIcon className="size-5" />
-                    No messages yet
-                  </div>
-                )}
-              </div>
-
-              <AnimatePresence>
-                {usersTyping.length > 0 && <TypingIndicator participants={usersTyping} />}
-              </AnimatePresence>
-
-              <AnimatePresence initial={false}>
-                {showScrollBottom && (
-                  <Button size="icon" className="absolute right-4 bottom-4 size-6 transition-colors" asChild>
-                    <motion.button
-                      type="button"
-                      onClick={scrollBottom}
-                      initial={{ y: 5, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -5, opacity: 0 }}
+      {messages?.items && session && (
+        <div className="flex h-full flex-col gap-4">
+          {/* <ChatParticipants chat={chat} session={session} client={client} /> */}
+          <div className="relative h-full w-full">
+            <div
+              ref={msgsContainerRef}
+              onScroll={throttledScroll}
+              className="absolute h-full w-full overflow-y-auto rounded-lg shadow-xs"
+            >
+              {messages.items.length > 0 ? (
+                <div className="flex flex-col gap-2 p-4">
+                  {messages?.hasPrevPage && (
+                    <Button
+                      variant="link"
+                      disabled={isLoadingPage}
+                      className="self-end p-0"
+                      onClick={async () => {
+                        await handleLoadPage()
+                      }}
                     >
-                      <ArrowDownIcon className="size-3" />
-                      <span className="sr-only">Scroll bottom</span>
-                    </motion.button>
-                  </Button>
-                )}
-              </AnimatePresence>
+                      Load more messages
+                      {isLoadingPage && <Icons.Spinner className="size-4" />}
+                    </Button>
+                  )}
+                  {messages.items.map((message) => (
+                    <MessageItem key={message.sid} session={session} message={message} />
+                  ))}
+                </div>
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
+                  <GhostIcon className="size-5" />
+                  No messages yet
+                </div>
+              )}
             </div>
-            <ActiveChatBottomActions chat={chat} />
+
+            <AnimatePresence>
+              {usersTyping.length > 0 && <TypingIndicator participants={usersTyping} />}
+            </AnimatePresence>
+
+            <AnimatePresence initial={false}>
+              {showScrollBottom && (
+                <Button size="icon" className="absolute right-4 bottom-4 size-6 transition-colors" asChild>
+                  <motion.button
+                    type="button"
+                    onClick={scrollBottom}
+                    initial={{ y: 5, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -5, opacity: 0 }}
+                  >
+                    <ArrowDownIcon className="size-3" />
+                    <span className="sr-only">Scroll bottom</span>
+                  </motion.button>
+                </Button>
+              )}
+            </AnimatePresence>
           </div>
-        )
+          <ActiveChatBottomActions chat={chat} />
+        </div>
       )}
     </>
   )

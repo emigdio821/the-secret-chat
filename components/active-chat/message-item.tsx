@@ -59,7 +59,10 @@ export function MessageItem({ message, session }: MessageItemProps) {
   }, [getMediaUrl, hasMedia])
 
   return (
-    <div
+    <motion.div
+      key={sid}
+      animate={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, x: isAuthor ? -50 : 50 }}
       className={cn('flex max-w-[75%] items-center gap-2', {
         'flex-row-reverse self-end': isAuthor,
       })}
@@ -78,15 +81,12 @@ export function MessageItem({ message, session }: MessageItemProps) {
           <UserIcon className="size-4" />
         </AvatarFallback>
       </Avatar>
-      <motion.div
-        key={sid}
-        animate={{ opacity: 1, x: 0 }}
-        initial={{ opacity: 0, x: isAuthor ? 20 : -20 }}
-        className={cn('bg-card/60 flex flex-col gap-2 rounded-lg border px-3 py-2 text-sm', {
-          'bg-muted/60': !isAuthor,
+      <div
+        className={cn('bg-card flex flex-col gap-2 rounded-lg border px-3 py-2 text-sm shadow-xs', {
+          'bg-input/30': !isAuthor,
         })}
       >
-        <span className="flex justify-between gap-2">
+        <div className="flex justify-between gap-2">
           <span>
             {isGif &&
               (body ? (
@@ -113,10 +113,11 @@ export function MessageItem({ message, session }: MessageItemProps) {
               </span>
             )}
           </span>
+
           {message.author === user?.email && (
             <MessageActions message={message} editMode={!isRawImage && !isGif && !isAudio} />
           )}
-        </span>
+        </div>
         <div className="text-muted-foreground flex flex-col text-[10px] leading-4">
           <span>
             {dateCreated && formatDate(dateCreated)}
@@ -126,7 +127,7 @@ export function MessageItem({ message, session }: MessageItemProps) {
           </span>
           {!isAuthor && <span>{partAttrs?.nickname ?? author}</span>}
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   )
 }

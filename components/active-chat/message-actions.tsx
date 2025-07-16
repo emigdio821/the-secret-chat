@@ -1,25 +1,26 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToggle } from '@mantine/hooks'
 import type { Message } from '@twilio/conversations'
-import { Edit2, MoreVertical, Save, SmilePlusIcon, Trash2 } from 'lucide-react'
+import { Edit2Icon, MoreHorizontalIcon, SmilePlusIcon, Trash2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import type * as z from 'zod'
+import type { z } from 'zod'
 import { editMessageSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
 import { EmojiPicker } from '@/components/emoji-picker'
 import { Icons } from '@/components/icons'
+import { AlertActionDialog } from '../dialogs/alert-action'
 
 interface MessageActionsProps {
   message: Message
@@ -27,8 +28,6 @@ interface MessageActionsProps {
 }
 
 export function MessageActions({ message, editMode }: MessageActionsProps) {
-  const [openedAlert, setOpenedAlert] = useToggle()
-  const [isLoading, setLoading] = useToggle()
   const [isEditMode, setEditMode] = useToggle()
   const form = useForm<z.infer<typeof editMessageSchema>>({
     resolver: zodResolver(editMessageSchema),
@@ -39,14 +38,10 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
 
   async function handleDeleteMessage() {
     try {
-      setLoading(true)
       await message.remove()
-      setOpenedAlert(false)
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[DELETE_CHAT_MSG]', errMessage)
-    } finally {
-      setLoading(false)
+      console.log('[delete_chat_msg]', errMessage)
     }
   }
 
@@ -76,96 +71,82 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
       }}
     >
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="size-5">
-          <span className="sr-only">Chat menu</span>
-          <MoreVertical className="size-3" />
+        <Button aria-label="Message actions" variant="ghost" size="icon" className="size-5">
+          <MoreHorizontalIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-[180px]">
+        <DropdownMenuLabel>Message actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
         {editMode && (
-          <>
-            <Popover
-              modal={true}
-              open={isEditMode}
-              onOpenChange={(opened) => {
-                if (!opened) {
-                  form.reset()
-                }
-                setEditMode(opened)
-              }}
-            >
-              <PopoverTrigger asChild>
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault()
-                    setEditMode(true)
-                  }}
-                >
-                  <Edit2 className="mr-2 size-4" />
-                  <span>Edit</span>
-                </DropdownMenuItem>
-              </PopoverTrigger>
-              <PopoverContent className="flex flex-col gap-2">
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-2">
-                  <Label>Edit message</Label>
-                  <Textarea
-                    autoComplete="false"
-                    className="resize-none"
-                    defaultValue={message.body ?? ''}
-                    placeholder={message.body ?? 'Edit your message'}
-                    {...form.register('body')}
+          <Popover
+            modal={true}
+            open={isEditMode}
+            onOpenChange={(opened) => {
+              if (!opened) {
+                form.reset()
+              }
+              setEditMode(opened)
+            }}
+          >
+            <PopoverTrigger asChild>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault()
+                  setEditMode(true)
+                }}
+              >
+                <Edit2Icon className="size-4" />
+                Edit
+              </DropdownMenuItem>
+            </PopoverTrigger>
+            <PopoverContent className="flex flex-col gap-2">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-2">
+                <Label>Edit message</Label>
+                <Textarea
+                  autoComplete="false"
+                  className="resize-none"
+                  defaultValue={message.body ?? ''}
+                  placeholder={message.body ?? 'Edit your message'}
+                  {...form.register('body')}
+                />
+                <div className="flex items-center justify-end gap-2">
+                  <EmojiPicker
+                    trigger={
+                      <Button size="icon" variant="ghost" aria-label="Emoji picker">
+                        <SmilePlusIcon className="size-4" />
+                      </Button>
+                    }
+                    callback={(value) => {
+                      const body = form.getValues('body')
+                      form.setValue('body', `${body}${value.emoji}`, {
+                        shouldValidate: true,
+                      })
+                    }}
                   />
-                  <div className="flex items-center justify-end gap-2">
-                    <EmojiPicker
-                      trigger={
-                        <Button size="icon" variant="ghost" aria-label="Emoji picker">
-                          <SmilePlusIcon className="size-4" />
-                        </Button>
-                      }
-                      callback={(value) => {
-                        const body = form.getValues('body')
-                        form.setValue('body', `${body}${value.emoji}`, {
-                          shouldValidate: true,
-                        })
-                      }}
-                    />
-                    <Button
-                      className="self-end"
-                      type="submit"
-                      disabled={form.formState.isSubmitting || !form.formState.isValid || !form.formState.isDirty}
-                    >
-                      Save
-                      {form.formState.isSubmitting ? (
-                        <Icons.Spinner className="ml-2" />
-                      ) : (
-                        <Save className="ml-2 size-4" />
-                      )}
-                    </Button>
-                  </div>
-                </form>
-              </PopoverContent>
-            </Popover>
-            <DropdownMenuSeparator />
-          </>
+                  <Button
+                    className="self-end"
+                    type="submit"
+                    disabled={form.formState.isSubmitting || !form.formState.isValid || !form.formState.isDirty}
+                  >
+                    Save
+                    {form.formState.isSubmitting && <Icons.Spinner className="ml-2" />}
+                  </Button>
+                </div>
+              </form>
+            </PopoverContent>
+          </Popover>
         )}
-        <ControlledAlertDialog
-          open={openedAlert}
-          isLoading={isLoading}
-          setOpen={setOpenedAlert}
-          action={handleDeleteMessage}
+        <AlertActionDialog
+          destructive
+          title="Delete message?"
+          action={async () => handleDeleteMessage()}
           trigger={
-            <DropdownMenuItem
-              className="text-destructive!"
-              onSelect={(e) => {
-                e.preventDefault()
-                setOpenedAlert(true)
-              }}
-            >
-              <Trash2 className="mr-2 size-4" />
+            <DropdownMenuItem variant="destructive" onSelect={(e) => e.preventDefault()}>
+              <Trash2Icon className="size-4" />
               <span>Delete</span>
             </DropdownMenuItem>
           }
-          alertMessage="This action cannot be undone. This will permanently delete this message."
         />
       </DropdownMenuContent>
     </DropdownMenu>

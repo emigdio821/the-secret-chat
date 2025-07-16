@@ -1,11 +1,7 @@
-import { useState } from 'react'
 import type { ChatAttributes } from '@/types'
-import { useQueryClient } from '@tanstack/react-query'
 import type { Client, Conversation } from '@twilio/conversations'
-import { Edit2Icon, InfoIcon, LogOut, MoreHorizontalIcon, Trash2 } from 'lucide-react'
+import { Edit2Icon, InfoIcon, LogOut, MoreHorizontalIcon, Trash2Icon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { toast } from 'sonner'
-import { ACTIVE_PARTICIPANTS_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -15,7 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ControlledAlertDialog } from '@/components/controlled-alert-dialog'
+import { DeleteChatAlert } from '../dialogs/chat/delete-chat-alert'
+import { EditChatDialog } from '../dialogs/chat/edit-chat-dialog'
+import { LeaveChatAlert } from '../dialogs/chat/leave-chat-alert'
 import { AddParticipantDialog } from './add-participant-dialog'
 
 interface ChatActionsProps {
@@ -24,51 +22,9 @@ interface ChatActionsProps {
 }
 
 export default function ChatActions({ chat, client }: ChatActionsProps) {
-  const queryClient = useQueryClient()
   const { data: session } = useSession()
-  const [openedAlert, setOpenedAlert] = useState(false)
-  const [openedLeaveChatAlert, setOpenedLeaveChatAlert] = useState(false)
-  const [isLoading, setLoading] = useState(false)
   const isAdmin = session?.user?.email === chat.createdBy
-  const chatAttrs = chat.attributes as ChatAttributes
-
-  async function handleDeleteChat() {
-    try {
-      setLoading(true)
-      await chat.delete()
-      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
-      await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
-      setOpenedAlert(false)
-    } catch (err) {
-      let errMsg = 'Unknown error'
-      if (err instanceof Error) errMsg = err.message
-      console.log('[CHAT_ACTIONS_DELETE]', errMsg)
-
-      toast.error('Uh oh!', {
-        description: 'Something went wrong while deleting the chat room, try again',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleLeaveChat() {
-    try {
-      setLoading(true)
-      await chat.leave()
-      setOpenedLeaveChatAlert(false)
-      setLoading(false)
-      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
-    } catch (err) {
-      let errMsg = 'Unknown error'
-      if (err instanceof Error) errMsg = err.message
-      console.log('[CHAT_ACTIONS_LEAVE]', errMsg)
-
-      toast.error('Uh oh!', {
-        description: 'Something went wrong while leaving the chat room, try again',
-      })
-    }
-  }
+  const chatAttrs = chat.attributes as ChatAttributes | undefined
 
   return (
     <>
@@ -89,65 +45,41 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
             )}
             <DropdownMenuSeparator className="sm:hidden" />
             <AddParticipantDialog chat={chat} client={client} />
+            <EditChatDialog
+              chat={chat}
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <Edit2Icon className="size-4" />
+                  Edit
+                </DropdownMenuItem>
+              }
+            />
             {/* TODO: Implement this */}
             <DropdownMenuItem disabled>
-              <Edit2Icon className="size-4" />
-              Edit chat
-            </DropdownMenuItem>
-            <DropdownMenuItem disabled>
               <InfoIcon className="size-4" />
-              Chat details
+              Details
             </DropdownMenuItem>
             {!isAdmin && (
-              <ControlledAlertDialog
-                open={openedLeaveChatAlert}
-                isLoading={isLoading}
-                setOpen={setOpenedLeaveChatAlert}
-                action={handleLeaveChat}
+              <LeaveChatAlert
+                chat={chat}
                 trigger={
-                  <DropdownMenuItem
-                    onSelect={(e) => {
-                      e.preventDefault()
-                      setOpenedLeaveChatAlert(true)
-                    }}
-                  >
-                    <LogOut className="mr-2 size-4" />
-                    <span>Leave chat</span>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <LogOut className="size-4" />
+                    <span>Leave</span>
                   </DropdownMenuItem>
-                }
-                alertMessage={
-                  <>
-                    You are about to leave <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room.
-                  </>
                 }
               />
             )}
             {isAdmin && (
               <>
                 <DropdownMenuSeparator />
-                <ControlledAlertDialog
-                  open={openedAlert}
-                  isLoading={isLoading}
-                  setOpen={setOpenedAlert}
-                  action={handleDeleteChat}
+                <DeleteChatAlert
+                  chat={chat}
                   trigger={
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onSelect={(e) => {
-                        e.preventDefault()
-                        setOpenedAlert(true)
-                      }}
-                    >
-                      <Trash2 className="size-4" />
-                      <span>Delete chat</span>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} variant="destructive">
+                      <Trash2Icon className="size-4" />
+                      Delete
                     </DropdownMenuItem>
-                  }
-                  alertMessage={
-                    <>
-                      This action cannot be undone. This will permanently delete{' '}
-                      <span className="font-semibold">{`"${chat.uniqueName}"`}</span> chat room and kick all the
-                      participants.
-                    </>
                   }
                 />
               </>

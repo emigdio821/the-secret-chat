@@ -35,7 +35,7 @@ export function useCurrentChat(chatId: string) {
       return chat
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[GET_CURRENT_CHAT]', errMessage)
+      console.log('[get_current_chat]', errMessage)
       throw err
     }
   }

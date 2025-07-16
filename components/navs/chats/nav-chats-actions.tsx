@@ -9,6 +9,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenuAction } from '@/components/ui/sidebar'
+import { DeleteChatAlert } from '@/components/dialogs/chat/delete-chat-alert'
+import { EditChatDialog } from '@/components/dialogs/chat/edit-chat-dialog'
 
 interface NavFolderActionsProps {
   chat: Conversation
@@ -27,26 +29,25 @@ export function NavChatsActions({ chat }: NavFolderActionsProps) {
           {chat.friendlyName || chat.uniqueName}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Edit2Icon className="size-4" />
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem variant="destructive">
-          <Trash2Icon className="size-4" />
-          Delete
-        </DropdownMenuItem>
-        {/* <AlertActionDialog
-          destructive
-          title="Delete folder?"
-          message="It will also delete all bookmarks/folders related to this folder. This action cannot be undone."
-          action={async () => await handleDeleteFolder(folder.id)}
+        <EditChatDialog
+          chat={chat}
           trigger={
-            <DropdownMenuItem variant="destructive" onSelect={(e) => e.preventDefault()}>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <Edit2Icon className="size-4" />
+              Edit
+            </DropdownMenuItem>
+          }
+        />
+
+        <DeleteChatAlert
+          chat={chat}
+          trigger={
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()} variant="destructive">
               <Trash2Icon className="size-4" />
               Delete
             </DropdownMenuItem>
           }
-        /> */}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   )

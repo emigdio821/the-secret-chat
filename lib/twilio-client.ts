@@ -27,10 +27,7 @@ export async function initTwilioClient() {
   const setLoading = useTwilioClientStore.getState().setLoading
 
   try {
-    console.log('Initializing client', twilioInstance)
     if (twilioInstance) return twilioInstance
-
-    console.log('There was no instance, creating one...')
 
     const token = await getToken()
     twilioInstance = new Client(token)

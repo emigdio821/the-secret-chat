@@ -16,7 +16,6 @@ export function useUserChats(search: string) {
   }
 
   async function getChats() {
-    console.log({ client })
     try {
       const chats = await client?.getSubscribedConversations()
       if (!chats) return []
