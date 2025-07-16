@@ -65,7 +65,7 @@ export function Messages({ chat }: MessagesProps) {
     }
   }, [])
 
-  const handleScroll = useCallback(() => {
+  const handleScroll = useCallback(async () => {
     const container = msgsContainerRef.current
     if (!container) return
 
@@ -78,9 +78,13 @@ export function Messages({ chat }: MessagesProps) {
     const atBottom = scrollBottomPosition >= scrollHeight
     if (atBottom && !autoScroll) setAutoScroll(true)
     else if (!atBottom && autoScroll) setAutoScroll(false)
-  }, [autoScroll, setAutoScroll])
 
-  const debouncedScroll = useMemo(() => debounce(handleScroll, 300), [handleScroll])
+    if (container.scrollTop <= 240 && !isFetchingNextPage && hasNextPage) {
+      await handleFetchOlderMessages()
+    }
+  }, [autoScroll, setAutoScroll, handleFetchOlderMessages, hasNextPage, isFetchingNextPage])
+
+  const debouncedScroll = useMemo(() => debounce(handleScroll, 200), [handleScroll])
 
   useEffect(() => {
     if (autoScroll && messages?.length) {
@@ -111,7 +115,7 @@ export function Messages({ chat }: MessagesProps) {
                     disabled={isFetchingNextPage}
                     onClick={handleFetchOlderMessages}
                   >
-                    Load more
+                    {isFetchingNextPage ? 'Fetching older messages...' : 'Load more messages'}
                     {isFetchingNextPage && <Icons.Spinner className="size-4" />}
                   </Button>
                 )}
