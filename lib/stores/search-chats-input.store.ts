@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-type SearchChatsInputStore = {
+interface SearchChatsInputStore {
   search: string
   setSearch: (value: string) => void
 }

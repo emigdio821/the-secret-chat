@@ -1,7 +1,7 @@
 import type { Client as TwilioClient } from '@twilio/conversations'
 import { create } from 'zustand'
 
-type TwilioClientStore = {
+interface TwilioClientStore {
   client: TwilioClient | null
   loading: boolean
   error: string | null

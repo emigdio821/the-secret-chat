@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { GIFS_QUERY } from '@/lib/constants'
+import { GIPHY_GIFS_QUERY } from '@/lib/constants'
 import { useGiphy } from '@/hooks/use-giphy'
 import { Button } from '@/components/ui/button'
 import {
@@ -28,7 +28,7 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
   const queryClient = useQueryClient()
   const [debouncedSearch] = useDebouncedValue(search, 500)
   const { data: gifs, isLoading: gifsLoading } = useQuery({
-    queryKey: [GIFS_QUERY, debouncedSearch],
+    queryKey: [GIPHY_GIFS_QUERY, debouncedSearch],
     queryFn: async () => await getGifs(debouncedSearch),
     enabled: opened,
   })
@@ -54,7 +54,7 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
       open={opened}
       onOpenChange={(isOpen) => {
         if (!isOpen) {
-          queryClient.removeQueries({ queryKey: [GIFS_QUERY] })
+          queryClient.removeQueries({ queryKey: [GIPHY_GIFS_QUERY] })
         }
         handlers.toggle()
       }}

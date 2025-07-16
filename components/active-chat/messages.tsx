@@ -5,8 +5,8 @@ import { ArrowDownIcon, GhostIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-import { useStore } from '@/lib/store'
 import { useChatAutoScrollStore } from '@/lib/stores/chat-autoscroll.store'
+import { useTypingParticipantsStore } from '@/lib/stores/typing-participants.store'
 import { useChatMessages } from '@/hooks/chat/use-chat-messages'
 import { Button } from '@/components/ui/button'
 import { Icons } from '../icons'
@@ -26,7 +26,7 @@ export function Messages({ chat }: MessagesProps) {
   const setAutoScroll = useChatAutoScrollStore((state) => state.setAutoScroll)
   const [showScrollBottom, setShowScrollBottom] = useState(false)
   const { data: queryMessages, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useChatMessages(chat)
-  const usersTyping = useStore((state) => state.usersTyping)
+  const typingParticipants = useTypingParticipantsStore((state) => state.typingParticipants)
   const messages =
     queryMessages?.pages
       .slice()
@@ -130,7 +130,9 @@ export function Messages({ chat }: MessagesProps) {
             )}
           </div>
 
-          <AnimatePresence>{usersTyping.length > 0 && <TypingIndicator participants={usersTyping} />}</AnimatePresence>
+          <AnimatePresence>
+            {typingParticipants.length > 0 && <TypingIndicator participants={typingParticipants} />}
+          </AnimatePresence>
 
           <AnimatePresence initial={false}>
             {showScrollBottom && (

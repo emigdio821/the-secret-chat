@@ -16,7 +16,7 @@ async function getToken() {
 
 let twilioInstance: Client | null = null
 
-async function refreshTwilioInstance() {
+export async function refreshTwilioInstance() {
   const token = await getToken()
   await twilioInstance?.updateToken(token)
 }

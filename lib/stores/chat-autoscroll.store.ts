@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-type ChatAutoScrollStore = {
+interface ChatAutoScrollStore {
   autoScroll: boolean
   setAutoScroll: (option: boolean) => void
 }
