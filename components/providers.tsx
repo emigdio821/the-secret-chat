@@ -12,19 +12,13 @@ interface ProvidersProps {
   children: React.ReactNode
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-    },
-  },
-})
+const queryClient = new QueryClient()
 
 export function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider enableSystem disableTransitionOnChange attribute="class" defaultTheme="system">
+      <ThemeProvider enableSystem disableTransitionOnChange attribute="class" defaultTheme="system">
+        <QueryClientProvider client={queryClient}>
           {children}
           <Toaster
             expand
@@ -36,9 +30,9 @@ export function Providers({ children }: ProvidersProps) {
               loading: <Icons.Spinner />,
             }}
           />
-        </ThemeProvider>
-        <ReactQueryDevtools />
-      </QueryClientProvider>
+          <ReactQueryDevtools />
+        </QueryClientProvider>
+      </ThemeProvider>
     </SessionProvider>
   )
 }

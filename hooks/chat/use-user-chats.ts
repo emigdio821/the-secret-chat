@@ -1,32 +1,28 @@
-import { useDebouncedValue } from '@mantine/hooks'
 import { useQuery } from '@tanstack/react-query'
-import type { Conversation } from '@twilio/conversations'
+import type { Conversation, Paginator } from '@twilio/conversations'
 import { USER_CHATS_QUERY } from '@/lib/constants'
 import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
 
 export function useUserChats(search: string) {
   const client = useTwilioClientStore((state) => state.client)
-  const [debouncedSearch] = useDebouncedValue(search, 500)
 
-  function filterBySearch(chats: Conversation[] | undefined) {
-    const searchText = debouncedSearch.trim()
-    if (!searchText || !search) return chats
+  function filterBySearch(paginator: Paginator<Conversation> | undefined) {
+    if (!search) return paginator
 
-    return chats?.filter((chat) => chat.uniqueName?.toLowerCase().includes(searchText.toLocaleLowerCase()))
+    const items = paginator?.items || []
+    const filtered = items?.filter((chat) => chat.friendlyName?.toLowerCase().includes(search.toLocaleLowerCase()))
+
+    return { ...paginator, items: filtered }
   }
 
   async function getChats() {
     try {
       const chats = await client?.getSubscribedConversations()
-      if (!chats) return []
-
-      // sortArray({ items: chats.items, key: 'friendlyName' })
-
-      return chats.items
+      return chats
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.log('[use_user_chats_error]', errMessage)
-      return []
+      throw err
     }
   }
 

@@ -37,7 +37,7 @@ export function NavChats() {
               <RotateCwIcon className="ml-auto size-4" />
             </SidebarMenuButton>
           )}
-          {chats?.map((chat) => (
+          {chats?.items.map((chat) => (
             <NavChatsItem key={chat.sid} chat={chat} />
           ))}
         </SidebarMenu>

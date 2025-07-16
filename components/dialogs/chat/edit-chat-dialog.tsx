@@ -3,6 +3,7 @@
 import { useId, useState } from 'react'
 import type { ChatAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import type { Conversation } from '@twilio/conversations'
 import { MessageSquareIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -11,7 +12,6 @@ import type { z } from 'zod'
 import { ACTIVE_CHAT_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { editChatSchema } from '@/lib/zod-schemas'
-import { useInvalidateQueries } from '@/hooks/use-invalidate-queries'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -36,8 +36,8 @@ interface EditProfileDialogProps {
 
 export function EditChatDialog({ chat, trigger }: EditProfileDialogProps) {
   const updateProfileFormId = useId()
+  const queryClient = useQueryClient()
   const [openDialog, setOpenDialog] = useState(false)
-  const { invalidateQueries } = useInvalidateQueries()
   const chatAttrs = chat.attributes as ChatAttributes | undefined
 
   const form = useForm<z.infer<typeof editChatSchema>>({
@@ -57,9 +57,11 @@ export function EditChatDialog({ chat, trigger }: EditProfileDialogProps) {
         description: values.description,
       }
       await chat.updateFriendlyName(values.friendlyName)
+      await chat.updateUniqueName(values.friendlyName)
       await chat.updateAttributes(attributes)
-      await invalidateQueries([USER_CHATS_QUERY])
-      await invalidateQueries([ACTIVE_CHAT_QUERY, chat.sid])
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
+      await queryClient.invalidateQueries({ queryKey: [ACTIVE_CHAT_QUERY, chat.sid] })
+
       form.reset(values)
       setOpenDialog(false)
       toast.success('Success', { description: 'Chat has been updated.' })
