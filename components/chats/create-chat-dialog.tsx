@@ -59,6 +59,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
 
       if (values.join_after && chat) {
         // await chat.join()
+        // TODO: Fix get chat when join after is not checked
         const user = await client.getUser(client.user.identity)
         const userAttrs = user.attributes as UserAttributes
         await chat.add(client.user.identity, {

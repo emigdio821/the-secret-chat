@@ -1,99 +1,97 @@
-'use client'
+import { useCallback, useRef, useState } from 'react'
 
-import { useRef, useState } from 'react'
-import { useToggle } from '@mantine/hooks'
-import { toast } from 'sonner'
-import { AUDIO_FORMAT } from '@/lib/constants'
+interface UseAudioRecorderReturn {
+  isRecording: boolean
+  isPaused: boolean
+  startRecording: () => Promise<void>
+  togglePauseRecording: () => void
+  stopRecording: () => Promise<Blob | null>
+}
 
-export function useAudioRecorder() {
-  const mediaRecorder = useRef<MediaRecorder>(null)
-  const [stream, setStream] = useState<MediaStream>()
-  const [isRecording, setRecording] = useToggle()
-  const [isPaused, setPaused] = useToggle()
-  const [audioChunks, setAudioChunks] = useState<Blob[]>([])
-  const recordingTime = 0
+export function useAudioRecorder(): UseAudioRecorderReturn {
+  const [isRecording, setIsRecording] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
 
-  async function startRecording() {
-    if ('MediaRecorder' in window) {
-      try {
-        const streamData = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: false,
-        })
+  const startRecording = useCallback(async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      alert('Audio recording is not supported in this browser.')
+      return
+    }
 
-        setStream(streamData)
-        setRecording(true)
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
 
-        const media = new MediaRecorder(streamData)
-        mediaRecorder.current = media
-        const recorder = mediaRecorder.current
+      const recorder = new MediaRecorder(stream)
+      mediaRecorderRef.current = recorder
+      audioChunksRef.current = []
 
-        recorder.start(1000)
-        recorder.ondataavailable = (e) => {
-          if (recorder.state === 'inactive') {
-            setAudioChunks([])
-          } else {
-            setAudioChunks((prevChunks) => [...prevChunks, e.data])
-          }
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data)
         }
-      } catch (err) {
-        let errMsg = 'Unknown error'
-        if (err instanceof Error) errMsg = err.message
-        console.log('[GET_USER_MEDIA]', errMsg)
-
-        setRecording(false)
-        stopRecording()
-        // toast.error('Recorder error', {
-        //   description: 'Not enough permissions to record audio, please check your browser config.',
-        // })
-        toast.error('Recorder error', {
-          description: errMsg,
-        })
       }
-    } else {
-      toast.error('Recorder error', {
-        description: 'The MediaRecorder API is not supported in your browser.',
-      })
+
+      recorder.onstart = () => {
+        setIsRecording(true)
+        setIsPaused(false)
+      }
+
+      recorder.onpause = () => setIsPaused(true)
+      recorder.onresume = () => setIsPaused(false)
+
+      recorder.onstop = () => {
+        setIsRecording(false)
+        setIsPaused(false)
+        stream.getTracks().forEach((track) => track.stop())
+      }
+
+      recorder.start()
+    } catch (err) {
+      console.error('Failed to start recording:', err)
     }
-  }
+  }, [])
 
-  function stopRecording() {
-    const mediaRecorderActive = mediaRecorder.current
-    setRecording(false)
-    if (isPaused) {
-      setPaused(false)
+  const togglePauseRecording = useCallback(() => {
+    const recorder = mediaRecorderRef.current
+    if (!recorder) return
+
+    // Safari does not support pause/resume — fallback to do nothing
+    if (typeof recorder.pause !== 'function' || typeof recorder.resume !== 'function') return
+
+    if (recorder.state === 'recording') {
+      recorder.pause()
+    } else if (recorder.state === 'paused') {
+      recorder.resume()
     }
+  }, [])
 
-    if (mediaRecorderActive) {
-      mediaRecorderActive.stop()
-      stream?.getTracks().forEach((track) => {
-        track.stop()
-      })
+  const stopRecording = useCallback(async (): Promise<Blob | null> => {
+    const recorder = mediaRecorderRef.current
+    return new Promise((resolve) => {
+      if (!recorder) return resolve(null)
 
-      const audioBlob = new Blob(audioChunks, { type: AUDIO_FORMAT })
-      // const audioUrl = URL.createObjectURL(audioBlob)
-      setAudioChunks([])
+      recorder.onstop = () => {
+        setIsRecording(false)
+        setIsPaused(false)
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        resolve(audioBlob)
+      }
 
-      return audioBlob
-    }
-  }
-
-  function togglePauseResume() {
-    setPaused(!isPaused)
-    const mediaRecorderActive = mediaRecorder.current
-
-    if (mediaRecorderActive) {
-      isPaused ? mediaRecorderActive.resume() : mediaRecorderActive.pause()
-    }
-  }
+      if (recorder.state !== 'inactive') {
+        recorder.stop()
+      } else {
+        resolve(null)
+      }
+    })
+  }, [])
 
   return {
-    startRecording,
     isRecording,
     isPaused,
-    recordingTime,
+    startRecording,
+    togglePauseRecording,
     stopRecording,
-    togglePauseResume,
-    stream,
   }
 }

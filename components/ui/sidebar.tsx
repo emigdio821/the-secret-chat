@@ -124,7 +124,7 @@ function SidebarProvider({
               ...style,
             } as React.CSSProperties
           }
-          className={cn('group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full', className)}
+          className={cn('group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-dvh w-full', className)}
           {...props}
         >
           {children}
@@ -209,7 +209,7 @@ function Sidebar({
       <div
         data-slot="sidebar-container"
         className={cn(
-          'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width,margin] duration-[.3s,.3s,.3s,.15s] ease-in-out md:flex',
+          'fixed inset-y-0 z-10 hidden h-dvh w-(--sidebar-width) transition-[left,right,width,margin] duration-[.3s,.3s,.3s,.15s] ease-in-out md:flex',
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] not-group-data-[collapsible=icon]:has-[[data-slot=sidebar-rail]:hover]:-ms-2 group-data-[collapsible=offcanvas]:has-[[data-slot=sidebar-rail]:hover]:ms-2'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] not-group-data-[collapsible=icon]:has-[[data-slot=sidebar-rail]:hover]:-me-2 group-data-[collapsible=offcanvas]:has-[[data-slot=sidebar-rail]:hover]:me-2',

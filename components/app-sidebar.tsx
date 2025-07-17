@@ -18,6 +18,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
+// import { CreateChatDialog } from './chats/create-chat-dialog'
 import { NavChats } from './navs/chats/nav-chats'
 import { NavUser } from './navs/nav-user'
 import { Input } from './ui/input'
@@ -102,7 +103,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </div>
           </div>
         ) : (
-          <NavChats />
+          <>
+            <NavChats />
+            {/* {twilioClient && <CreateChatDialog client={twilioClient} isLoading={false} />} */}
+          </>
         )}
       </SidebarContent>
       <SidebarFooter>

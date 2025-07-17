@@ -1,146 +1,153 @@
-import { useRef, useState } from 'react'
-import { useToggle } from '@mantine/hooks'
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
 import { PauseIcon, PlayIcon, SquareIcon } from 'lucide-react'
-import { toast } from 'sonner'
-import { AUDIO_FORMAT } from '@/lib/constants'
-import { secsToTime } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
+import { Skeleton } from './ui/skeleton'
 
 interface AudioPlayerProps {
-  url: string
-  errorCb: () => Promise<void>
+  src: string
+  className?: string
 }
 
-export function AudioPlayer({ url }: AudioPlayerProps) {
-  const aurioRef = useRef<HTMLAudioElement>(null)
+export function AudioPlayer({ src, className }: AudioPlayerProps) {
+  const audioRef = useRef<HTMLAudioElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [sliderValue, setSliderValue] = useState(0)
+  const [playbackRate, setPlaybackRate] = useState(1)
+  const [duration, setDuration] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
-  const [speed, toggleSpeed] = useToggle([1, 2, 3])
+  const [isLoadingMetadata, setLoadingMetadata] = useState(true)
 
-  async function handlePlay() {
-    const player = aurioRef.current
-    if (player) {
-      try {
-        await player.play()
-        setIsPlaying(true)
-      } catch (err) {
-        let errMsg = 'Unknown error'
-        if (err instanceof Error) errMsg = err.message
-        toast.error('Player error', {
-          description: `Something went wrong, ${errMsg}`,
-        })
-      }
-    }
-  }
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
 
-  function handlePause() {
-    const player = aurioRef.current
-    if (player) {
-      player.pause()
-      setIsPlaying(false)
-    }
-  }
-
-  function handleStop() {
-    const player = aurioRef.current
-    if (player) {
-      player.pause()
-      player.currentTime = 0
-      setSliderValue(0)
-      setIsPlaying(false)
-    }
-  }
-
-  function handlePlaying() {
-    const player = aurioRef.current
-    if (player) {
-      player.playbackRate = speed
-      setCurrentTime(player.currentTime)
-      setSliderValue((player.currentTime / player.duration) * 100)
-      // if (player.currentTime === duration) {
-      //   handleStop()
-      // }
-    }
-  }
-
-  function handleLoadedMetadata() {
-    const player = aurioRef.current
-    if (player) {
-      if (player.duration === Infinity) {
-        player.currentTime = 1e101
-        player.ontimeupdate = () => {
-          if (player) {
-            player.ontimeupdate = () => {}
-            player.currentTime = 0
-          }
+    const handleLoadedMetadata = () => {
+      if (audio.duration === Infinity) {
+        console.log('triggered 3')
+        // Fix duration if blob is streaming-like
+        audio.currentTime = 1e101
+        const fixDuration = () => {
+          console.log('triggered')
+          audio.currentTime = 0
+          setDuration(audio.duration)
+          setCurrentTime(0)
+          setLoadingMetadata(false)
+          audio.removeEventListener('timeupdate', fixDuration)
         }
+        audio.addEventListener('timeupdate', fixDuration)
+      } else {
+        console.log('triggered2')
+        setDuration(audio.duration)
       }
     }
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime)
+    }
+
+    const handleEnded = () => {
+      setIsPlaying(false)
+      setCurrentTime(0)
+    }
+
+    audio.load()
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata)
+    audio.addEventListener('timeupdate', handleTimeUpdate)
+    audio.addEventListener('ended', handleEnded)
+
+    return () => {
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
+      audio.removeEventListener('timeupdate', handleTimeUpdate)
+      audio.removeEventListener('ended', handleEnded)
+    }
+  }, [])
+
+  const togglePlay = () => {
+    const audio = audioRef.current
+    if (!audio) return
+
+    if (isPlaying) {
+      audio.pause()
+      setIsPlaying(false)
+    } else {
+      audio
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch(console.error)
+    }
+  }
+
+  const handleStop = () => {
+    const audio = audioRef.current
+    if (!audio) return
+    audio.pause()
+    audio.currentTime = 0
+    setIsPlaying(false)
+  }
+
+  const toggleSpeed = () => {
+    const audio = audioRef.current
+    if (!audio) return
+    const newRate = playbackRate === 1 ? 2 : 1
+    audio.playbackRate = newRate
+    setPlaybackRate(newRate)
+  }
+
+  const handleSeek = (value: number[]) => {
+    const audio = audioRef.current
+    if (!audio || value.length === 0) return
+    audio.currentTime = value[0]
+    setCurrentTime(value[0])
+  }
+
+  const formatTime = (secs: number) => {
+    if (!Number.isFinite(secs)) return '0:00'
+    const minutes = Math.floor(secs / 60)
+    const seconds = Math.floor(secs % 60)
+      .toString()
+      .padStart(2, '0')
+    return `${minutes}:${seconds}`
   }
 
   return (
-    <div className="h-20 w-32">
-      <audio ref={aurioRef} onEnded={handleStop} onTimeUpdate={handlePlaying} onLoadedMetadata={handleLoadedMetadata}>
+    <div className={cn('flex w-40 flex-col gap-2', className)}>
+      <audio ref={audioRef} src={src} preload="metadata" className="hidden" hidden>
         <track kind="captions" />
-        <source src={url} type={AUDIO_FORMAT} />
-        Your browser does not support the
-        <code>audio</code> element.
       </audio>
-      <div className="flex h-full w-full flex-col justify-between gap-2">
-        <div className="flex justify-between gap-2 text-xs">
-          <span>{secsToTime(currentTime)}</span>
-          <span>{secsToTime(aurioRef.current?.duration)}</span>
-        </div>
+
+      <div className="text-xs tabular-nums">
+        {formatTime(currentTime)} / {formatTime(duration)}
+      </div>
+
+      {isLoadingMetadata ? (
+        <Skeleton className="h-1 w-full" />
+      ) : (
         <Slider
-          step={1}
-          max={100}
-          className="w-full"
-          defaultValue={[0]}
-          value={[sliderValue]}
-          onValueChange={(value) => {
-            const player = aurioRef.current
-            if (player && player.duration !== Infinity) {
-              if (aurioRef.current) {
-                const seekTo = (value[0] / 100) * aurioRef.current?.duration
-                player.currentTime = seekTo
-              }
-            }
-          }}
+          min={0}
+          step={0.1}
+          max={duration || 1}
+          onValueChange={handleSeek}
+          value={[Math.min(currentTime, duration)]}
         />
+      )}
+
+      <div className="mt-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Button
-            size="icon"
-            type="button"
-            variant="outline"
-            className="size-8 rounded-full"
-            onClick={isPlaying ? handlePause : handlePlay}
-          >
+          <Button variant="outline" size="icon" onClick={togglePlay}>
             {isPlaying ? <PauseIcon className="size-4" /> : <PlayIcon className="size-4" />}
           </Button>
-          <Button
-            size="icon"
-            type="button"
-            variant="outline"
-            className="size-6"
-            onClick={handleStop}
-            disabled={!isPlaying}
-          >
+
+          <Button variant="outline" size="icon" className="size-7" onClick={handleStop}>
             <SquareIcon className="fill-foreground size-2" />
           </Button>
-          <Button
-            size="icon"
-            type="button"
-            variant="outline"
-            className="size-6 text-xs"
-            onClick={() => {
-              toggleSpeed()
-            }}
-          >
-            {speed}x
-          </Button>
         </div>
+
+        <Button variant="outline" size="icon" onClick={toggleSpeed} className="size-7 text-xs">
+          {playbackRate}x
+        </Button>
       </div>
     </div>
   )

@@ -53,16 +53,21 @@ export function MediaActions({ chat }: { chat: Conversation }) {
     }
   }
 
-  async function handleSendAudio(blob: Blob) {
-    if (blob.size === 0) return
+  async function handleSendAudio() {
+    const audioBlob = await audioRecorder.stopRecording()
+    if (!audioBlob || audioBlob.size === 0) return
+
     const audioToast = toast.loading('Processing audio...')
+
     try {
+      const file = new File([audioBlob], 'audio-blob.webm', { type: audioBlob.type })
       const formData = new FormData()
-      formData.append('file', blob, 'audio-blob.mp3')
+      formData.append('file', file)
+
       await chat.sendMessage(formData)
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[SEND_AUDIO]', errMessage)
+      console.error('[send_audio]', errMessage)
     } finally {
       toast.dismiss(audioToast)
     }
@@ -134,7 +139,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                   <DropdownMenuItem
                     onSelect={(e) => {
                       e.preventDefault()
-                      audioRecorder.togglePauseResume()
+                      audioRecorder.togglePauseRecording()
                     }}
                   >
                     {audioRecorder.isPaused ? (
@@ -150,14 +155,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                     )}{' '}
                     audio
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={async () => {
-                      const blob = audioRecorder.stopRecording()
-                      if (blob) {
-                        await handleSendAudio(blob)
-                      }
-                    }}
-                  >
+                  <DropdownMenuItem onSelect={handleSendAudio}>
                     <SendHorizonal className="size-4" />
                     Send audio
                   </DropdownMenuItem>

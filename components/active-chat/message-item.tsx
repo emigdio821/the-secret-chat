@@ -20,7 +20,6 @@ interface MessageItemProps {
 
 export function MessageItem({ message, session }: MessageItemProps) {
   const user = session.user
-  const [mediaURL, setMediaURL] = useState<string>('')
   const { author, sid, body, dateCreated } = message
   const isAuthor = author === user?.email
   const hasMedia = message.type === 'media'
@@ -31,11 +30,20 @@ export function MessageItem({ message, session }: MessageItemProps) {
   const partAttrs = participant?.attributes as ParticipantAttributes | undefined
   const msgAttrs = message.attributes as MessageAttributes | undefined
   const isGif = msgAttrs?.gif
+  const [msgMedia, setMsgMedia] = useState({
+    url: '',
+    loading: true,
+  })
 
   const getMediaUrl = useCallback(async () => {
     if (rawMedia) {
+      setMsgMedia({ url: '', loading: true })
       const url = await rawMedia.getContentTemporaryUrl()
-      setMediaURL(url ?? '')
+      if (url) {
+        setMsgMedia({ url, loading: false })
+      } else {
+        setMsgMedia({ url: '', loading: false })
+      }
     }
   }, [rawMedia])
 
@@ -84,13 +92,19 @@ export function MessageItem({ message, session }: MessageItemProps) {
                 <Skeleton className="h-20 w-28" />
               ))}
             {isRawImage &&
-              (mediaURL ? (
-                <ImageViewer url={mediaURL} title={rawMedia?.filename ?? undefined} />
-              ) : (
+              (msgMedia.loading ? (
                 <Skeleton className="h-20 w-28" />
+              ) : (
+                msgMedia.url && <ImageViewer url={msgMedia.url} title={rawMedia?.filename ?? ''} />
               ))}
+
             {isAudio &&
-              (mediaURL ? <AudioPlayer url={mediaURL} errorCb={getMediaUrl} /> : <Skeleton className="h-20 w-32" />)}
+              (msgMedia.loading ? (
+                <Skeleton className="h-20 w-40" />
+              ) : (
+                msgMedia.url && <AudioPlayer src={msgMedia.url} />
+              ))}
+
             {!isGif && !isRawImage && !isAudio && (
               <span
                 className={cn({

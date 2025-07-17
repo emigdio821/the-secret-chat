@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Conversation } from '@twilio/conversations'
 import { debounce } from 'lodash'
-import { ArrowDownIcon, BugIcon, GhostIcon, RotateCwIcon } from 'lucide-react'
+import { ArrowDownIcon, BugIcon, RotateCwIcon, WindIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -36,6 +36,7 @@ export function Messages({ chat }: MessagesProps) {
     error,
     refetch,
   } = useChatMessages(chat)
+
   const typingParticipants = useTypingParticipantsStore((state) => state.typingParticipants)
   const messages =
     queryMessages?.pages
@@ -155,9 +156,9 @@ export function Messages({ chat }: MessagesProps) {
                 </AnimatePresence>
               </div>
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
-                <GhostIcon className="size-5" />
-                No messages yet
+              <div className="flex h-full flex-col items-center justify-center gap-2">
+                <WindIcon className="text-muted-foreground size-12" />
+                <span className="text-muted-foreground text-sm">This conversation is empty</span>
               </div>
             )}
           </div>
