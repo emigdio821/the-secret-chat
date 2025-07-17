@@ -42,7 +42,6 @@ export function EditProfilePopover({ client, user }: EditProfilePopoverProps) {
       }
 
       const attrsPayload: UserAttributes = {
-        isOnline: false,
         name: (values.name || userAttrs?.name || user.name) ?? '',
         nickname: (values.nickname || userAttrs?.nickname || client.user.friendlyName) ?? '',
         avatar_url: (values.avatar_url || user.image) ?? '',

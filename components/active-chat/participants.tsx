@@ -93,7 +93,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                         variant="ghost"
                         disabled={!user}
                         className={cn('gap-2 px-1 sm:w-full sm:justify-start', {
-                          'opacity-50': !partAttrs?.isOnline,
+                          'opacity-50': false,
                         })}
                       >
                         <div className="relative size-5 rounded-sm">
@@ -111,7 +111,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                             className={cn(
                               'border-card absolute -right-[2px] -bottom-[2px] size-2 rounded-full border bg-zinc-400',
                               {
-                                'bg-green-400': partAttrs?.isOnline,
+                                'bg-green-400': false,
                               },
                             )}
                           />
@@ -158,7 +158,6 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
                       )}
                       <DropdownMenuLabel className="flex items-center gap-2 pt-0 font-normal">
                         <Signal className="size-4" />
-                        {partAttrs?.isOnline ? 'Online' : 'Offline'}
                       </DropdownMenuLabel>
                       {isAdmin && participant.identity !== user?.email && (
                         <>

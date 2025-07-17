@@ -12,7 +12,13 @@ interface ProvidersProps {
   children: React.ReactNode
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+    },
+  },
+})
 
 export function Providers({ children }: ProvidersProps) {
   return (
