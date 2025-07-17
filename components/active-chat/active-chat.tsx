@@ -117,7 +117,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   )
 
   const handleMessageRemoved = useCallback(async () => {
-    await queryClient.invalidateQueries({ queryKey: [ACTIVE_CHAT_QUERY, chatId] })
+    await queryClient.invalidateQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY, chatId] })
   }, [queryClient, chatId])
 
   const handleRemoveTyping = useCallback(

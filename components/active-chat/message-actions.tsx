@@ -1,10 +1,11 @@
+import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToggle } from '@mantine/hooks'
 import type { Message } from '@twilio/conversations'
 import { Edit2Icon, MoreHorizontalIcon, SmilePlusIcon, Trash2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type { z } from 'zod'
+import { cn } from '@/lib/utils'
 import { editMessageSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,12 +16,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
 import { EmojiPicker } from '@/components/emoji-picker'
 import { Icons } from '@/components/icons'
 import { AlertActionDialog } from '../dialogs/alert-action'
+import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form'
 
 interface MessageActionsProps {
   message: Message
@@ -28,7 +29,8 @@ interface MessageActionsProps {
 }
 
 export function MessageActions({ message, editMode }: MessageActionsProps) {
-  const [isEditMode, setEditMode] = useToggle()
+  const [isEditMode, setEditMode] = useState(false)
+  const [openActions, setOpenActions] = useState(false)
   const form = useForm<z.infer<typeof editMessageSchema>>({
     resolver: zodResolver(editMessageSchema),
     defaultValues: {
@@ -63,10 +65,12 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
 
   return (
     <DropdownMenu
+      open={openActions}
       onOpenChange={(opened) => {
         if (!opened) {
           setEditMode(false)
         }
+        setOpenActions(opened)
       }}
     >
       <DropdownMenuTrigger asChild>
@@ -100,46 +104,62 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
               </DropdownMenuItem>
             </PopoverTrigger>
             <PopoverContent className="flex flex-col gap-2">
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-2">
-                <Label>Edit message</Label>
-                <Textarea
-                  autoComplete="false"
-                  className="resize-none"
-                  defaultValue={message.body ?? ''}
-                  placeholder={message.body ?? 'Edit your message'}
-                  {...form.register('body')}
-                />
-                <div className="flex items-center justify-end gap-2">
-                  <EmojiPicker
-                    trigger={
-                      <Button size="icon" variant="ghost" aria-label="Emoji picker">
-                        <SmilePlusIcon className="size-4" />
-                      </Button>
-                    }
-                    callback={(value) => {
-                      const body = form.getValues('body')
-                      form.setValue('body', `${body}${value.emoji}`, {
-                        shouldValidate: true,
-                      })
-                    }}
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-4">
+                  <FormField
+                    name="body"
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel>Edit message</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            className="resize-none"
+                            defaultValue={message.body ?? ''}
+                            placeholder={message.body ?? 'Edit your message'}
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
                   />
-                  <Button
-                    className="self-end"
-                    type="submit"
-                    disabled={form.formState.isSubmitting || !form.formState.isValid || !form.formState.isDirty}
-                  >
-                    Save
-                    {form.formState.isSubmitting && <Icons.Spinner className="ml-2" />}
-                  </Button>
-                </div>
-              </form>
+
+                  <div className="flex gap-2">
+                    <EmojiPicker
+                      trigger={
+                        <Button size="icon" variant="outline" aria-label="Emoji picker">
+                          <SmilePlusIcon className="size-4" />
+                        </Button>
+                      }
+                      callback={(value) => {
+                        const body = form.getValues('body')
+                        form.setValue('body', `${body}${value.emoji}`, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
+                      }}
+                    />
+                    <Button
+                      type="submit"
+                      className="grow"
+                      disabled={form.formState.isSubmitting || !form.formState.isValid || !form.formState.isDirty}
+                    >
+                      <span className={cn(form.formState.isSubmitting && 'invisible')}>Save</span>
+                      {form.formState.isSubmitting && <Icons.Spinner className="absolute" />}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
             </PopoverContent>
           </Popover>
         )}
         <AlertActionDialog
           destructive
           title="Delete message?"
-          action={async () => handleDeleteMessage()}
+          action={async () => {
+            await handleDeleteMessage()
+            setOpenActions(false)
+          }}
           trigger={
             <DropdownMenuItem variant="destructive" onSelect={(e) => e.preventDefault()}>
               <Trash2Icon className="size-4" />

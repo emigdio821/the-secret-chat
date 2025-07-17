@@ -100,11 +100,11 @@ export function Messages({ chat }: MessagesProps) {
     <>
       <div className="flex h-full flex-col gap-4">
         {/* <ChatParticipants chat={chat} session={session} client={client} /> */}
-        <div className="relative h-full w-full">
+        <div className="relative h-full w-full overflow-hidden rounded-lg border">
           <div
             ref={msgsContainerRef}
             onScroll={debouncedScroll}
-            className="absolute h-full w-full overflow-y-auto rounded-lg shadow-xs"
+            className="absolute h-full w-full overflow-y-auto rounded-lg"
           >
             {messages.length > 0 ? (
               <div className="flex flex-col gap-2 p-4">
@@ -119,8 +119,10 @@ export function Messages({ chat }: MessagesProps) {
                     {isFetchingNextPage && <Icons.Spinner className="size-4" />}
                   </Button>
                 )}
-                {session &&
-                  messages.map((message) => <MessageItem key={message.sid} session={session} message={message} />)}
+                <AnimatePresence initial={false}>
+                  {session &&
+                    messages.map((message) => <MessageItem key={message.sid} session={session} message={message} />)}
+                </AnimatePresence>
               </div>
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-sm">
