@@ -32,6 +32,7 @@ export function JoinChatDialog({ client }: JoinChatDialogProps) {
   const router = useRouter()
 
   const form = useForm<z.infer<typeof joinChatRoomSchema>>({
+    shouldUnregister: true,
     resolver: zodResolver(joinChatRoomSchema),
     defaultValues: {
       id: '',
@@ -67,9 +68,7 @@ export function JoinChatDialog({ client }: JoinChatDialogProps) {
     <Dialog
       open={openedDialog}
       onOpenChange={(opened) => {
-        if (!opened) {
-          form.reset()
-        }
+        if (form.formState.isSubmitting) return
         setOpenedDialog(opened)
       }}
     >
@@ -78,11 +77,7 @@ export function JoinChatDialog({ client }: JoinChatDialogProps) {
           Join chat
         </Button>
       </DialogTrigger>
-      <DialogContent
-        onInteractOutside={(e) => {
-          e.preventDefault()
-        }}
-      >
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Join chat</DialogTitle>
           <DialogDescription>Join an existing chat room</DialogDescription>

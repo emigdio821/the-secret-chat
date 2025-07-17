@@ -52,6 +52,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
       await message.updateBody(values.body)
       await message.updateAttributes({ isEdited: true })
       setEditMode(false)
+      setOpenActions(false)
       form.reset(values)
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : err
@@ -115,7 +116,6 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                         <FormControl>
                           <Textarea
                             className="resize-none"
-                            defaultValue={message.body ?? ''}
                             placeholder={message.body ?? 'Edit your message'}
                             {...field}
                           />

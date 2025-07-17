@@ -64,9 +64,6 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
         onOpenAutoFocus={(e) => {
           e.preventDefault()
         }}
-        onInteractOutside={(e) => {
-          e.preventDefault()
-        }}
       >
         <DialogHeader>
           <DialogTitle>Pick a GIF</DialogTitle>

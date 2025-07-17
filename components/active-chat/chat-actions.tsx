@@ -1,20 +1,18 @@
-import type { ChatAttributes } from '@/types'
 import type { Client, Conversation } from '@twilio/conversations'
-import { Edit2Icon, InfoIcon, LogOut, MoreHorizontalIcon, Trash2Icon } from 'lucide-react'
+import { Edit2Icon, InfoIcon, LogOut, MoreHorizontalIcon, Trash2Icon, UserPlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { AddParticipantDialog } from '../dialogs/chat/add-participant-dialog'
 import { DeleteChatAlert } from '../dialogs/chat/delete-chat-alert'
 import { EditChatDialog } from '../dialogs/chat/edit-chat-dialog'
 import { LeaveChatAlert } from '../dialogs/chat/leave-chat-alert'
-import { AddParticipantDialog } from './add-participant-dialog'
 
 interface ChatActionsProps {
   chat: Conversation
@@ -24,7 +22,6 @@ interface ChatActionsProps {
 export default function ChatActions({ chat, client }: ChatActionsProps) {
   const { data: session } = useSession()
   const isAdmin = session?.user?.email === chat.createdBy
-  const chatAttrs = chat.attributes as ChatAttributes | undefined
 
   return (
     <>
@@ -36,15 +33,13 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
               <MoreHorizontalIcon className="size-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="max-w-[180px]">
-            <DropdownMenuLabel className="sm:hidden">{chat.friendlyName ?? 'Chat'}</DropdownMenuLabel>
-            {chatAttrs?.description && (
-              <DropdownMenuLabel className="pt-0 text-xs font-normal sm:hidden">
-                {chatAttrs?.description}
-              </DropdownMenuLabel>
-            )}
-            <DropdownMenuSeparator className="sm:hidden" />
-            <AddParticipantDialog chat={chat} client={client} />
+          <DropdownMenuContent align="end" className="max-w-52">
+            {/* TODO: Implement this */}
+            <DropdownMenuItem disabled>
+              <InfoIcon className="size-4" />
+              Details
+            </DropdownMenuItem>
+
             <EditChatDialog
               chat={chat}
               trigger={
@@ -54,11 +49,17 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
                 </DropdownMenuItem>
               }
             />
-            {/* TODO: Implement this */}
-            <DropdownMenuItem disabled>
-              <InfoIcon className="size-4" />
-              Details
-            </DropdownMenuItem>
+
+            <AddParticipantDialog
+              chat={chat}
+              client={client}
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <UserPlusIcon className="size-4" />
+                  Add participant
+                </DropdownMenuItem>
+              }
+            />
             {!isAdmin && (
               <LeaveChatAlert
                 chat={chat}

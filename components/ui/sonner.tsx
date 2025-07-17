@@ -8,6 +8,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
   return (
     <Sonner
+      toastOptions={{
+        classNames: {
+          toast: 'group-[.toaster]:pointer-events-auto',
+        },
+      }}
       theme={theme as ToasterProps['theme']}
       className="toaster group"
       style={

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Conversation } from '@twilio/conversations'
 import { debounce } from 'lodash'
-import { ArrowDownIcon, GhostIcon } from 'lucide-react'
+import { ArrowDownIcon, BugIcon, GhostIcon, RotateCwIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -11,6 +11,8 @@ import { useChatMessages } from '@/hooks/chat/use-chat-messages'
 import { Button } from '@/components/ui/button'
 import { Icons } from '../icons'
 import { Loader } from '../loader'
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
+import { TypographyH4 } from '../ui/typography'
 import { ActiveChatBottomActions } from './bottom-actions'
 import { MessageItem } from './message-item'
 import { TypingIndicator } from './typing-indicator'
@@ -25,7 +27,15 @@ export function Messages({ chat }: MessagesProps) {
   const autoScroll = useChatAutoScrollStore((state) => state.autoScroll)
   const setAutoScroll = useChatAutoScrollStore((state) => state.setAutoScroll)
   const [showScrollBottom, setShowScrollBottom] = useState(false)
-  const { data: queryMessages, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useChatMessages(chat)
+  const {
+    data: queryMessages,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+    refetch,
+  } = useChatMessages(chat)
   const typingParticipants = useTypingParticipantsStore((state) => state.typingParticipants)
   const messages =
     queryMessages?.pages
@@ -94,6 +104,26 @@ export function Messages({ chat }: MessagesProps) {
 
   if (isLoading) {
     return <Loader msg="Retrieving chat messages..." />
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-col items-center justify-center">
+          <CardTitle className="mb-4">
+            <BugIcon className="size-6" />
+          </CardTitle>
+          <TypographyH4>Error</TypographyH4>
+          <CardDescription>Something went wrong while fetching the messages.</CardDescription>
+        </CardHeader>
+        <CardFooter className="justify-center">
+          <Button variant="outline" onClick={() => refetch()}>
+            <RotateCwIcon className="size-4" />
+            Re-fetch messages
+          </Button>
+        </CardFooter>
+      </Card>
+    )
   }
 
   return (

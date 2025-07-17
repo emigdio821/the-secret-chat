@@ -38,6 +38,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
   const router = useRouter()
 
   const form = useForm<z.infer<typeof createChatRoomSchema>>({
+    shouldUnregister: true,
     resolver: zodResolver(createChatRoomSchema),
     defaultValues: {
       name: '',
@@ -90,9 +91,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
     <Dialog
       open={openedDialog}
       onOpenChange={(opened) => {
-        if (!opened) {
-          form.reset()
-        }
+        if (form.formState.isSubmitting) return
         setOpenedDialog(opened)
       }}
     >
@@ -101,11 +100,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
           Create chat
         </Button>
       </DialogTrigger>
-      <DialogContent
-        onInteractOutside={(e) => {
-          e.preventDefault()
-        }}
-      >
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create chat</DialogTitle>
           <DialogDescription>Create a new chat room.</DialogDescription>

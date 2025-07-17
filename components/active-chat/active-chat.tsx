@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import type { ChatAttributes } from '@/types'
 import { useQueryClient } from '@tanstack/react-query'
 import type { Client, Conversation, Message, Participant } from '@twilio/conversations'
-import { ArrowLeftIcon, GhostIcon } from 'lucide-react'
+import { ArrowLeftIcon, BugIcon, GhostIcon, MessageSquareIcon, RotateCwIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   ACTIVE_CHAT_MESSAGES_QUERY,
@@ -18,6 +18,7 @@ import { useCurrentChat } from '@/hooks/chat/use-current-chat'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader } from '../loader'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { TypographyH4 } from '../ui/typography'
 import ChatActions from './chat-actions'
 import { Messages } from './messages'
@@ -30,7 +31,7 @@ interface ActiveChatProps {
 export function ActiveChat({ client, chatId }: ActiveChatProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { data: chat, isLoading } = useCurrentChat(chatId)
+  const { data: chat, isLoading, error, refetch } = useCurrentChat(chatId)
   const chatAttrs = chat?.attributes as ChatAttributes | undefined
   const setTypingParticipant = useTypingParticipantsStore((state) => state.setTypingParticipant)
   const removeTypingParticipant = useTypingParticipantsStore((state) => state.removeTypingParticipant)
@@ -178,14 +179,42 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     return <Loader msg="Loading chat..." />
   }
 
+  if (error) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-col items-center justify-center">
+          <CardTitle className="mb-4">
+            <BugIcon className="size-6" />
+          </CardTitle>
+          <TypographyH4>Error</TypographyH4>
+          <CardDescription>Something went wrong while fetching the chat.</CardDescription>
+        </CardHeader>
+        <CardFooter className="justify-center">
+          <Button variant="outline" onClick={() => refetch()}>
+            <RotateCwIcon className="size-4" />
+            Re-fetch chat
+          </Button>
+        </CardFooter>
+      </Card>
+    )
+  }
+
   return (
     <>
       {chat ? (
         <>
           <div className="flex items-center justify-between gap-2">
-            <div>
-              <TypographyH4>{chat.friendlyName}</TypographyH4>
-              {chatAttrs?.description && <p className="text-muted-foreground text-sm">{chatAttrs.description}</p>}
+            <div className="flex items-center gap-2">
+              <Avatar className="size-10">
+                <AvatarImage src={chatAttrs?.chatLogoUrl} />
+                <AvatarFallback className="bg-highlight">
+                  <MessageSquareIcon className="size-4" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <TypographyH4>{chat.friendlyName}</TypographyH4>
+                {chatAttrs?.description && <p className="text-muted-foreground text-sm">{chatAttrs.description}</p>}
+              </div>
             </div>
             <ChatActions chat={chat} client={client} />
           </div>
