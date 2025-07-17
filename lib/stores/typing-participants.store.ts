@@ -18,7 +18,7 @@ export const useTypingParticipantsStore = create<TypingParticipantsStore>((set) 
       return { typingParticipants: [...state.typingParticipants, participant] }
     }),
   removeTypingParticipant: (participant) => {
-    set((state) => ({ typingParticipants: state.typingParticipants.filter((part) => part.sid === participant.sid) }))
+    set((state) => ({ typingParticipants: state.typingParticipants.filter((part) => part.sid !== participant.sid) }))
   },
   removeAllTypingParticipants: () => set({ typingParticipants: [] }),
 }))
