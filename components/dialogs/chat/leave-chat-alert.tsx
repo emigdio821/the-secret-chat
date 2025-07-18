@@ -19,10 +19,10 @@ export function LeaveChatAlert({ chat, trigger }: DeleteChatAlertProps) {
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
-      console.log('[leave_chat_alert]', errMsg)
+      console.error('[leave_chat_alert]', errMsg)
 
-      toast.error('Uh oh!', {
-        description: 'Unable to leave the chat at this time, try again',
+      toast.error('Error', {
+        description: 'Unable to leave the chat at this time, try again.',
       })
     }
   }

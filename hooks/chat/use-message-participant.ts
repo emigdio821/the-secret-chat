@@ -8,7 +8,7 @@ export function useMessageParticipant(message: Message) {
       return await message.getParticipant()
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[get_part_msg]', errMessage)
+      console.error('[get_part_msg]', errMessage)
       throw err
     }
   }

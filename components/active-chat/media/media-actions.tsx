@@ -49,7 +49,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
       })
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[SEND_GIF]', errMessage)
+      console.error('[send_gif]', errMessage)
     }
   }
 

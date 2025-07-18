@@ -54,12 +54,11 @@ export function JoinChatDialog({ client }: JoinChatDialogProps) {
       setOpenedDialog(false)
       form.reset()
     } catch (err) {
-      let errMsg = 'Unknown error'
-      if (err instanceof Error) errMsg = err.message
-      console.log('[JOIN_CHAT_DIALOG]', errMsg)
+      const errMsg = err instanceof Error ? err.message : err
+      console.error('[join_chat_dialog]', errMsg)
 
-      toast.error('Uh oh!', {
-        description: "Seems like the chat room doesn't exist or you don't have access to it",
+      toast.error('Error', {
+        description: 'Seems like the chat room does not exist, or you do not have access to it.',
       })
     }
   }

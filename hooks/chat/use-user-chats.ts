@@ -21,7 +21,7 @@ export function useUserChats(search: string) {
       return chats
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[use_user_chats_error]', errMessage)
+      console.error('[use_user_chats_error]', errMessage)
       throw err
     }
   }

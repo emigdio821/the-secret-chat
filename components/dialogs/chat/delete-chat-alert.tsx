@@ -19,10 +19,10 @@ export function DeleteChatAlert({ chat, trigger }: DeleteChatAlertProps) {
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
-      console.log('[delete_chat_alert]', errMsg)
+      console.error('[delete_chat_alert]', errMsg)
 
-      toast.error('Uh oh!', {
-        description: 'Unable to delete the chat at this time, try again',
+      toast.error('Error', {
+        description: 'Unable to delete the chat at this time, try again.',
       })
     }
   }

@@ -35,7 +35,7 @@ export function AlertActionDialog<T>(props: AlertActionDialogProps<T>) {
       await action()
       setOpenAlert(false)
     } catch (err) {
-      console.log('Alert action dialog error', err)
+      console.error('[alert_action]', err)
       toast.error('Error', { description: 'Unable to perform this action, try again.' })
     } finally {
       setLoading(false)

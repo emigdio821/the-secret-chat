@@ -22,7 +22,6 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-
       const recorder = new MediaRecorder(stream)
       mediaRecorderRef.current = recorder
       audioChunksRef.current = []
@@ -69,21 +68,22 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
 
   const stopRecording = useCallback(async (): Promise<Blob | null> => {
     const recorder = mediaRecorderRef.current
-    return new Promise((resolve) => {
-      if (!recorder) return resolve(null)
+    if (!recorder) return null
 
-      recorder.onstop = () => {
-        setIsRecording(false)
-        setIsPaused(false)
+    return new Promise<Blob | null>((resolve) => {
+      const originalOnStop = recorder.onstop
+      setIsRecording(false)
+      setIsPaused(false)
+
+      recorder.onstop = (e) => {
+        if (originalOnStop) originalOnStop.call(recorder, e)
+
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        audioChunksRef.current = []
         resolve(audioBlob)
       }
 
-      if (recorder.state !== 'inactive') {
-        recorder.stop()
-      } else {
-        resolve(null)
-      }
+      recorder.stop()
     })
   }, [])
 

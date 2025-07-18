@@ -43,7 +43,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
       await message.remove()
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[delete_chat_msg]', errMessage)
+      console.error('[delete_chat_msg]', errMessage)
     }
   }
 
@@ -56,9 +56,9 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
       form.reset(values)
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : err
-      console.log('[edit_chat_message]', errMsg)
+      console.error('[edit_chat_message]', errMsg)
 
-      toast.error('Uh oh!', {
+      toast.error('Error', {
         description: 'Unable to edit the message at this time, try again.',
       })
     }
@@ -84,7 +84,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
         <DropdownMenuSeparator />
         {editMode && (
           <Popover
-            modal={true}
+            modal
             open={isEditMode}
             onOpenChange={(opened) => {
               if (!opened) {

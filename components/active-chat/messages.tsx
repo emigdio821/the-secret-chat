@@ -60,10 +60,10 @@ export function Messages({ chat }: MessagesProps) {
         container.scrollTop = newScrollHeight - prevScrollHeight + prevScrollTop
       })
     } catch (err) {
-      const errMsg = err instanceof Error ? err.message : 'Unknown error'
+      const errMsg = err instanceof Error ? err.message : err
       console.error('[fetch_more_messages]', errMsg)
 
-      toast.error('Uh oh!', {
+      toast.error('Error', {
         description: 'Unable to fetch more messages at this time, try again.',
       })
     }

@@ -1,5 +1,6 @@
 import type { Participant } from '@twilio/conversations'
 import { clsx, type ClassValue } from 'clsx'
+import { format, isToday, isYesterday } from 'date-fns'
 import { twMerge } from 'tailwind-merge'
 import { envClient } from '@/lib/zod-schemas'
 
@@ -7,27 +8,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatDate(d: Date) {
-  const date = new Date(d)
-  const today = new Date()
-  const isToday = date.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)
+export function formatDate(date: Date | string) {
+  const parsedDate = new Date(date)
 
-  if (isToday) {
-    return `Today, ${new Date(d).toLocaleString([], {
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-    })}`
+  if (isToday(parsedDate)) {
+    return `Today, ${format(parsedDate, 'HH:mm')}`
   }
 
-  return new Date(d).toLocaleString([], {
-    hour12: false,
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  if (isYesterday(parsedDate)) {
+    return `Yesterday, ${format(parsedDate, 'HH:mm')}`
+  }
+
+  return format(parsedDate, 'MMM dd, yyyy, HH:mm')
 }
 
 export function getFirstName(n: string) {

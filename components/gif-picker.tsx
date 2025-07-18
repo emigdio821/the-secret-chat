@@ -44,8 +44,8 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
       }
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[GET_GIFS]', errMessage)
-      return null
+      console.error('[get_gifs]', errMessage)
+      throw err
     }
   }
 

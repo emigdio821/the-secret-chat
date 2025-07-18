@@ -8,7 +8,7 @@ export function useChatUnreadMsgs(chat: Conversation) {
       return await chat.getUnreadMessagesCount()
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[chat_unread_msgs_query]', errMessage)
+      console.error('[chat_unread_msgs_query]', errMessage)
       throw err
     }
   }

@@ -1,17 +1,16 @@
-import { useCallback, useEffect, useState } from 'react'
 import type { MessageAttributes, ParticipantAttributes } from '@/types'
 import type { Message } from '@twilio/conversations'
 import { UserIcon } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { Session } from 'next-auth'
 import { AVATAR_FALLBACK_URL } from '@/lib/constants'
-import { cn, formatDate } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { useMessageMedia } from '@/hooks/chat/use-message-media'
 import { useMessageParticipant } from '@/hooks/chat/use-message-participant'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Skeleton } from '@/components/ui/skeleton'
-import { AudioPlayer } from '@/components/audio-player'
-import { ImageViewer } from '@/components/image-viewer'
+import { MessageMediaItem } from './media/message-media-item'
 import { MessageActions } from './message-actions'
+import { MessageMeta } from './message-meta'
 
 interface MessageItemProps {
   message: Message
@@ -30,28 +29,12 @@ export function MessageItem({ message, session }: MessageItemProps) {
   const partAttrs = participant?.attributes as ParticipantAttributes | undefined
   const msgAttrs = message.attributes as MessageAttributes | undefined
   const isGif = msgAttrs?.gif
-  const [msgMedia, setMsgMedia] = useState({
-    url: '',
-    loading: true,
-  })
+  const editMode = !isRawImage && !isGif && !isAudio
+  const { msgMedia } = useMessageMedia(rawMedia)
 
-  const getMediaUrl = useCallback(async () => {
-    if (rawMedia) {
-      setMsgMedia({ url: '', loading: true })
-      const url = await rawMedia.getContentTemporaryUrl()
-      if (url) {
-        setMsgMedia({ url, loading: false })
-      } else {
-        setMsgMedia({ url: '', loading: false })
-      }
-    }
-  }, [rawMedia])
-
-  useEffect(() => {
-    if (hasMedia) {
-      void getMediaUrl()
-    }
-  }, [getMediaUrl, hasMedia])
+  const avatarUrl = isAuthor
+    ? ((partAttrs?.avatar_url || user.image) ?? AVATAR_FALLBACK_URL)
+    : partAttrs?.avatar_url || AVATAR_FALLBACK_URL
 
   return (
     <motion.div
@@ -65,72 +48,35 @@ export function MessageItem({ message, session }: MessageItemProps) {
       })}
     >
       <Avatar className="size-6 self-start">
-        <AvatarImage
-          className="object-cover"
-          alt={`${user?.name}`}
-          src={
-            isAuthor
-              ? ((partAttrs?.avatar_url || user.image) ?? AVATAR_FALLBACK_URL)
-              : partAttrs?.avatar_url || AVATAR_FALLBACK_URL
-          }
-        />
+        <AvatarImage className="object-cover" alt={`${user?.name}`} src={avatarUrl} />
         <AvatarFallback>
           <UserIcon className="size-4" />
         </AvatarFallback>
       </Avatar>
-      <div
-        className={cn('bg-card flex flex-col gap-2 rounded-lg border px-3 py-2 text-sm shadow-xs', {
-          'bg-input/30': !isAuthor,
-        })}
-      >
-        <div className="flex justify-between gap-2">
-          <span>
-            {isGif &&
-              (body ? (
-                <ImageViewer url={body} title="GIPHY" errorCb={getMediaUrl} />
-              ) : (
-                <Skeleton className="h-20 w-28" />
-              ))}
-            {isRawImage &&
-              (msgMedia.loading ? (
-                <Skeleton className="h-20 w-28" />
-              ) : (
-                msgMedia.url && <ImageViewer url={msgMedia.url} title={rawMedia?.filename ?? ''} />
-              ))}
 
-            {isAudio &&
-              (msgMedia.loading ? (
-                <Skeleton className="h-20 w-40" />
-              ) : (
-                msgMedia.url && <AudioPlayer src={msgMedia.url} />
-              ))}
-
-            {!isGif && !isRawImage && !isAudio && (
-              <span
-                className={cn({
-                  'text-muted-foreground italic': !body,
-                  'whitespace-pre-line': body,
-                })}
-              >
-                {body ?? 'Empty message'}
-              </span>
-            )}
-          </span>
-
-          {message.author === user?.email && (
-            <MessageActions message={message} editMode={!isRawImage && !isGif && !isAudio} />
-          )}
+      <div className="bg-card flex flex-col gap-2 rounded-lg border px-3 py-2 text-sm shadow-xs">
+        <div className="flex gap-2">
+          <MessageMediaItem
+            body={body}
+            isGif={isGif}
+            isAudio={isAudio}
+            msgMedia={msgMedia}
+            rawMedia={rawMedia}
+            isRawImage={isRawImage}
+          />
         </div>
-        <div className="text-muted-foreground flex flex-col text-[10px] leading-4">
-          <span>
-            {dateCreated && formatDate(dateCreated)}
-            {isGif && ' (via GIPHY)'}
-            {msgAttrs?.isEdited && ' (edited)'}
-            {isRawImage && hasMedia && rawMedia?.contentType && ` (${rawMedia?.contentType})`}
-          </span>
-          {!isAuthor && <span>{partAttrs?.nickname ?? author}</span>}
-        </div>
+
+        <MessageMeta
+          isGif={isGif}
+          author={author}
+          msgAttrs={msgAttrs}
+          isAuthor={isAuthor}
+          rawMedia={rawMedia}
+          partAttrs={partAttrs}
+          dateCreated={dateCreated}
+        />
       </div>
+      {isAuthor && <MessageActions message={message} editMode={editMode} />}
     </motion.div>
   )
 }

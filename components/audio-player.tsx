@@ -25,12 +25,9 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
     if (!audio) return
 
     const handleLoadedMetadata = () => {
-      if (audio.duration === Infinity) {
-        console.log('triggered 3')
-        // Fix duration if blob is streaming-like
+      if (audio.duration === Infinity || Number.isNaN(audio.duration)) {
         audio.currentTime = 1e101
         const fixDuration = () => {
-          console.log('triggered')
           audio.currentTime = 0
           setDuration(audio.duration)
           setCurrentTime(0)
@@ -39,8 +36,8 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
         }
         audio.addEventListener('timeupdate', fixDuration)
       } else {
-        console.log('triggered2')
         setDuration(audio.duration)
+        setLoadingMetadata(false)
       }
     }
 

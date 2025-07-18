@@ -1,6 +1,5 @@
 'use client'
 
-import { redirect } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
@@ -22,23 +21,16 @@ export function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
     try {
-      const response = await signIn('credentials', {
-        redirect: false,
+      await signIn('credentials', {
+        redirectTo: '/',
         username: values.username,
         password: values.password,
       })
-
-      if (response.error) {
-        toast.error('Error', {
-          description: 'Credentials are invalid',
-        })
-
-        return
-      }
-
-      redirect('/')
     } catch (err) {
-      console.log('[SIGN_IN_ERR]', err)
+      toast.error('Error', {
+        description: 'Credentials are invalid',
+      })
+      console.error('[login_form]', err)
     }
   }
 

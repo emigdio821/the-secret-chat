@@ -50,9 +50,9 @@ export function AddParticipantDialog({ chat, client, trigger }: AddParticipantDi
       form.reset()
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : err
-      console.log('[add_participant_dialog]', errMsg)
+      console.error('[add_participant_dialog]', errMsg)
 
-      toast.error('Uh oh!', {
+      toast.error('Error', {
         description: 'Unable to add this participant, please check the ID and try again.',
       })
     }

@@ -1,6 +1,7 @@
 import type { Emoji } from 'frimousse'
 import {
   EmojiPickerContent,
+  EmojiPickerFooter,
   EmojiPickerSearch,
   EmojiPicker as PrimitiveEmojiPicker,
 } from '@/components/ui/emoji-picker'
@@ -24,6 +25,7 @@ export function EmojiPicker({ callback, trigger }: EmojiPickerProps) {
         >
           <EmojiPickerSearch />
           <EmojiPickerContent />
+          <EmojiPickerFooter />
         </PrimitiveEmojiPicker>
       </PopoverContent>
     </Popover>

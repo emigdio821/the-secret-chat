@@ -61,15 +61,18 @@ export default function ChatActions({ chat, client }: ChatActionsProps) {
               }
             />
             {!isAdmin && (
-              <LeaveChatAlert
-                chat={chat}
-                trigger={
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <LogOut className="size-4" />
-                    <span>Leave</span>
-                  </DropdownMenuItem>
-                }
-              />
+              <>
+                <DropdownMenuSeparator />
+                <LeaveChatAlert
+                  chat={chat}
+                  trigger={
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <LogOut className="size-4" />
+                      <span>Leave</span>
+                    </DropdownMenuItem>
+                  }
+                />
+              </>
             )}
             {isAdmin && (
               <>

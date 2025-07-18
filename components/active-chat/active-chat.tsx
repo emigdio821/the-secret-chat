@@ -13,6 +13,7 @@ import {
   MSG_PARTICIPANT_QUERY,
   USER_CHATS_QUERY,
 } from '@/lib/constants'
+import { useChatAutoScrollStore } from '@/lib/stores/chat-autoscroll.store'
 import { useTypingParticipantsStore } from '@/lib/stores/typing-participants.store'
 import { useCurrentChat } from '@/hooks/chat/use-current-chat'
 import { Button } from '@/components/ui/button'
@@ -34,7 +35,9 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   const { data: chat, isLoading, error, refetch } = useCurrentChat(chatId)
   const chatAttrs = chat?.attributes as ChatAttributes | undefined
   const setTypingParticipant = useTypingParticipantsStore((state) => state.setTypingParticipant)
+  const removeAllTypingParticipants = useTypingParticipantsStore((state) => state.removeAllTypingParticipants)
   const removeTypingParticipant = useTypingParticipantsStore((state) => state.removeTypingParticipant)
+  const setAutoScroll = useChatAutoScrollStore((state) => state.setAutoScroll)
 
   const handleMessageAdded = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: [ACTIVE_CHAT_MESSAGES_QUERY] })
@@ -159,6 +162,8 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         chat.removeListener('participantUpdated', handleUpdatedParticipant)
         chat.removeListener('messageUpdated', handleUpdatedMessage)
         chat.removeListener('updated', handleUpdatedChat)
+        removeAllTypingParticipants()
+        setAutoScroll(true)
       }
     }
   }, [
@@ -173,6 +178,8 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     handleUpdatedParticipant,
     handleUpdatedMessage,
     handleUpdatedChat,
+    removeAllTypingParticipants,
+    setAutoScroll,
   ])
 
   if (isLoading) {

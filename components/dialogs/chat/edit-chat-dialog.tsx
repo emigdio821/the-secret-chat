@@ -62,7 +62,7 @@ export function EditChatDialog({ chat, trigger }: EditProfileDialogProps) {
       toast.success('Success', { description: 'Chat has been updated.' })
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[edit_chat_dialog]', errMessage)
+      console.error('[edit_chat_dialog]', errMessage)
       toast.error('Unable to update the chat at this time, try again.')
     }
   }

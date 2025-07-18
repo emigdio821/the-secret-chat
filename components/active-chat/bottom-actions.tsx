@@ -29,16 +29,15 @@ export function ActiveChatBottomActions({ chat }: { chat: Conversation }) {
 
   async function onSubmit(values: z.infer<typeof sendMessageSchema>) {
     try {
-      form.reset()
       await chat.sendMessage(values.message)
       setAutoScroll(true)
+      form.reset()
     } catch (err) {
-      let errMsg = 'Unknown error'
-      if (err instanceof Error) errMsg = err.message
-      console.log('[ACTIVE_CHAT_SEND_MSG]', errMsg)
+      const errMsg = err instanceof Error ? err.message : err
+      console.error('[send_message]', errMsg)
 
-      toast.error('Uh oh!', {
-        description: 'Something went wrong while sending the message, try again',
+      toast.error('Error', {
+        description: 'Unable to send the message at this time, try again.',
       })
     }
   }

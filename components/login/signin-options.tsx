@@ -18,10 +18,10 @@ export function SignInOptions() {
     } catch (err) {
       setLoading(false)
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[signin]', errMessage)
+      console.error('[signin]', errMessage)
 
-      toast.error('Uh oh!', {
-        description: 'Unable to signin now, try again',
+      toast.error('Error', {
+        description: 'Unable to signin at this time, try again.',
       })
     }
   }

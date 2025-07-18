@@ -54,9 +54,9 @@ export function EditProfilePopover({ client, user }: EditProfilePopoverProps) {
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
-      console.log('[UPODATE_PROFILE]', errMsg)
-      toast.error('Uh oh!', {
-        description: 'Something went wrong while updating your profile, try again',
+      console.error('[edit_profile]', errMsg)
+      toast.error('Error', {
+        description: 'Unable to update profile at this time, try again.',
       })
     }
   }

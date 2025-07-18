@@ -10,7 +10,7 @@ async function getToken() {
     return data.access_token
   } catch (err) {
     const errMessage = err instanceof Error ? err.message : err
-    console.log('[GET_TOKEN]', errMessage)
+    console.error('[get_token]', errMessage)
   }
 }
 
@@ -32,7 +32,6 @@ export async function initTwilioClient() {
     const token = await getToken()
     twilioInstance = new Client(token)
 
-    // Optional: Listen to token expiry events
     twilioInstance.on('tokenAboutToExpire', () => {
       toast('Client status', {
         duration: Infinity,
@@ -58,7 +57,7 @@ export async function initTwilioClient() {
 
     return twilioInstance
   } catch (err) {
-    const errMsg = err instanceof Error ? err.message : 'Unable to create twilio client at this time, try again'
+    const errMsg = err instanceof Error ? err.message : 'Unable to create twilio client at this time, try again.'
     setError(errMsg)
   } finally {
     setLoading(false)

@@ -36,8 +36,8 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
       return participants
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[GET_PARTICIPANTS]', errMessage)
-      return null
+      console.error('[get_participants]', errMessage)
+      throw err
     }
   }
 
@@ -48,7 +48,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
       setOpenedAlert(false)
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.log('[REMOVE_PARTICIPANT]', errMessage)
+      console.error('[remove_participant]', errMessage)
     } finally {
       setLoading(false)
     }
@@ -61,7 +61,7 @@ export function ChatParticipants({ chat, session, client }: ChatParticipantsProp
   //     })
   //   } catch (err) {
   //     const errMessage = err instanceof Error ? err.message : err
-  //     console.log('[MAKE_ADMIN_PARTICIPANT]', errMessage)
+  //     console.error('[MAKE_ADMIN_PARTICIPANT]', errMessage)
   //   }
   // }
 

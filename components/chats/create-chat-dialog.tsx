@@ -76,13 +76,14 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
-      console.log('[CREATE_CHAT_DIALOG]', errMsg)
+      console.error('[create_chat_dialog]', errMsg)
+
       const toastMsg =
         errMsg.toLowerCase() === 'conflict'
-          ? 'Seems like that chat name already exists, try another one'
-          : 'Something went wrong while creating the chat room, try again'
+          ? 'Seems like that chat name already exists, try another one.'
+          : 'Unable to create this chat at this moment, try again.'
 
-      toast.error('Uh oh!', {
+      toast.error('Error', {
         description: toastMsg,
       })
     }
