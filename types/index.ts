@@ -4,6 +4,7 @@ export type UserAttributes = {
   nickname: string
   avatar_url: string
   name: string
+  about: string
 } & JSONValue
 
 export type ParticipantAttributes = {

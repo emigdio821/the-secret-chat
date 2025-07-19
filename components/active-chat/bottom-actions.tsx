@@ -63,6 +63,7 @@ export function ActiveChatBottomActions({ chat }: { chat: Conversation }) {
                     <EmojiPicker
                       trigger={
                         <Button
+                          type="button"
                           size="icon"
                           variant="unstyled"
                           aria-label="Emoji picker"

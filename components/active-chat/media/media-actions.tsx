@@ -78,6 +78,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button
+            type="button"
             size="icon"
             variant="unstyled"
             aria-label="Media actions"

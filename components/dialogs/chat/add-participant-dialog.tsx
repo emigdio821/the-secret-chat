@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import type { UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { Client, Conversation } from '@twilio/conversations'
+import type { Conversation } from '@twilio/conversations'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type { z } from 'zod'
+import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
 import { cn } from '@/lib/utils'
 import { addParticipantSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
@@ -23,12 +24,12 @@ import { Icons } from '@/components/icons'
 
 interface AddParticipantDialogProps {
   chat: Conversation
-  client: Client
   trigger: React.ReactNode
 }
 
-export function AddParticipantDialog({ chat, client, trigger }: AddParticipantDialogProps) {
+export function AddParticipantDialog({ chat, trigger }: AddParticipantDialogProps) {
   const [openDialog, setOpenDialog] = useState(false)
+  const client = useTwilioClientStore((state) => state.client)
   const form = useForm<z.infer<typeof addParticipantSchema>>({
     shouldUnregister: true,
     resolver: zodResolver(addParticipantSchema),
@@ -39,6 +40,8 @@ export function AddParticipantDialog({ chat, client, trigger }: AddParticipantDi
 
   async function onSubmit(values: z.infer<typeof addParticipantSchema>) {
     try {
+      if (!client) throw new Error('Twilio client is undefined')
+
       const user = await client.getUser(values.id)
       const userAttrs = user.attributes as UserAttributes
       await chat.add(values.id, {

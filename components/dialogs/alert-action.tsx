@@ -65,7 +65,9 @@ export function AlertActionDialog<T>(props: AlertActionDialogProps<T>) {
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel asChild>
-            <Button variant="ghost">Cancel</Button>
+            <Button type="button" variant="ghost">
+              Cancel
+            </Button>
           </AlertDialogCancel>
           <AlertDialogAction
             disabled={isLoading}

@@ -18,6 +18,7 @@ import { useTypingParticipantsStore } from '@/lib/stores/typing-participants.sto
 import { useCurrentChat } from '@/hooks/chat/use-current-chat'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { ChatDetailsDialog } from '../dialogs/chat/chat-details-dialog'
 import { Loader } from '../loader'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { TypographyH4 } from '../ui/typography'
@@ -194,10 +195,10 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
             <BugIcon className="size-6" />
           </CardTitle>
           <TypographyH4>Error</TypographyH4>
-          <CardDescription>Something went wrong while fetching the chat.</CardDescription>
+          <CardDescription className="text-center">Something went wrong while fetching the chat.</CardDescription>
         </CardHeader>
         <CardFooter className="justify-center">
-          <Button variant="outline" onClick={() => refetch()}>
+          <Button type="button" variant="outline" onClick={() => refetch()}>
             <RotateCwIcon className="size-4" />
             Re-fetch chat
           </Button>
@@ -219,11 +220,18 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <TypographyH4>{chat.friendlyName}</TypographyH4>
+                <ChatDetailsDialog
+                  chat={chat}
+                  trigger={
+                    <Button variant="plain" type="button">
+                      <TypographyH4>{chat.friendlyName || chat.uniqueName}</TypographyH4>
+                    </Button>
+                  }
+                />
                 {chatAttrs?.description && <p className="text-muted-foreground text-sm">{chatAttrs.description}</p>}
               </div>
             </div>
-            <ChatActions chat={chat} client={client} />
+            <ChatActions chat={chat} />
           </div>
           <Messages chat={chat} />
         </>

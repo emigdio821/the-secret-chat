@@ -12,10 +12,12 @@ export function ClientError({ errorMsg }: { errorMsg?: string }) {
           <BugIcon className="size-6" />
         </CardTitle>
         <TypographyH4>Error</TypographyH4>
-        <CardDescription>{errorMsg ?? 'Something went wrong while initializing the client.'}</CardDescription>
+        <CardDescription className="text-center">
+          {errorMsg ?? 'Something went wrong while initializing the client.'}
+        </CardDescription>
       </CardHeader>
       <CardFooter className="justify-center">
-        <Button variant="outline" onClick={refreshTwilioInstance}>
+        <Button type="button" variant="outline" onClick={refreshTwilioInstance}>
           <RotateCwIcon className="size-4" />
           Reload client
         </Button>

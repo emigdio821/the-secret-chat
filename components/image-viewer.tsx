@@ -13,7 +13,7 @@ export function ImageViewer({ url, title, errorCb }: ImageViewerProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="plain" className="h-20 w-28 rounded-sm">
+        <Button type="button" variant="plain" className="h-20 w-28 rounded-sm">
           <BlurImage src={url} alt={title ?? ''} />
           <span className="sr-only">Open image</span>
         </Button>
@@ -23,7 +23,7 @@ export function ImageViewer({ url, title, errorCb }: ImageViewerProps) {
           {title && <DialogTitle>{title}</DialogTitle>}
 
           <DialogClose asChild>
-            <Button size="icon" className="ml-auto" aria-label="Close image viewer" variant="secondary">
+            <Button type="button" size="icon" className="ml-auto" aria-label="Close image viewer" variant="secondary">
               <XIcon className="size-4" />
             </Button>
           </DialogClose>

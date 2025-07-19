@@ -59,7 +59,13 @@ export function GifPicker({ trigger, callback }: GifPickerProps) {
         handlers.toggle()
       }}
     >
-      <DialogTrigger asChild>{trigger ?? <Button onClick={handlers.open}>Select a GIF</Button>}</DialogTrigger>
+      <DialogTrigger asChild>
+        {trigger ?? (
+          <Button type="button" onClick={handlers.open}>
+            Select a GIF
+          </Button>
+        )}
+      </DialogTrigger>
       <DialogContent
         onOpenAutoFocus={(e) => {
           e.preventDefault()

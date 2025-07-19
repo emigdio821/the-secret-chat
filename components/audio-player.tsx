@@ -111,8 +111,9 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
 
   return (
     <div className={cn('flex w-40 flex-col gap-2', className)}>
-      <audio ref={audioRef} src={src} preload="metadata" className="hidden" hidden>
+      <audio ref={audioRef} preload="none" className="hidden" hidden>
         <track kind="captions" />
+        <source src={src} type="audio/mpeg" />
       </audio>
 
       <div className="text-xs tabular-nums">
@@ -133,16 +134,16 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
 
       <div className="mt-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={togglePlay}>
+          <Button type="button" variant="outline" size="icon" onClick={togglePlay}>
             {isPlaying ? <PauseIcon className="size-4" /> : <PlayIcon className="size-4" />}
           </Button>
 
-          <Button variant="outline" size="icon" className="size-7" onClick={handleStop}>
+          <Button type="button" variant="outline" size="icon" className="size-7" onClick={handleStop}>
             <SquareIcon className="fill-foreground size-2" />
           </Button>
         </div>
 
-        <Button variant="outline" size="icon" onClick={toggleSpeed} className="size-7 text-xs">
+        <Button type="button" variant="outline" size="icon" onClick={toggleSpeed} className="size-7 text-xs">
           {playbackRate}x
         </Button>
       </div>

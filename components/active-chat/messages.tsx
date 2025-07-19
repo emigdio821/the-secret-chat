@@ -115,10 +115,10 @@ export function Messages({ chat }: MessagesProps) {
             <BugIcon className="size-6" />
           </CardTitle>
           <TypographyH4>Error</TypographyH4>
-          <CardDescription>Something went wrong while fetching the messages.</CardDescription>
+          <CardDescription className="text-center">Something went wrong while fetching the messages.</CardDescription>
         </CardHeader>
         <CardFooter className="justify-center">
-          <Button variant="outline" onClick={() => refetch()}>
+          <Button type="button" variant="outline" onClick={() => refetch()}>
             <RotateCwIcon className="size-4" />
             Re-fetch messages
           </Button>
@@ -141,6 +141,7 @@ export function Messages({ chat }: MessagesProps) {
               <div className="flex flex-col gap-2 p-4">
                 {hasNextPage && (
                   <Button
+                    type="button"
                     variant="outline"
                     className="self-end"
                     disabled={isFetchingNextPage}
@@ -169,7 +170,7 @@ export function Messages({ chat }: MessagesProps) {
 
           <AnimatePresence initial={false}>
             {showScrollBottom && (
-              <Button size="icon" className="absolute right-4 bottom-4 size-6 transition-colors" asChild>
+              <Button type="button" size="icon" className="absolute right-4 bottom-4 size-6 transition-colors" asChild>
                 <motion.button
                   type="button"
                   onClick={scrollBottom}

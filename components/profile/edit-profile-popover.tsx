@@ -45,6 +45,7 @@ export function EditProfilePopover({ client, user }: EditProfilePopoverProps) {
         name: (values.name || userAttrs?.name || user.name) ?? '',
         nickname: (values.nickname || userAttrs?.nickname || client.user.friendlyName) ?? '',
         avatar_url: (values.avatar_url || user.image) ?? '',
+        about: '',
       }
 
       await client.user.updateAttributes(attrsPayload)
@@ -74,7 +75,9 @@ export function EditProfilePopover({ client, user }: EditProfilePopoverProps) {
       }}
     >
       <PopoverTrigger asChild>
-        <Button variant="outline">Edit profile</Button>
+        <Button type="button" variant="outline">
+          Edit profile
+        </Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
@@ -99,7 +102,11 @@ export function EditProfilePopover({ client, user }: EditProfilePopoverProps) {
                 )}
               />
               <GifPicker
-                trigger={<Button variant="outline">GIF</Button>}
+                trigger={
+                  <Button type="button" variant="outline">
+                    GIF
+                  </Button>
+                }
                 callback={(url) => {
                   form.setValue('avatar_url', url)
                 }}

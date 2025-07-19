@@ -21,6 +21,5 @@ export function useCurrentChat(chatId: string) {
   return useQuery({
     queryKey: [ACTIVE_CHAT_QUERY, chatId],
     queryFn: getCurrentChat,
-    enabled: true,
   })
 }

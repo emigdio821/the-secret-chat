@@ -78,7 +78,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
       recorder.onstop = (e) => {
         if (originalOnStop) originalOnStop.call(recorder, e)
 
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mpeg' })
         audioChunksRef.current = []
         resolve(audioBlob)
       }

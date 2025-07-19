@@ -75,7 +75,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
       }}
     >
       <DropdownMenuTrigger asChild>
-        <Button aria-label="Message actions" variant="ghost" size="icon" className="size-5">
+        <Button type="button" aria-label="Message actions" variant="ghost" size="icon" className="size-5">
           <MoreHorizontalIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -127,7 +127,7 @@ export function MessageActions({ message, editMode }: MessageActionsProps) {
                   <div className="flex gap-2">
                     <EmojiPicker
                       trigger={
-                        <Button size="icon" variant="outline" aria-label="Emoji picker">
+                        <Button type="button" size="icon" variant="outline" aria-label="Emoji picker">
                           <SmilePlusIcon className="size-4" />
                         </Button>
                       }
