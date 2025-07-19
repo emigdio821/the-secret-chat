@@ -30,7 +30,7 @@ export function ChatParticipants({ chat }: ChatParticipantsProps) {
         <CardFooter className="justify-center">
           <Button type="button" variant="outline" onClick={() => refetch()}>
             <RotateCwIcon className="size-4" />
-            Re-fetch participants
+            Refetch participants
           </Button>
         </CardFooter>
       </Card>
@@ -61,7 +61,7 @@ export function ChatParticipants({ chat }: ChatParticipantsProps) {
         </div>
       ) : (
         participants?.length && (
-          <div className="flex max-h-52 flex-col items-start gap-1 overflow-y-auto">
+          <div className="-m-2 flex max-h-[212px] flex-col items-start gap-1 overflow-y-auto p-2">
             {participants.map((participant) => (
               <ParticipantDropdown key={participant.sid} participant={participant} chat={chat} withActions />
             ))}

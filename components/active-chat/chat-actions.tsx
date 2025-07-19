@@ -1,5 +1,5 @@
 import type { Conversation } from '@twilio/conversations'
-import { Edit2Icon, InfoIcon, LogOut, MoreHorizontalIcon, Trash2Icon, UserPlusIcon } from 'lucide-react'
+import { Edit2Icon, InfoIcon, LogOutIcon, MoreHorizontalIcon, Trash2Icon, UserPlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import {
@@ -44,15 +44,17 @@ export default function ChatActions({ chat }: ChatActionsProps) {
               }
             />
 
-            <EditChatDialog
-              chat={chat}
-              trigger={
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  <Edit2Icon className="size-4" />
-                  Edit
-                </DropdownMenuItem>
-              }
-            />
+            {isAdmin && (
+              <EditChatDialog
+                chat={chat}
+                trigger={
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Edit2Icon className="size-4" />
+                    Edit
+                  </DropdownMenuItem>
+                }
+              />
+            )}
 
             <AddParticipantDialog
               chat={chat}
@@ -70,8 +72,8 @@ export default function ChatActions({ chat }: ChatActionsProps) {
                   chat={chat}
                   trigger={
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      <LogOut className="size-4" />
-                      <span>Leave</span>
+                      <LogOutIcon className="size-4" />
+                      Leave
                     </DropdownMenuItem>
                   }
                 />

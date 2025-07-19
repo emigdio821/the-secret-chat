@@ -79,10 +79,10 @@ export function EditChatDialog({ chat, trigger }: EditProfileDialogProps) {
       <DialogContent>
         <DialogHeader className="space-y-0">
           <DialogTitle>Edit chat</DialogTitle>
+          <DialogDescription className="sr-only">Edit your chat here.</DialogDescription>
         </DialogHeader>
-        <DialogDescription className="sr-only">Edit your chat here.</DialogDescription>
 
-        <Avatar className="mb-4 size-16">
+        <Avatar className="my-2 size-16">
           <AvatarImage src={form.getValues('chatLogoUrl') || chatAttrs?.chatLogoUrl} />
           <AvatarFallback className="bg-highlight">
             <MessageSquareIcon className="size-4" />

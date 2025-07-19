@@ -26,6 +26,8 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
   const user = session?.user
   const isAdmin = user?.email === chat.createdBy
   const partAttrs = participant.attributes as ParticipantAttributes | undefined
+  const participantName = partAttrs?.nickname || participant.identity
+  const participantAvatarUrl = partAttrs?.avatar_url || AVATAR_FALLBACK_URL
 
   async function handleKickParticipant(participant: Participant) {
     try {
@@ -41,15 +43,15 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
       <DropdownMenuTrigger asChild>
         <Button type="button" variant="ghost" className="truncate px-3">
           <Avatar className="size-5">
-            <AvatarImage src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL} />
+            <AvatarImage src={participantAvatarUrl} />
             <AvatarFallback />
           </Avatar>
-          {participant.identity === user?.email ? 'You' : partAttrs?.nickname || participant.identity}
+          {participant.identity === user?.email ? 'You' : participantName}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="max-w-60">
         <Avatar className="mx-2 mt-2 size-12">
-          <AvatarImage src={partAttrs?.avatar_url || AVATAR_FALLBACK_URL} />
+          <AvatarImage src={participantAvatarUrl} />
           <AvatarFallback />
         </Avatar>
 
@@ -78,8 +80,14 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
           <>
             <DropdownMenuSeparator />
             <AlertActionDialog
+              title="Kick participant?"
+              message={
+                <span>
+                  You are about to kick <span className="font-semibold">{participantName}</span>.
+                </span>
+              }
               trigger={
-                <DropdownMenuItem variant="destructive">
+                <DropdownMenuItem variant="destructive" onSelect={(e) => e.preventDefault()}>
                   <UserXIcon className="size-4" />
                   Kick
                 </DropdownMenuItem>

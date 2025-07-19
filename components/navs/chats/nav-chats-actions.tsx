@@ -1,5 +1,5 @@
 import type { Conversation } from '@twilio/conversations'
-import { Edit2Icon, InfoIcon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react'
+import { Edit2Icon, InfoIcon, LogOutIcon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import {
   DropdownMenu,
@@ -10,8 +10,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenuAction } from '@/components/ui/sidebar'
+import { ChatDetailsDialog } from '@/components/dialogs/chat/chat-details-dialog'
 import { DeleteChatAlert } from '@/components/dialogs/chat/delete-chat-alert'
 import { EditChatDialog } from '@/components/dialogs/chat/edit-chat-dialog'
+import { LeaveChatAlert } from '@/components/dialogs/chat/leave-chat-alert'
 
 interface NavFolderActionsProps {
   chat: Conversation
@@ -34,10 +36,27 @@ export function NavChatsActions({ chat }: NavFolderActionsProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <InfoIcon className="size-4" />
-          Details
-        </DropdownMenuItem>
+        <ChatDetailsDialog
+          chat={chat}
+          trigger={
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <InfoIcon className="size-4" />
+              Details
+            </DropdownMenuItem>
+          }
+        />
+
+        {!isAdmin && (
+          <LeaveChatAlert
+            chat={chat}
+            trigger={
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <LogOutIcon className="size-4" />
+                Leave
+              </DropdownMenuItem>
+            }
+          />
+        )}
 
         {isAdmin && (
           <>
@@ -50,7 +69,7 @@ export function NavChatsActions({ chat }: NavFolderActionsProps) {
                 </DropdownMenuItem>
               }
             />
-
+            <DropdownMenuSeparator />
             <DeleteChatAlert
               chat={chat}
               trigger={

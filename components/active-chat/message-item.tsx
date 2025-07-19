@@ -29,7 +29,7 @@ export function MessageItem({ message, session }: MessageItemProps) {
   const partAttrs = participant?.attributes as ParticipantAttributes | undefined
   const msgAttrs = message.attributes as MessageAttributes | undefined
   const isGif = msgAttrs?.gif
-  const editMode = !isRawImage && !isGif && !isAudio
+  const isEditable = !isRawImage && !isGif && !isAudio
   const { msgMedia } = useMessageMedia(rawMedia)
 
   const avatarUrl = isAuthor
@@ -76,7 +76,7 @@ export function MessageItem({ message, session }: MessageItemProps) {
           dateCreated={dateCreated}
         />
       </div>
-      {isAuthor && <MessageActions message={message} editMode={editMode} />}
+      {isAuthor && <MessageActions message={message} isEditable={isEditable} />}
     </motion.div>
   )
 }

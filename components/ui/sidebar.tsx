@@ -284,7 +284,7 @@ function SidebarRail({
           />
         </button>
       </TooltipTrigger>
-      <TooltipContent side={side === 'right' ? 'left' : 'right'} className="[&_span]:hidden">
+      <TooltipContent sideOffset={0} side={side === 'right' ? 'left' : 'right'} className="[&_span]:hidden">
         {state === 'collapsed' ? 'Expand' : 'Collapse'}
       </TooltipContent>
     </Tooltip>

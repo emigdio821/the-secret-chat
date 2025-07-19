@@ -200,7 +200,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         <CardFooter className="justify-center">
           <Button type="button" variant="outline" onClick={() => refetch()}>
             <RotateCwIcon className="size-4" />
-            Re-fetch chat
+            Refetch chat
           </Button>
         </CardFooter>
       </Card>

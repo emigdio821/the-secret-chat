@@ -120,7 +120,7 @@ export function Messages({ chat }: MessagesProps) {
         <CardFooter className="justify-center">
           <Button type="button" variant="outline" onClick={() => refetch()}>
             <RotateCwIcon className="size-4" />
-            Re-fetch messages
+            Refetch messages
           </Button>
         </CardFooter>
       </Card>

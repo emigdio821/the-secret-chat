@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import type { UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import type { Conversation } from '@twilio/conversations'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type { z } from 'zod'
+import { ACTIVE_PARTICIPANTS_QUERY } from '@/lib/constants'
 import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
 import { cn } from '@/lib/utils'
 import { addParticipantSchema } from '@/lib/zod-schemas'
@@ -28,6 +30,7 @@ interface AddParticipantDialogProps {
 }
 
 export function AddParticipantDialog({ chat, trigger }: AddParticipantDialogProps) {
+  const queryClient = useQueryClient()
   const [openDialog, setOpenDialog] = useState(false)
   const client = useTwilioClientStore((state) => state.client)
   const form = useForm<z.infer<typeof addParticipantSchema>>({
@@ -43,12 +46,13 @@ export function AddParticipantDialog({ chat, trigger }: AddParticipantDialogProp
       if (!client) throw new Error('Twilio client is undefined')
 
       const user = await client.getUser(values.id)
-      const userAttrs = user.attributes as UserAttributes
+      const userAttrs = user.attributes as UserAttributes | undefined
       await chat.add(values.id, {
         nickname: user.friendlyName,
-        avatar_url: userAttrs.avatar_url || '',
+        avatar_url: userAttrs?.avatar_url || '',
         name: userAttrs?.name || '',
       })
+      await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
       setOpenDialog(false)
       form.reset()
     } catch (err) {

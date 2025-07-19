@@ -7,7 +7,6 @@ import { GhostIcon } from 'lucide-react'
 import { siteConfig } from '@/config/site'
 import { useSearchChatsInputStore } from '@/lib/stores/search-chats-input.store'
 import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
-import { initTwilioClient } from '@/lib/twilio-client'
 import {
   Sidebar,
   SidebarContent,
@@ -25,8 +24,8 @@ import { Input } from './ui/input'
 import { Skeleton } from './ui/skeleton'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const twilioClient = useTwilioClientStore((state) => state.client)
-  const isClientLoading = useTwilioClientStore((state) => state.loading)
+  const initClient = useTwilioClientStore((state) => state.initClient)
+  const clientLoading = useTwilioClientStore((state) => state.loading)
   const searchStoreValue = useSearchChatsInputStore((state) => state.search)
   const setSearchStoreValue = useSearchChatsInputStore((state) => state.setSearch)
   const [searchInputVal, setSearchInputVal] = useState(searchStoreValue)
@@ -38,10 +37,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [setSearchStoreValue])
 
   useEffect(() => {
-    if (!twilioClient) {
-      initTwilioClient()
-    }
-  }, [twilioClient])
+    initClient()
+  }, [initClient])
 
   useEffect(() => {
     return () => {
@@ -91,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {isClientLoading ? (
+        {clientLoading ? (
           <div className="p-2">
             <div className="flex h-8 items-center">
               <Skeleton className="h-2 w-16" />

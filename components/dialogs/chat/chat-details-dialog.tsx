@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { ChatAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { Conversation } from '@twilio/conversations'
-import { MessageSquareIcon, ShieldIcon, Trash2Icon, UserPlusIcon } from 'lucide-react'
+import { LogOutIcon, MessageSquareIcon, ShieldIcon, Trash2Icon, UserPlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -23,10 +24,12 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ParticipantDropdown } from '@/components/active-chat/participant-dropdown'
 import { ChatParticipants } from '@/components/active-chat/participants'
 import { AddParticipantDialog } from './add-participant-dialog'
 import { DeleteChatAlert } from './delete-chat-alert'
+import { LeaveChatAlert } from './leave-chat-alert'
 
 interface EditProfileDialogProps {
   chat: Conversation
@@ -99,26 +102,58 @@ export function ChatDetailsDialog({ chat, trigger }: EditProfileDialogProps) {
         <ChatParticipants chat={chat} />
 
         <DialogFooter>
-          <AddParticipantDialog
-            chat={chat}
-            trigger={
-              <Button variant="outline">
-                <UserPlusIcon className="size-4" />
-                Add participant
-              </Button>
-            }
-          />
-          {isAdmin && (
-            <DeleteChatAlert
+          <Tooltip>
+            <AddParticipantDialog
               chat={chat}
               trigger={
-                <Button variant="destructive">
-                  <Trash2Icon className="size-4" />
-                  Delete
-                </Button>
+                <TooltipTrigger asChild>
+                  <Button aria-label="Add participant" variant="outline" size="icon">
+                    <UserPlusIcon className="size-4" />
+                  </Button>
+                </TooltipTrigger>
               }
             />
+            <TooltipContent>Add participant</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <LeaveChatAlert
+              chat={chat}
+              trigger={
+                <TooltipTrigger asChild>
+                  <Button aria-label="Leave chat" variant="outline" size="icon">
+                    <LogOutIcon className="size-4" />
+                  </Button>
+                </TooltipTrigger>
+              }
+            />
+            <TooltipContent>Leave chat</TooltipContent>
+          </Tooltip>
+
+          {isAdmin && (
+            <Tooltip>
+              <DeleteChatAlert
+                chat={chat}
+                trigger={
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      aria-label="Delete chat"
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2Icon className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                }
+              />
+              <TooltipContent>Delete chat</TooltipContent>
+            </Tooltip>
           )}
+
+          <DialogClose asChild>
+            <Button>Close</Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import type { UserAttributes } from '@/types'
-import { LogInIcon, LogOutIcon, MoonIcon, MoreHorizontalIcon, PlusIcon, SettingsIcon, SunIcon } from 'lucide-react'
+import { LogInIcon, LogOutIcon, MoonIcon, PlusIcon, SettingsIcon, SunIcon } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { AVATAR_FALLBACK_URL } from '@/lib/constants'
@@ -36,20 +36,6 @@ export function NavUser() {
 
   if (status === 'loading' || loading) return <Skeleton className="h-8" />
 
-  // if (error || !profile)
-  //   return (
-  //     <SidebarMenuButton onClick={() => refetch()}>
-  //       <Avatar className="size-5">
-  //         <AvatarImage src="" />
-  //         <AvatarFallback />
-  //       </Avatar>
-  //       <div className="grid flex-1 text-left text-sm leading-tight">
-  //         <span className="truncate font-medium">Refetch profile</span>
-  //       </div>
-  //       <RotateCwIcon className="ml-auto size-4" />
-  //     </SidebarMenuButton>
-  //   )
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -63,7 +49,6 @@ export function NavUser() {
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user?.name}</span>
               </div>
-              <MoreHorizontalIcon className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="sm:w-(--radix-dropdown-menu-trigger-width)" align="start">
