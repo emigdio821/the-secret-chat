@@ -24,9 +24,18 @@ export function NavChats() {
         <SidebarMenu>
           {isLoading && (
             <>
-              <Skeleton className="h-12" />
-              <Skeleton className="h-12" />
-              <Skeleton className="h-12" />
+              <div className="flex h-12 items-center gap-2 p-2">
+                <Skeleton className="size-8 rounded-full" />
+                <Skeleton className="h-2 w-3/5" />
+              </div>
+              <div className="flex h-12 items-center gap-2 p-2">
+                <Skeleton className="size-8 rounded-full" />
+                <Skeleton className="h-2 w-3/5" />
+              </div>
+              <div className="flex h-12 items-center gap-2 p-2">
+                <Skeleton className="size-8 rounded-full" />
+                <Skeleton className="h-2 w-3/5" />
+              </div>
             </>
           )}
           {error && (

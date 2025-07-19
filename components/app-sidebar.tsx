@@ -25,6 +25,7 @@ import { Skeleton } from './ui/skeleton'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const initClient = useTwilioClientStore((state) => state.initClient)
+  const client = useTwilioClientStore((state) => state.client)
   const clientLoading = useTwilioClientStore((state) => state.loading)
   const searchStoreValue = useSearchChatsInputStore((state) => state.search)
   const setSearchStoreValue = useSearchChatsInputStore((state) => state.setSearch)
@@ -94,16 +95,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <Skeleton className="h-2 w-16" />
             </div>
             <div className="flex flex-col gap-1">
-              <Skeleton className="h-12" />
-              <Skeleton className="h-12" />
-              <Skeleton className="h-12" />
+              <div className="flex h-12 items-center gap-2 p-2">
+                <Skeleton className="size-8 rounded-full" />
+                <Skeleton className="h-2 w-3/5" />
+              </div>
+              <div className="flex h-12 items-center gap-2 p-2">
+                <Skeleton className="size-8 rounded-full" />
+                <Skeleton className="h-2 w-3/5" />
+              </div>
+              <div className="flex h-12 items-center gap-2 p-2">
+                <Skeleton className="size-8 rounded-full" />
+                <Skeleton className="h-2 w-3/5" />
+              </div>
             </div>
           </div>
         ) : (
-          <>
-            <NavChats />
-            {/* {twilioClient && <CreateChatDialog client={twilioClient} isLoading={false} />} */}
-          </>
+          client && <NavChats />
         )}
       </SidebarContent>
       <SidebarFooter>
