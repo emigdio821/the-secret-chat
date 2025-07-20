@@ -41,7 +41,7 @@ export function ChatParticipants({ chat }: ChatParticipantsProps) {
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <UsersIcon className="text-muted-foreground size-4" />
-        <span className="text-sm leading-none font-medium">Participants</span>
+        <span className="text-sm leading-none font-semibold">Participants</span>
         <Badge variant="secondary">{participants?.length ?? 0}</Badge>
       </div>
       {isLoading ? (
@@ -61,7 +61,7 @@ export function ChatParticipants({ chat }: ChatParticipantsProps) {
         </div>
       ) : (
         participants?.length && (
-          <div className="-m-2 flex max-h-[212px] flex-col items-start gap-1 overflow-y-auto p-2">
+          <div className="-m-2 flex max-h-[200px] flex-col items-start gap-2 overflow-y-auto p-2">
             {participants.map((participant) => (
               <ParticipantDropdown key={participant.sid} participant={participant} chat={chat} withActions />
             ))}

@@ -41,8 +41,8 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
   return (
     <DropdownMenu key={participant.sid}>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" className="truncate px-3">
-          <Avatar className="size-5">
+        <Button type="button" variant="plain" className="truncate">
+          <Avatar className="size-4">
             <AvatarImage src={participantAvatarUrl} />
             <AvatarFallback />
           </Avatar>

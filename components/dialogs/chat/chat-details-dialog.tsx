@@ -85,7 +85,7 @@ export function ChatDetailsDialog({ chat, trigger }: EditProfileDialogProps) {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <ShieldIcon className="text-muted-foreground size-4" />
-            <span className="text-sm leading-none font-medium">Admin</span>
+            <span className="text-sm leading-none font-semibold">Admin</span>
           </div>
           <div>
             {isLoading ? (
