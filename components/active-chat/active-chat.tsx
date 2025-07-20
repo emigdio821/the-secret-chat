@@ -45,7 +45,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   }, [queryClient])
 
   const handleChatRemoved = useCallback(
-    (chat: Conversation) => {
+    async (chat: Conversation) => {
       toast('Info', {
         description: (
           <>
@@ -54,9 +54,11 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
           </>
         ),
       })
+
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
       router.push('/')
     },
-    [router],
+    [router, queryClient],
   )
 
   const handleUpdatedChat = useCallback(

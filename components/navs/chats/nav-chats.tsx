@@ -5,21 +5,36 @@ import { useSearchChatsInputStore } from '@/lib/stores/search-chats-input.store'
 import { useUserChats } from '@/hooks/chat/use-user-chats'
 import {
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuSkeleton,
 } from '@/components/ui/sidebar'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { NavChatsItem } from './nav-chats-item'
 
 export function NavChats() {
   const searchValue = useSearchChatsInputStore((state) => state.search)
-  const { data: chats, error, isLoading, refetch } = useUserChats(searchValue)
+  const { data: chats, error, isLoading, isRefetching, refetch } = useUserChats(searchValue)
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Chats</SidebarGroupLabel>
+      {isLoading ? (
+        <Skeleton className="absolute top-3.5 right-3 size-4" />
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <SidebarGroupAction disabled={isRefetching} aria-label="Refetch chats">
+              <RotateCwIcon />
+            </SidebarGroupAction>
+          </TooltipTrigger>
+          <TooltipContent>Refetch chats</TooltipContent>
+        </Tooltip>
+      )}
       <SidebarGroupContent>
         <SidebarMenu>
           {isLoading && (
