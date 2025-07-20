@@ -92,7 +92,9 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
                   Kick
                 </DropdownMenuItem>
               }
-              action={handleKickParticipant}
+              action={async () => {
+                await handleKickParticipant(participant)
+              }}
             />
           </>
         )}
