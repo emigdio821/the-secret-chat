@@ -17,6 +17,7 @@ function EmojiPicker({ className, ...props }: React.ComponentProps<typeof EmojiP
         className,
       )}
       data-slot="emoji-picker"
+      style={{ '--frimousse-emoji-font': 'sans-serif' } as React.CSSProperties}
       {...props}
     />
   )
