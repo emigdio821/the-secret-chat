@@ -117,19 +117,21 @@ export function ChatDetailsDialog({ chat, trigger }: EditProfileDialogProps) {
               <TooltipContent>Add participant</TooltipContent>
             </Tooltip>
 
-            <Tooltip>
-              <LeaveChatAlert
-                chat={chat}
-                trigger={
-                  <TooltipTrigger asChild>
-                    <Button aria-label="Leave chat" variant="outline" size="icon">
-                      <LogOutIcon className="size-4" />
-                    </Button>
-                  </TooltipTrigger>
-                }
-              />
-              <TooltipContent>Leave chat</TooltipContent>
-            </Tooltip>
+            {!isAdmin && (
+              <Tooltip>
+                <LeaveChatAlert
+                  chat={chat}
+                  trigger={
+                    <TooltipTrigger asChild>
+                      <Button aria-label="Leave chat" variant="outline" size="icon">
+                        <LogOutIcon className="size-4" />
+                      </Button>
+                    </TooltipTrigger>
+                  }
+                />
+                <TooltipContent>Leave chat</TooltipContent>
+              </Tooltip>
+            )}
 
             {isAdmin && (
               <Tooltip>
