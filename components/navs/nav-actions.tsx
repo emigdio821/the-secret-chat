@@ -1,15 +1,20 @@
 import { LogInIcon, MessageSquarePlusIcon } from 'lucide-react'
 import { CreateChatDialog } from '../dialogs/chat/create-chat-dialog'
+import { JoinChatDialog } from '../dialogs/chat/join-chat-dialog'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar'
 
 export function NavActions() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton disabled>
-          <LogInIcon className="size-4" />
-          Join chat
-        </SidebarMenuButton>
+        <JoinChatDialog
+          trigger={
+            <SidebarMenuButton>
+              <LogInIcon className="size-4" />
+              Join chat
+            </SidebarMenuButton>
+          }
+        />
       </SidebarMenuItem>
       <SidebarMenuItem>
         <CreateChatDialog

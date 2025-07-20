@@ -22,44 +22,6 @@ export function formatDate(date: Date | string) {
   return format(parsedDate, 'MMM dd, yyyy, HH:mm')
 }
 
-export function getFirstName(n: string) {
-  return n.split(' ')[0]
-}
-
-interface SortArrayProps<T> {
-  items: T[]
-  key: keyof T
-  comparator?: string
-}
-
-export function sortArray<T>({ items, key, comparator }: SortArrayProps<T>) {
-  if (!key) return items
-
-  if (comparator) {
-    return items.sort((x, y) => {
-      if (x[key] === comparator) return -1
-      if (y[key] === comparator) return 1
-      return 0
-    })
-  }
-
-  return items.sort((x, y) => {
-    let xVal = x[key] || ''
-    let yVal = y[key] || ''
-
-    if (typeof xVal === 'string') {
-      xVal = xVal.toLowerCase()
-    }
-    if (typeof yVal === 'string') {
-      yVal = yVal.toLowerCase()
-    }
-
-    if (xVal < yVal) return -1
-    if (xVal > yVal) return 1
-    return 0
-  })
-}
-
 export function isAdmin(part: Participant) {
   return part.roleSid === envClient.NEXT_PUBLIC_TWILIO_CHANNEL_ADMIN
 }

@@ -1,16 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { Client } from '@twilio/conversations'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type { z } from 'zod'
+import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
+import { cn } from '@/lib/utils'
 import { joinChatRoomSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -18,18 +20,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Icons } from '@/components/icons'
 
 interface JoinChatDialogProps {
-  isLoading: boolean
-  client: Client
+  trigger: React.ReactNode
 }
 
-export function JoinChatDialog({ client }: JoinChatDialogProps) {
-  const [openedDialog, setOpenedDialog] = useState(false)
+export function JoinChatDialog({ trigger }: JoinChatDialogProps) {
   const router = useRouter()
+  const joinChatFormId = useId()
+  const [openedDialog, setOpenedDialog] = useState(false)
+  const client = useTwilioClientStore((state) => state.client)
 
   const form = useForm<z.infer<typeof joinChatRoomSchema>>({
     shouldUnregister: true,
@@ -41,19 +44,26 @@ export function JoinChatDialog({ client }: JoinChatDialogProps) {
 
   async function onSubmit(values: z.infer<typeof joinChatRoomSchema>) {
     try {
-      const chat = await client?.getConversationByUniqueName(values.id)
+      if (!client) throw new Error('Twilio client is undefined')
+      const chat = await client.getConversationByUniqueName(values.id)
 
-      if (chat?.status === 'notParticipating') {
+      if (chat.status === 'joined') {
+        toast.info('Info', {
+          description: 'You are already a member of this chat.',
+        })
+
+        return
+      }
+
+      if (chat.status === 'notParticipating') {
         await chat?.join()
       }
 
-      if (chat) {
-        router.push(`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`)
-      }
-
+      router.push(`/chat/${chat.sid}`)
       setOpenedDialog(false)
       form.reset()
     } catch (err) {
+      console.log(err)
       const errMsg = err instanceof Error ? err.message : err
       console.error('[join_chat_dialog]', errMsg)
 
@@ -71,38 +81,41 @@ export function JoinChatDialog({ client }: JoinChatDialogProps) {
         setOpenedDialog(opened)
       }}
     >
-      <DialogTrigger asChild>
-        <Button type="button" disabled>
-          Join chat
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Join chat</DialogTitle>
-          <DialogDescription>Join an existing chat room</DialogDescription>
+          <DialogDescription className="sr-only">Join an existing chat using the chat id.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
+          <form onSubmit={form.handleSubmit(onSubmit)} id={joinChatFormId} className="space-y-4">
             <FormField
-              control={form.control}
               name="id"
+              control={form.control}
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>Chat ID</FormLabel>
                   <FormControl>
-                    <Input placeholder="Chat id" autoComplete="false" {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <DialogFooter className="mt-4">
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                Join
-                {form.formState.isSubmitting && <Icons.Spinner className="ml-2" />}
-              </Button>
-            </DialogFooter>
           </form>
         </Form>
+
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="outline">
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button type="submit" form={joinChatFormId} disabled={form.formState.isSubmitting}>
+            <span className={cn(form.formState.isSubmitting && 'invisible')}>Join</span>
+            {form.formState.isSubmitting && <Icons.Spinner className="absolute" />}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
