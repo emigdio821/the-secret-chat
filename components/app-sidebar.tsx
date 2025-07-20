@@ -15,13 +15,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSkeleton,
   SidebarRail,
 } from '@/components/ui/sidebar'
-// import { CreateChatDialog } from './chats/create-chat-dialog'
 import { NavChats } from './navs/chats/nav-chats'
+import { NavActions } from './navs/nav-actions'
 import { NavUser } from './navs/nav-user'
 import { Input } from './ui/input'
-import { Skeleton } from './ui/skeleton'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const initClient = useTwilioClientStore((state) => state.initClient)
@@ -65,7 +65,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{siteConfig.name}</span>
-                  <span className="truncate text-xs">A simple chat</span>
+                  <span className="truncate text-xs font-normal">A simple chat</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -91,22 +91,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {clientLoading ? (
           <div className="p-2">
-            <div className="flex h-8 items-center">
-              <Skeleton className="h-2 w-16" />
-            </div>
+            <SidebarMenuSkeleton className="w-20" />
             <div className="flex flex-col gap-1">
-              <div className="flex h-12 items-center gap-2 p-2">
-                <Skeleton className="size-8 rounded-full" />
-                <Skeleton className="h-2 w-3/5" />
-              </div>
-              <div className="flex h-12 items-center gap-2 p-2">
-                <Skeleton className="size-8 rounded-full" />
-                <Skeleton className="h-2 w-3/5" />
-              </div>
-              <div className="flex h-12 items-center gap-2 p-2">
-                <Skeleton className="size-8 rounded-full" />
-                <Skeleton className="h-2 w-3/5" />
-              </div>
+              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuSkeleton showIcon />
             </div>
           </div>
         ) : (
@@ -114,7 +103,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         )}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        {clientLoading ? (
+          <>
+            <SidebarMenuSkeleton className="w-30" showIcon />
+            <SidebarMenuSkeleton className="w-36" showIcon />
+            <SidebarMenuSkeleton className="w-3/4" showIcon />
+          </>
+        ) : (
+          client && (
+            <>
+              <NavActions />
+              <NavUser />
+            </>
+          )
+        )}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

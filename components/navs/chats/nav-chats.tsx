@@ -9,8 +9,8 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
+  SidebarMenuSkeleton,
 } from '@/components/ui/sidebar'
-import { Skeleton } from '@/components/ui/skeleton'
 import { NavChatsItem } from './nav-chats-item'
 
 export function NavChats() {
@@ -24,18 +24,9 @@ export function NavChats() {
         <SidebarMenu>
           {isLoading && (
             <>
-              <div className="flex h-12 items-center gap-2 p-2">
-                <Skeleton className="size-8 rounded-full" />
-                <Skeleton className="h-2 w-3/5" />
-              </div>
-              <div className="flex h-12 items-center gap-2 p-2">
-                <Skeleton className="size-8 rounded-full" />
-                <Skeleton className="h-2 w-3/5" />
-              </div>
-              <div className="flex h-12 items-center gap-2 p-2">
-                <Skeleton className="size-8 rounded-full" />
-                <Skeleton className="h-2 w-3/5" />
-              </div>
+              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuSkeleton showIcon />
             </>
           )}
           {error && (

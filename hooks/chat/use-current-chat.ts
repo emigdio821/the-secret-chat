@@ -10,6 +10,11 @@ export function useCurrentChat(chatId: string) {
 
     try {
       const chat = await client.getConversationBySid(chatId)
+
+      if (chat.status === 'notParticipating') {
+        await chat.join()
+      }
+
       return chat
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err

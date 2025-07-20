@@ -1,19 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { UserAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
-import type { Client } from '@twilio/conversations'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type { z } from 'zod'
 import { USER_CHATS_QUERY } from '@/lib/constants'
+import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
+import { cn } from '@/lib/utils'
 import { createChatRoomSchema } from '@/lib/zod-schemas'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -28,14 +30,15 @@ import { Textarea } from '@/components/ui/textarea'
 import { Icons } from '@/components/icons'
 
 interface CreateChatDialogProps {
-  isLoading: boolean
-  client: Client
+  trigger: React.ReactNode
 }
 
-export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
+export function CreateChatDialog({ trigger }: CreateChatDialogProps) {
+  const router = useRouter()
+  const createChatFormId = useId()
   const queryClient = useQueryClient()
   const [openedDialog, setOpenedDialog] = useState(false)
-  const router = useRouter()
+  const client = useTwilioClientStore((state) => state.client)
 
   const form = useForm<z.infer<typeof createChatRoomSchema>>({
     shouldUnregister: true,
@@ -49,6 +52,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
 
   async function onSubmit(values: z.infer<typeof createChatRoomSchema>) {
     try {
+      if (!client) throw new Error('Twilio client is undefined')
       const chat = await client.createConversation({
         uniqueName: values.name,
         friendlyName: values.name,
@@ -57,17 +61,20 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
         },
       })
 
-      if (values.join_after && chat) {
+      if (values.join_after) {
         // await chat.join()
         // TODO: Fix get chat when join after is not checked
         const user = await client.getUser(client.user.identity)
-        const userAttrs = user.attributes as UserAttributes
+        const userAttrs = user.attributes as UserAttributes | undefined
+
         await chat.add(client.user.identity, {
-          nickname: user.friendlyName,
+          nickname: userAttrs?.nickname || user.friendlyName,
           avatar_url: userAttrs?.avatar_url || '',
           name: userAttrs?.name || '',
+          about: userAttrs?.about || '',
         })
-        router.push(`/chat/${chat.sid}?name=${chat.friendlyName ?? chat.uniqueName}`)
+
+        router.push(`/chat/${chat.sid}`)
       }
 
       await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
@@ -76,7 +83,7 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message
-      console.error('[create_chat_dialog]', errMsg)
+      console.error('[create_chat_dialog]', err)
 
       const toastMsg =
         errMsg.toLowerCase() === 'conflict'
@@ -97,28 +104,26 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
         setOpenedDialog(opened)
       }}
     >
-      <DialogTrigger asChild>
-        <Button type="button" disabled={isLoading}>
-          Create chat
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create chat</DialogTitle>
-          <DialogDescription>Create a new chat room.</DialogDescription>
+          <DialogDescription className="sr-only">Create your chat here.</DialogDescription>
         </DialogHeader>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
+          <form id={createChatFormId} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
-              control={form.control}
               name="name"
+              control={form.control}
               render={({ field }) => {
                 const charsLength = field.value.length
 
                 return (
                   <FormItem>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input maxLength={40} autoComplete="false" placeholder="Chat name" {...field} />
+                      <Input maxLength={40} {...field} />
                     </FormControl>
                     {charsLength >= 30 && (
                       <p className="text-muted-foreground text-xs">{charsLength} / 40 characters</p>
@@ -129,13 +134,14 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
               }}
             />
             <FormField
-              control={form.control}
               name="description"
+              control={form.control}
               render={({ field }) => {
                 const charsLength = field.value.length
 
                 return (
                   <FormItem>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea
                         maxLength={100}
@@ -172,14 +178,20 @@ export function CreateChatDialog({ isLoading, client }: CreateChatDialogProps) {
                 </FormItem>
               )}
             />
-            <DialogFooter className="mt-4">
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                Create
-                {form.formState.isSubmitting && <Icons.Spinner className="ml-2" />}
-              </Button>
-            </DialogFooter>
           </form>
         </Form>
+
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="outline">
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button type="submit" form={createChatFormId} disabled={form.formState.isSubmitting}>
+            <span className={cn(form.formState.isSubmitting && 'invisible')}>Create</span>
+            {form.formState.isSubmitting && <Icons.Spinner className="absolute" />}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

@@ -2,11 +2,10 @@
 
 import Link from 'next/link'
 import type { UserAttributes } from '@/types'
-import { LogInIcon, LogOutIcon, MoonIcon, PlusIcon, SettingsIcon, SunIcon } from 'lucide-react'
+import { LogOutIcon, MoonIcon, SettingsIcon, SunIcon } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { AVATAR_FALLBACK_URL } from '@/lib/constants'
-import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
 import { useUserProfile } from '@/hooks/use-user-profile'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -30,12 +29,11 @@ export function NavUser() {
   const { setTheme, theme } = useTheme()
   const { data: session, status } = useSession()
   const user = session?.user
-  const loading = useTwilioClientStore((state) => state.loading)
   const { data: profile, isLoading } = useUserProfile()
   const userAttrs = profile?.attributes as UserAttributes | undefined
   const avatarUrl = (userAttrs?.avatar_url || user?.image) ?? AVATAR_FALLBACK_URL
 
-  if (status === 'loading' || loading || isLoading)
+  if (status === 'loading' || isLoading)
     return (
       <div className="flex h-8 items-center gap-2 p-2">
         <Skeleton className="size-5" />
@@ -72,16 +70,6 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem disabled>
-                <PlusIcon className="size-4" />
-                Create chat
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <LogInIcon className="size-4" />
-                Join chat
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
             <DropdownMenuGroup>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>

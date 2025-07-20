@@ -18,15 +18,14 @@ export function NavChatsItem({ chat }: { chat: Conversation }) {
     <SidebarMenuItem key={chat.sid}>
       <SidebarMenuButton
         asChild
-        size="lg"
         isActive={pathname === `/chat/${chat.sid}`}
         className={cn(unreadMsgs && 'group-has-data-[sidebar=menu-action]/menu-item:pr-16')}
       >
         <Link href={`/chat/${chat.sid}`}>
-          <Avatar className="size-8">
+          <Avatar className="size-4">
             <AvatarImage src={chatAttrs?.chatLogoUrl} />
             <AvatarFallback className="bg-highlight">
-              <MessageSquareIcon className="size-4" />
+              <MessageSquareIcon className="size-3" />
             </AvatarFallback>
           </Avatar>
           <span>{chat.friendlyName || chat.uniqueName}</span>

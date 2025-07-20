@@ -52,6 +52,7 @@ export function AddParticipantDialog({ chat, trigger }: AddParticipantDialogProp
         avatar_url: userAttrs?.avatar_url || '',
         name: userAttrs?.name || '',
       })
+
       await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
       setOpenDialog(false)
       form.reset()

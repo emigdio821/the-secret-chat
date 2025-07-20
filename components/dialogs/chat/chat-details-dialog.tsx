@@ -101,55 +101,57 @@ export function ChatDetailsDialog({ chat, trigger }: EditProfileDialogProps) {
 
         <ChatParticipants chat={chat} />
 
-        <DialogFooter>
-          <Tooltip>
-            <AddParticipantDialog
-              chat={chat}
-              trigger={
-                <TooltipTrigger asChild>
-                  <Button aria-label="Add participant" variant="outline" size="icon">
-                    <UserPlusIcon className="size-4" />
-                  </Button>
-                </TooltipTrigger>
-              }
-            />
-            <TooltipContent>Add participant</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <LeaveChatAlert
-              chat={chat}
-              trigger={
-                <TooltipTrigger asChild>
-                  <Button aria-label="Leave chat" variant="outline" size="icon">
-                    <LogOutIcon className="size-4" />
-                  </Button>
-                </TooltipTrigger>
-              }
-            />
-            <TooltipContent>Leave chat</TooltipContent>
-          </Tooltip>
-
-          {isAdmin && (
+        <DialogFooter className="flex-col">
+          <div className="flex items-center justify-center gap-2 sm:justify-normal">
             <Tooltip>
-              <DeleteChatAlert
+              <AddParticipantDialog
                 chat={chat}
                 trigger={
                   <TooltipTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      aria-label="Delete chat"
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2Icon className="size-4" />
+                    <Button aria-label="Add participant" variant="outline" size="icon">
+                      <UserPlusIcon className="size-4" />
                     </Button>
                   </TooltipTrigger>
                 }
               />
-              <TooltipContent>Delete chat</TooltipContent>
+              <TooltipContent>Add participant</TooltipContent>
             </Tooltip>
-          )}
+
+            <Tooltip>
+              <LeaveChatAlert
+                chat={chat}
+                trigger={
+                  <TooltipTrigger asChild>
+                    <Button aria-label="Leave chat" variant="outline" size="icon">
+                      <LogOutIcon className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                }
+              />
+              <TooltipContent>Leave chat</TooltipContent>
+            </Tooltip>
+
+            {isAdmin && (
+              <Tooltip>
+                <DeleteChatAlert
+                  chat={chat}
+                  trigger={
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        aria-label="Delete chat"
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2Icon className="size-4" />
+                      </Button>
+                    </TooltipTrigger>
+                  }
+                />
+                <TooltipContent>Delete chat</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
 
           <DialogClose asChild>
             <Button>Close</Button>
