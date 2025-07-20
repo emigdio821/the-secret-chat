@@ -34,11 +34,13 @@ export const useTwilioClientStore = create<TwilioClientStore>((set, get) => ({
         await get().refreshToken()
       })
 
-      set({
-        client: twilioClient,
-        initialized: true,
-        loading: false,
-        error: null,
+      twilioClient.on('initialized', async () => {
+        set({
+          client: twilioClient,
+          initialized: true,
+          loading: false,
+          error: null,
+        })
       })
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : 'Unknown error'

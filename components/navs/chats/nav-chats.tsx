@@ -41,7 +41,7 @@ export function NavChats() {
           {error && (
             <SidebarMenuButton onClick={() => refetch()}>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">Refetch folders</span>
+                <span className="truncate font-medium">Refetch chats</span>
               </div>
               <RotateCwIcon className="ml-auto size-4" />
             </SidebarMenuButton>

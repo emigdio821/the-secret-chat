@@ -76,15 +76,15 @@ export function byteFormatter(bytes: number, decimals: number = 0) {
   return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`
 }
 
-export function secsToTime(nTime?: number) {
-  if (!nTime) return '0:00'
-  const theTime = nTime
-  const mins = Math.floor(theTime / 60)
-  const secs = Math.floor(theTime % 60)
-  let formattedSecs: string
-  if (secs < 10) {
-    formattedSecs = `0${String(secs)}`
-    return `${mins}:${formattedSecs}`
-  }
-  return `${mins}:${secs}`
+export function formatSecondsToTime(secs: number) {
+  if (!Number.isFinite(secs)) return '0:00'
+  const minutes = Math.floor(secs / 60)
+  const seconds = Math.floor(secs % 60)
+    .toString()
+    .padStart(2, '0')
+  return `${minutes}:${seconds}`
+}
+
+export function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }

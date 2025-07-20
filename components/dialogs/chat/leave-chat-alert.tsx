@@ -1,7 +1,7 @@
+import { useQueryClient } from '@tanstack/react-query'
 import type { Conversation } from '@twilio/conversations'
 import { toast } from 'sonner'
 import { USER_CHATS_QUERY } from '@/lib/constants'
-import { useInvalidateQueries } from '@/hooks/use-invalidate-queries'
 import { AlertActionDialog } from '../alert-action'
 
 interface DeleteChatAlertProps {
@@ -10,12 +10,12 @@ interface DeleteChatAlertProps {
 }
 
 export function LeaveChatAlert({ chat, trigger }: DeleteChatAlertProps) {
-  const { invalidateQueries } = useInvalidateQueries()
+  const queryClient = useQueryClient()
 
   async function handleLeaveChat() {
     try {
       await chat.leave()
-      await invalidateQueries([USER_CHATS_QUERY])
+      await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
     } catch (err) {
       let errMsg = 'Unknown error'
       if (err instanceof Error) errMsg = err.message

@@ -7,6 +7,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { AVATAR_FALLBACK_URL } from '@/lib/constants'
 import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
+import { useUserProfile } from '@/hooks/use-user-profile'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -28,13 +29,19 @@ import { Skeleton } from '../ui/skeleton'
 export function NavUser() {
   const { setTheme, theme } = useTheme()
   const { data: session, status } = useSession()
-  const client = useTwilioClientStore((state) => state.client)
-  const loading = useTwilioClientStore((state) => state.loading)
   const user = session?.user
-  const userAttrs = client?.user.attributes as UserAttributes | undefined
+  const loading = useTwilioClientStore((state) => state.loading)
+  const { data: profile, isLoading } = useUserProfile()
+  const userAttrs = profile?.attributes as UserAttributes | undefined
   const avatarUrl = (userAttrs?.avatar_url || user?.image) ?? AVATAR_FALLBACK_URL
 
-  if (status === 'loading' || loading) return <Skeleton className="h-8" />
+  if (status === 'loading' || loading || isLoading)
+    return (
+      <div className="flex h-8 items-center gap-2 p-2">
+        <Skeleton className="size-5" />
+        <Skeleton className="h-2 w-3/4" />
+      </div>
+    )
 
   return (
     <SidebarMenu>

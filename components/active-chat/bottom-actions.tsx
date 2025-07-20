@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { Conversation } from '@twilio/conversations'
-import { Send, SmileIcon } from 'lucide-react'
+import { SendIcon, SmilePlusIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type { z } from 'zod'
@@ -69,7 +69,7 @@ export function ActiveChatBottomActions({ chat }: { chat: Conversation }) {
                           aria-label="Emoji picker"
                           className="text-muted-foreground hover:text-foreground data-[state=open]:text-foreground"
                         >
-                          <SmileIcon className="size-4" />
+                          <SmilePlusIcon className="size-4" />
                         </Button>
                       }
                       callback={(value) => {
@@ -85,7 +85,7 @@ export function ActiveChatBottomActions({ chat }: { chat: Conversation }) {
           )}
         />
         <Button size="icon" type="submit" disabled={form.formState.isSubmitting || !form.formState.isValid}>
-          <Send className="size-4" />
+          <SendIcon className="size-4" />
           <span className="sr-only">Send message</span>
         </Button>
       </form>

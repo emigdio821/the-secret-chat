@@ -32,6 +32,7 @@ export const editProfileSchema = z.object({
   name: optionalField,
   nickname: optionalField,
   avatar_url: optionalField,
+  about: optionalField.max(50, 'The max length is 50 characters'),
 })
 
 export const editMessageSchema = z.object({

@@ -133,9 +133,12 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
     [queryClient, removeTypingParticipant],
   )
 
-  const handleUpdatedParticipant = useCallback(async () => {
-    await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
-  }, [queryClient])
+  const handleUpdatedParticipant = useCallback(
+    async (_: { participant: Participant; updateReasons: string[] }) => {
+      await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
+    },
+    [queryClient],
+  )
 
   useEffect(() => {
     if (chat) {

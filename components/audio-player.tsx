@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { PauseIcon, PlayIcon, SquareIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatSecondsToTime } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Skeleton } from './ui/skeleton'
@@ -100,15 +100,6 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
     setCurrentTime(value[0])
   }
 
-  const formatTime = (secs: number) => {
-    if (!Number.isFinite(secs)) return '0:00'
-    const minutes = Math.floor(secs / 60)
-    const seconds = Math.floor(secs % 60)
-      .toString()
-      .padStart(2, '0')
-    return `${minutes}:${seconds}`
-  }
-
   return (
     <div className={cn('flex w-40 flex-col gap-2', className)}>
       <audio ref={audioRef} preload="none" className="hidden" hidden>
@@ -117,7 +108,7 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
       </audio>
 
       <div className="text-xs tabular-nums">
-        {formatTime(currentTime)} / {formatTime(duration)}
+        {formatSecondsToTime(currentTime)} / {formatSecondsToTime(duration)}
       </div>
 
       {isLoadingMetadata ? (

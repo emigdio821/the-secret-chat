@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Conversation } from '@twilio/conversations'
-import { debounce } from 'lodash'
+import { throttle } from 'lodash'
 import { ArrowDownIcon, BugIcon, RotateCwIcon, WindIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useSession } from 'next-auth/react'
@@ -24,6 +24,7 @@ interface MessagesProps {
 export function Messages({ chat }: MessagesProps) {
   const { data: session } = useSession()
   const msgsContainerRef = useRef<HTMLDivElement>(null)
+  const suppressScrollRef = useRef(false)
   const autoScroll = useChatAutoScrollStore((state) => state.autoScroll)
   const setAutoScroll = useChatAutoScrollStore((state) => state.setAutoScroll)
   const [showScrollBottom, setShowScrollBottom] = useState(false)
@@ -77,6 +78,8 @@ export function Messages({ chat }: MessagesProps) {
   }, [])
 
   const handleScroll = useCallback(async () => {
+    if (suppressScrollRef.current) return
+
     const container = msgsContainerRef.current
     if (!container) return
 
@@ -90,18 +93,26 @@ export function Messages({ chat }: MessagesProps) {
     if (atBottom && !autoScroll) setAutoScroll(true)
     else if (!atBottom && autoScroll) setAutoScroll(false)
 
-    if (container.scrollTop <= 240 && !isFetchingNextPage && hasNextPage) {
+    if (container.scrollTop <= 450 && !isFetchingNextPage && hasNextPage) {
       await handleFetchOlderMessages()
     }
   }, [autoScroll, setAutoScroll, handleFetchOlderMessages, hasNextPage, isFetchingNextPage])
 
-  const debouncedScroll = useMemo(() => debounce(handleScroll, 200), [handleScroll])
+  const throttledScroll = useMemo(() => throttle(handleScroll, 300), [handleScroll])
 
   useEffect(() => {
     if (autoScroll && messages?.length) {
-      scrollBottom()
+      const el = msgsContainerRef.current
+      if (el) {
+        suppressScrollRef.current = true
+        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+
+        setTimeout(() => {
+          suppressScrollRef.current = false
+        }, 400)
+      }
     }
-  }, [scrollBottom, autoScroll, messages])
+  }, [autoScroll, messages])
 
   if (isLoading) {
     return <Loader msg="Retrieving chat messages..." />
@@ -130,11 +141,10 @@ export function Messages({ chat }: MessagesProps) {
   return (
     <>
       <div className="flex h-full flex-col gap-4">
-        {/* <ChatParticipants chat={chat} session={session} client={client} /> */}
         <div className="relative h-full w-full overflow-hidden rounded-lg border">
           <div
             ref={msgsContainerRef}
-            onScroll={debouncedScroll}
+            onScroll={throttledScroll}
             className="absolute h-full w-full overflow-y-auto rounded-lg"
           >
             {messages.length > 0 ? (
