@@ -7,9 +7,11 @@ import type { Client, Conversation, Message, Participant } from '@twilio/convers
 import { ArrowLeftIcon, BugIcon, GhostIcon, MessageSquareIcon, RotateCwIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import {
+  ACTIVE_CHAT_ADMINS_QUERY,
   ACTIVE_CHAT_MESSAGES_QUERY,
   ACTIVE_CHAT_QUERY,
   ACTIVE_PARTICIPANTS_QUERY,
+  IS_ADMIN_QUERY,
   MSG_PARTICIPANT_QUERY,
   USER_CHATS_QUERY,
 } from '@/lib/constants'
@@ -137,11 +139,14 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
 
   const handleUpdatedParticipant = useCallback(
     async ({ participant, updateReasons }: { participant: Participant; updateReasons: string[] }) => {
-      console.log(participant.identity)
-      console.log('reasons', updateReasons)
+      if (updateReasons.includes('roleSid') && chat) {
+        await queryClient.invalidateQueries({ queryKey: [ACTIVE_CHAT_ADMINS_QUERY, chat.sid] })
+        await queryClient.invalidateQueries({ queryKey: [IS_ADMIN_QUERY, chat.sid, participant.identity] })
+      }
+
       await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
     },
-    [queryClient],
+    [queryClient, chat],
   )
 
   useEffect(() => {
@@ -220,7 +225,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
         <>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Avatar className="size-10">
+              <Avatar className="size-8 sm:size-10">
                 <AvatarImage src={chatAttrs?.chatLogoUrl} />
                 <AvatarFallback className="bg-highlight">
                   <MessageSquareIcon className="size-4" />
@@ -235,7 +240,9 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
                     </Button>
                   }
                 />
-                {chatAttrs?.description && <p className="text-muted-foreground text-sm">{chatAttrs.description}</p>}
+                {chatAttrs?.description && (
+                  <p className="text-muted-foreground text-xs sm:text-sm">{chatAttrs.description}</p>
+                )}
               </div>
             </div>
             <ChatActions chat={chat} />

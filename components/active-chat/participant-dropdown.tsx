@@ -36,6 +36,7 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
   const participantName = partAttrs?.nickname || participant.identity
   const participantAvatarUrl = partAttrs?.avatar_url || AVATAR_FALLBACK_URL
   const { data: isAdmin } = useIsChatAdmin(chat.sid, user?.email || '')
+  const { data: isParticipantAdmin } = useIsChatAdmin(chat.sid, participant.identity || '')
 
   async function handleKickParticipant() {
     try {
@@ -46,7 +47,7 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
     }
   }
 
-  async function handleMakeAdminParticipant() {
+  async function handleToggleAdminParticipant() {
     try {
       await axios.post('/api/twilio/toggle-admin', {
         chatId: chat.sid,
@@ -102,7 +103,7 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
           <>
             <DropdownMenuSeparator />
             <AlertActionDialog
-              title="Make admin?"
+              title={isParticipantAdmin ? 'Dismiss as admin?' : 'Make admin?'}
               message={
                 <span>
                   You are about to make <span className="font-semibold">{participantName}</span> a chat admin.
@@ -111,11 +112,11 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
               trigger={
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <ShieldIcon className="size-4" />
-                  Make admin
+                  {isParticipantAdmin ? 'Dismiss as admin' : 'Make admin'}
                 </DropdownMenuItem>
               }
               action={async () => {
-                await handleMakeAdminParticipant()
+                await handleToggleAdminParticipant()
               }}
             />
             <AlertActionDialog

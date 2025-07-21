@@ -94,9 +94,13 @@ export function ChatDetailsDialog({ chat, trigger }: EditProfileDialogProps) {
                 <Skeleton className="h-2 grow" />
               </div>
             ) : (
-              chatAdmins?.map((adminPart) => (
-                <ParticipantDropdown key={adminPart.sid} participant={adminPart} chat={chat} />
-              ))
+              chatAdmins && (
+                <div className="-m-2 flex max-h-[200px] flex-col items-start gap-2 overflow-y-auto p-2">
+                  {chatAdmins.map((adminPart) => (
+                    <ParticipantDropdown key={adminPart.sid} participant={adminPart} chat={chat} />
+                  ))}
+                </div>
+              )
             )}
           </div>
         </div>
