@@ -1,8 +1,11 @@
 import type { ParticipantAttributes } from '@/types'
+import { useQueryClient } from '@tanstack/react-query'
 import type { Conversation, Participant } from '@twilio/conversations'
-import { AtSignIcon, QuoteIcon, UserIcon, UserXIcon } from 'lucide-react'
+import axios from 'axios'
+import { AtSignIcon, QuoteIcon, ShieldIcon, UserIcon, UserXIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { AVATAR_FALLBACK_URL } from '@/lib/constants'
+import { AVATAR_FALLBACK_URL, IS_ADMIN_QUERY } from '@/lib/constants'
+import { useIsChatAdmin } from '@/hooks/chat/use-is-admin'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,19 +25,34 @@ interface ParticipantDropdownProps {
 }
 
 export function ParticipantDropdown({ participant, chat, withActions = false }: ParticipantDropdownProps) {
+  const queryClient = useQueryClient()
   const { data: session } = useSession()
   const user = session?.user
-  const isAdmin = user?.email === chat.createdBy
   const partAttrs = participant.attributes as ParticipantAttributes | undefined
   const participantName = partAttrs?.nickname || participant.identity
   const participantAvatarUrl = partAttrs?.avatar_url || AVATAR_FALLBACK_URL
+  const { data: isAdmin } = useIsChatAdmin(chat.sid, user?.email || '')
 
-  async function handleKickParticipant(participant: Participant) {
+  async function handleKickParticipant() {
     try {
       await chat.removeParticipant(participant)
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.error('[remove_participant]', errMessage)
+    }
+  }
+
+  async function handleMakeAdminParticipant() {
+    try {
+      await axios.post('/api/twilio/make-admin', {
+        chatId: chat.sid,
+        participantId: participant.sid,
+      })
+
+      await queryClient.invalidateQueries({ queryKey: [IS_ADMIN_QUERY, chat.sid, participant.identity] })
+    } catch (err) {
+      const errMessage = err instanceof Error ? err.message : err
+      console.error('[make_admin_participant]', errMessage)
     }
   }
 
@@ -80,6 +98,23 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
           <>
             <DropdownMenuSeparator />
             <AlertActionDialog
+              title="Make admin?"
+              message={
+                <span>
+                  You are about to make <span className="font-semibold">{participantName}</span> and admin.
+                </span>
+              }
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <ShieldIcon className="size-4" />
+                  Make admin
+                </DropdownMenuItem>
+              }
+              action={async () => {
+                await handleMakeAdminParticipant()
+              }}
+            />
+            <AlertActionDialog
               title="Kick participant?"
               message={
                 <span>
@@ -93,7 +128,7 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
                 </DropdownMenuItem>
               }
               action={async () => {
-                await handleKickParticipant(participant)
+                await handleKickParticipant()
               }}
             />
           </>

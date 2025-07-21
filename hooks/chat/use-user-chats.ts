@@ -30,5 +30,7 @@ export function useUserChats(search: string) {
     queryKey: [USER_CHATS_QUERY],
     queryFn: getChats,
     select: filterBySearch,
+    gcTime: 15 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   })
 }

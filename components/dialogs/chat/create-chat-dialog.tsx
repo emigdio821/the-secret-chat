@@ -11,7 +11,7 @@ import type { z } from 'zod'
 import { USER_CHATS_QUERY } from '@/lib/constants'
 import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
 import { cn } from '@/lib/utils'
-import { createChatRoomSchema } from '@/lib/zod-schemas'
+import { createChatRoomSchema } from '@/lib/zod-schemas/form/form.schema'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

@@ -12,7 +12,7 @@ import type { z } from 'zod'
 import { AVATAR_FALLBACK_URL, USER_PROFILE } from '@/lib/constants'
 import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
 import { cn, delay } from '@/lib/utils'
-import { editProfileSchema } from '@/lib/zod-schemas'
+import { editProfileSchema } from '@/lib/zod-schemas/form/form.schema'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {

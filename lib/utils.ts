@@ -1,8 +1,6 @@
-import type { Participant } from '@twilio/conversations'
 import { clsx, type ClassValue } from 'clsx'
 import { format, isToday, isYesterday } from 'date-fns'
 import { twMerge } from 'tailwind-merge'
-import { envClient } from '@/lib/zod-schemas'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -20,10 +18,6 @@ export function formatDate(date: Date | string) {
   }
 
   return format(parsedDate, 'MMM dd, yyyy, HH:mm')
-}
-
-export function isAdmin(part: Participant) {
-  return part.roleSid === envClient.NEXT_PUBLIC_TWILIO_CHANNEL_ADMIN
 }
 
 export function byteFormatter(bytes: number, decimals: number = 0) {

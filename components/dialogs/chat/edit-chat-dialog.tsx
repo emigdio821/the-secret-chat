@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type { z } from 'zod'
 import { cn } from '@/lib/utils'
-import { editChatSchema } from '@/lib/zod-schemas'
+import { editChatSchema } from '@/lib/zod-schemas/form/form.schema'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {

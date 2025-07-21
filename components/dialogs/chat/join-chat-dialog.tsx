@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import type { z } from 'zod'
 import { useTwilioClientStore } from '@/lib/stores/twilio-client.store'
 import { cn } from '@/lib/utils'
-import { joinChatRoomSchema } from '@/lib/zod-schemas'
+import { joinChatRoomSchema } from '@/lib/zod-schemas/form/form.schema'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

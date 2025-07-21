@@ -9,8 +9,9 @@ import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { cn } from '@/lib/utils'
-import { editChatSchema } from '@/lib/zod-schemas'
+import { editChatSchema } from '@/lib/zod-schemas/form/form.schema'
 import { useAdminParticipant } from '@/hooks/chat/use-chat-admin-participant'
+import { useIsChatAdmin } from '@/hooks/chat/use-is-admin'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -41,8 +42,7 @@ export function ChatDetailsDialog({ chat, trigger }: EditProfileDialogProps) {
   const [openDialog, setOpenDialog] = useState(false)
   const chatAttrs = chat.attributes as ChatAttributes | undefined
   const { data: adminParticipant, isLoading } = useAdminParticipant(chat)
-  const user = session?.user
-  const isAdmin = user?.email === chat.createdBy
+  const { data: isAdmin } = useIsChatAdmin(chat.sid, session?.user?.email || '')
 
   const form = useForm<z.infer<typeof editChatSchema>>({
     shouldUnregister: true,

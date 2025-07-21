@@ -136,7 +136,9 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
   )
 
   const handleUpdatedParticipant = useCallback(
-    async (_: { participant: Participant; updateReasons: string[] }) => {
+    async ({ participant, updateReasons }: { participant: Participant; updateReasons: string[] }) => {
+      console.log(participant.identity)
+      console.log('reasons', updateReasons)
       await queryClient.invalidateQueries({ queryKey: [ACTIVE_PARTICIPANTS_QUERY] })
     },
     [queryClient],

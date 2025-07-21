@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import twilio from 'twilio'
 import { auth } from '@/lib/auth'
+import { envServer } from '@/lib/zod-schemas/env/server.schema'
 
 export async function GET() {
   const session = await auth()
@@ -11,9 +12,9 @@ export async function GET() {
   const { AccessToken } = twilio.jwt
   const { ChatGrant } = AccessToken
   const accessToken = new AccessToken(
-    process.env.TWILIO_ACCOUNT_SID as string,
-    process.env.TWILIO_API_KEY as string,
-    process.env.TWILIO_API_SECRET as string,
+    envServer.TWILIO_ACCOUNT_SID,
+    envServer.TWILIO_API_KEY,
+    envServer.TWILIO_API_SECRET,
     {
       identity: session.user.email,
       ttl: 86400,

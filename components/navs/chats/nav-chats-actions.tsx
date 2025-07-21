@@ -1,6 +1,7 @@
 import type { Conversation } from '@twilio/conversations'
 import { Edit2Icon, InfoIcon, LogOutIcon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { useIsChatAdmin } from '@/hooks/chat/use-is-admin'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +22,7 @@ interface NavFolderActionsProps {
 
 export function NavChatsActions({ chat }: NavFolderActionsProps) {
   const { data: session } = useSession()
-  const isAdmin = session?.user?.email === chat.createdBy
+  const { data: isAdmin } = useIsChatAdmin(chat.sid, session?.user?.email || '')
 
   return (
     <DropdownMenu>
