@@ -105,7 +105,7 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
               title="Make admin?"
               message={
                 <span>
-                  You are about to make <span className="font-semibold">{participantName}</span> and admin.
+                  You are about to make <span className="font-semibold">{participantName}</span> a chat admin.
                 </span>
               }
               trigger={
