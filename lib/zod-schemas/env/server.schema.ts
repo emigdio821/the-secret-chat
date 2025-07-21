@@ -11,6 +11,7 @@ const envSchema = z.object({
   TWILIO_ACCOUNT_SID: z.string().nonempty(),
   TWILIO_SERVICE_SID: z.string().nonempty(),
   TWILIO_AUTH_TOKEN: z.string().nonempty(),
+  GIPHY_API_KEY: z.string().nonempty(),
 })
 
 export const envServer = envSchema.parse(process.env)

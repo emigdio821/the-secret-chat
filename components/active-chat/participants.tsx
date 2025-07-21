@@ -60,7 +60,7 @@ export function ChatParticipants({ chat }: ChatParticipantsProps) {
           </div>
         </div>
       ) : (
-        participants?.length && (
+        participants && (
           <div className="-m-2 flex max-h-[200px] flex-col items-start gap-2 overflow-y-auto p-2">
             {participants.map((participant) => (
               <ParticipantDropdown key={participant.sid} participant={participant} chat={chat} withActions />

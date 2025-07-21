@@ -5,9 +5,15 @@ import { ACTIVE_CHAT_ADMINS_QUERY } from '@/lib/constants'
 
 export function useChatAdmins(chatId: string) {
   async function fetchChatAdmins() {
-    const { data: admins } = await axios.post<ParticipantInstance[]>('/api/twilio/chat-admins', { chatId })
+    try {
+      const { data: admins } = await axios.post<ParticipantInstance[]>('/api/twilio/chat-admins', { chatId })
 
-    return admins
+      return admins
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : err
+      console.error('[use_chat_admins]', errMsg)
+      throw err
+    }
   }
 
   return useQuery({

@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { GifPicker } from '@/components/gif-picker'
+import { GifPickerDialog } from '@/components/dialogs/gif-picker-dialog'
 
 export function MediaActions({ chat }: { chat: Conversation }) {
   const fileInputId = useId()
@@ -163,14 +163,14 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                 </>
               ) : (
                 <>
-                  <GifPicker
+                  <GifPickerDialog
                     trigger={
                       <DropdownMenuItem disabled={audioRecorder.isRecording} onSelect={(e) => e.preventDefault()}>
                         <ImageIcon className="size-4" />
-                        GIF
+                        Pick a GIF
                       </DropdownMenuItem>
                     }
-                    callback={handleSendGif}
+                    onSelect={handleSendGif}
                   />
                   <DropdownMenuItem onSelect={handleUploadImage} disabled={audioRecorder.isRecording}>
                     <Upload className="size-4" />

@@ -11,7 +11,7 @@ function Input({ className, children, type, ...props }: React.ComponentProps<'in
   const isSearch = type === 'search'
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <input
         type={isPassword ? typeState : type}
         data-slot="input"
