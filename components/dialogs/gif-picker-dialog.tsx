@@ -80,19 +80,21 @@ export function GifPickerDialog({ onSelect, trigger }: GifPickerDialogProps) {
         ) : (
           gifs &&
           (gifs.length > 0 ? (
-            <div className="grid max-h-96 grid-cols-2 place-items-center gap-2 overflow-y-auto rounded-lg sm:grid-cols-3">
-              {gifs.map((gif) => (
-                <Button
-                  key={gif.id}
-                  type="button"
-                  variant="unstyled"
-                  aria-label={`${gif.title}-gif`}
-                  className="h-24 w-full hover:scale-90 sm:h-20"
-                  onClick={() => throttledSelect(gif.images.fixed_height.url)}
-                >
-                  <BlurImage className="object-contain" src={gif.images.fixed_height_small.url} alt={gif.title} />
-                </Button>
-              ))}
+            <div className="overflow-hidden rounded-lg">
+              <div className="grid max-h-96 grid-cols-2 place-items-center gap-2 overflow-y-auto rounded-lg sm:grid-cols-3">
+                {gifs.map((gif) => (
+                  <Button
+                    key={gif.id}
+                    type="button"
+                    variant="unstyled"
+                    aria-label={`${gif.title}-gif`}
+                    className="h-24 w-full hover:scale-90 sm:h-20"
+                    onClick={() => throttledSelect(gif.images.fixed_height.url)}
+                  >
+                    <BlurImage className="object-contain" src={gif.images.fixed_height_small.url} alt={gif.title} />
+                  </Button>
+                ))}
+              </div>
             </div>
           ) : (
             <Card>

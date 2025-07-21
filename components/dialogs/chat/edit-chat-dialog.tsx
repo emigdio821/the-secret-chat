@@ -25,6 +25,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Icons } from '@/components/icons'
+import { GifPickerDialog } from '../gif-picker-dialog'
 
 interface EditProfileDialogProps {
   chat: Conversation
@@ -96,9 +97,18 @@ export function EditChatDialog({ chat, trigger }: EditProfileDialogProps) {
                     <FormLabel>Avatar URL</FormLabel>
                     <FormDescription>Copy and pase the URL of the desired image.</FormDescription>
                   </div>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
+
+                  <div className="flex items-center gap-2">
+                    <FormControl>
+                      <Input className="grow" {...field} />
+                    </FormControl>
+                    <GifPickerDialog
+                      onSelect={(url) => {
+                        form.setValue('chatLogoUrl', url)
+                      }}
+                      trigger={<Button variant="outline">GIF</Button>}
+                    />
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
