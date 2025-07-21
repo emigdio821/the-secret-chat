@@ -63,7 +63,7 @@ export function JoinChatDialog({ trigger }: JoinChatDialogProps) {
       setOpenedDialog(false)
       form.reset()
     } catch (err) {
-      console.log(err)
+      console.error(err)
       const errMsg = err instanceof Error ? err.message : err
       console.error('[join_chat_dialog]', errMsg)
 

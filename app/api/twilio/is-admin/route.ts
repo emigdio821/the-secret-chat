@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : 'Unknown error'
 
-    console.error('[api/twilio:is-admin]:', error)
+    console.error('[api/twilio/is-admin]', error)
     return NextResponse.json({ error: errMsg }, { status: 500 })
   }
 }
