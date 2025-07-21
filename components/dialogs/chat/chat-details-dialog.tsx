@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { cn } from '@/lib/utils'
 import { editChatSchema } from '@/lib/zod-schemas/form/form.schema'
-import { useAdminParticipant } from '@/hooks/chat/use-chat-admin-participant'
+import { useChatAdmins } from '@/hooks/chat/use-chat-admins'
 import { useIsChatAdmin } from '@/hooks/chat/use-is-admin'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -41,8 +41,8 @@ export function ChatDetailsDialog({ chat, trigger }: EditProfileDialogProps) {
   const { data: session } = useSession()
   const [openDialog, setOpenDialog] = useState(false)
   const chatAttrs = chat.attributes as ChatAttributes | undefined
-  const { data: adminParticipant, isLoading } = useAdminParticipant(chat)
   const { data: isAdmin } = useIsChatAdmin(chat.sid, session?.user?.email || '')
+  const { data: chatAdmins, isLoading } = useChatAdmins(chat.sid)
 
   const form = useForm<z.infer<typeof editChatSchema>>({
     shouldUnregister: true,
@@ -94,7 +94,9 @@ export function ChatDetailsDialog({ chat, trigger }: EditProfileDialogProps) {
                 <Skeleton className="h-2 grow" />
               </div>
             ) : (
-              adminParticipant && <ParticipantDropdown participant={adminParticipant} chat={chat} />
+              chatAdmins?.map((adminPart) => (
+                <ParticipantDropdown key={adminPart.sid} participant={adminPart} chat={chat} />
+              ))
             )}
           </div>
         </div>

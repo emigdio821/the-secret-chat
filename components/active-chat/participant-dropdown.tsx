@@ -4,6 +4,7 @@ import type { Conversation, Participant } from '@twilio/conversations'
 import axios from 'axios'
 import { AtSignIcon, QuoteIcon, ShieldIcon, UserIcon, UserXIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import type { ParticipantInstance } from 'twilio/lib/rest/conversations/v1/conversation/participant'
 import { AVATAR_FALLBACK_URL, IS_ADMIN_QUERY } from '@/lib/constants'
 import { useIsChatAdmin } from '@/hooks/chat/use-is-admin'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -19,23 +20,26 @@ import {
 import { AlertActionDialog } from '../dialogs/alert-action'
 
 interface ParticipantDropdownProps {
-  participant: Participant
   chat: Conversation
   withActions?: boolean
+  participant: Participant | ParticipantInstance
 }
 
 export function ParticipantDropdown({ participant, chat, withActions = false }: ParticipantDropdownProps) {
   const queryClient = useQueryClient()
   const { data: session } = useSession()
   const user = session?.user
-  const partAttrs = participant.attributes as ParticipantAttributes | undefined
+  const partAttrs =
+    typeof participant.attributes === 'string'
+      ? (JSON.parse(participant.attributes) as ParticipantAttributes | undefined)
+      : (participant.attributes as ParticipantAttributes | undefined)
   const participantName = partAttrs?.nickname || participant.identity
   const participantAvatarUrl = partAttrs?.avatar_url || AVATAR_FALLBACK_URL
   const { data: isAdmin } = useIsChatAdmin(chat.sid, user?.email || '')
 
   async function handleKickParticipant() {
     try {
-      await chat.removeParticipant(participant)
+      await chat.removeParticipant(participant.sid)
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.error('[remove_participant]', errMessage)
@@ -44,7 +48,7 @@ export function ParticipantDropdown({ participant, chat, withActions = false }: 
 
   async function handleMakeAdminParticipant() {
     try {
-      await axios.post('/api/twilio/make-admin', {
+      await axios.post('/api/twilio/toggle-admin', {
         chatId: chat.sid,
         participantId: participant.sid,
       })
