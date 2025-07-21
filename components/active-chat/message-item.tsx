@@ -1,6 +1,5 @@
 import type { MessageAttributes, ParticipantAttributes } from '@/types'
 import type { Message } from '@twilio/conversations'
-import { UserIcon } from 'lucide-react'
 import { motion } from 'motion/react'
 import type { Session } from 'next-auth'
 import { AVATAR_FALLBACK_URL } from '@/lib/constants'
@@ -49,9 +48,7 @@ export function MessageItem({ message, session }: MessageItemProps) {
     >
       <Avatar className="size-6 self-start">
         <AvatarImage className="object-cover" alt={`${user?.name}`} src={avatarUrl} />
-        <AvatarFallback>
-          <UserIcon className="size-4" />
-        </AvatarFallback>
+        <AvatarFallback />
       </Avatar>
 
       <div className="bg-card flex flex-col gap-2 rounded-lg border px-3 py-2 text-sm shadow-xs">

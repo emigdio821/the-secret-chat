@@ -4,7 +4,6 @@ import { useId, useState } from 'react'
 import type { ChatAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { Conversation } from '@twilio/conversations'
-import { MessageSquareIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type { z } from 'zod'
@@ -84,9 +83,7 @@ export function EditChatDialog({ chat, trigger }: EditProfileDialogProps) {
 
         <Avatar className="my-2 size-16">
           <AvatarImage src={form.getValues('chatLogoUrl') || chatAttrs?.chatLogoUrl} />
-          <AvatarFallback className="bg-highlight">
-            <MessageSquareIcon className="size-4" />
-          </AvatarFallback>
+          <AvatarFallback className="bg-highlight" />
         </Avatar>
         <Form {...form}>
           <form id={updateProfileFormId} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

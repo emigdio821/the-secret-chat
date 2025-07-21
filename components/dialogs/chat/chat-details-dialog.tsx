@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { ChatAttributes } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { Conversation } from '@twilio/conversations'
-import { LogOutIcon, MessageSquareIcon, ShieldIcon, Trash2Icon, UserPlusIcon } from 'lucide-react'
+import { LogOutIcon, ShieldIcon, Trash2Icon, UserPlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
@@ -77,9 +77,7 @@ export function ChatDetailsDialog({ chat, trigger }: EditProfileDialogProps) {
 
         <Avatar className="my-2 size-16">
           <AvatarImage src={form.getValues('chatLogoUrl') || chatAttrs?.chatLogoUrl} />
-          <AvatarFallback className="bg-highlight">
-            <MessageSquareIcon className="size-4" />
-          </AvatarFallback>
+          <AvatarFallback className="bg-highlight" />
         </Avatar>
 
         <div className="flex flex-col gap-2">

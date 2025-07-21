@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ChatAttributes } from '@/types'
 import type { Conversation } from '@twilio/conversations'
-import { MessageSquareIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useChatUnreadMsgs } from '@/hooks/chat/use-chat-unread-msgs'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -24,9 +23,7 @@ export function NavChatsItem({ chat }: { chat: Conversation }) {
         <Link href={`/chat/${chat.sid}`}>
           <Avatar className="size-4">
             <AvatarImage src={chatAttrs?.chatLogoUrl} />
-            <AvatarFallback className="bg-highlight">
-              <MessageSquareIcon className="size-3" />
-            </AvatarFallback>
+            <AvatarFallback className="bg-highlight" />
           </Avatar>
           <span>{chat.friendlyName || chat.uniqueName}</span>
         </Link>

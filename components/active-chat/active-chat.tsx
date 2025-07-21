@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import type { ChatAttributes } from '@/types'
 import { useQueryClient } from '@tanstack/react-query'
 import type { Client, Conversation, Message, Participant } from '@twilio/conversations'
-import { ArrowLeftIcon, BugIcon, GhostIcon, MessageSquareIcon, RotateCwIcon } from 'lucide-react'
+import { ArrowLeftIcon, BugIcon, GhostIcon, RotateCwIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   ACTIVE_CHAT_ADMINS_QUERY,
@@ -227,9 +227,7 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
             <div className="flex items-center gap-2">
               <Avatar className="size-8 sm:size-10">
                 <AvatarImage src={chatAttrs?.chatLogoUrl} />
-                <AvatarFallback className="bg-highlight">
-                  <MessageSquareIcon className="size-4" />
-                </AvatarFallback>
+                <AvatarFallback className="bg-highlight" />
               </Avatar>
               <div>
                 <ChatDetailsDialog
