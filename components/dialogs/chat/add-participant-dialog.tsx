@@ -13,6 +13,7 @@ import { addParticipantSchema } from '@/lib/zod-schemas/form/form.schema'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -96,6 +97,11 @@ export function AddParticipantDialog({ chat, trigger }: AddParticipantDialogProp
               )}
             />
             <DialogFooter className="mt-4">
+              <DialogClose asChild>
+                <Button type="button" variant="outline">
+                  Cancel
+                </Button>
+              </DialogClose>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 <span className={cn(form.formState.isSubmitting && 'invisible')}>Add</span>
                 {form.formState.isSubmitting && <Icons.Spinner className="absolute" />}
