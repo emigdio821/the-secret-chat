@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import type { Client, Conversation, Message, Participant } from '@twilio/conversations'
 import { ArrowLeftIcon, BugIcon, GhostIcon, RotateCwIcon } from 'lucide-react'
 import { toast } from 'sonner'
+import { siteConfig } from '@/config/site'
 import {
   ACTIVE_CHAT_ADMINS_QUERY,
   ACTIVE_CHAT_MESSAGES_QUERY,
@@ -72,6 +73,11 @@ export function ActiveChat({ client, chatId }: ActiveChatProps) {
       const newCovo = Object.create(conversation)
       await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
       queryClient.setQueryData([ACTIVE_CHAT_QUERY, chatId], newCovo)
+
+      // Abit of a hack, but works for now...
+      if (conversation.friendlyName) {
+        document.title = `${conversation.friendlyName} · ${siteConfig.name}`
+      }
     },
     [chatId, queryClient],
   )

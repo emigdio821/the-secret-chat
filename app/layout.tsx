@@ -25,8 +25,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
+    { media: '(prefers-color-scheme: light)', color: '#fdfcfd' },
+    { media: '(prefers-color-scheme: dark)', color: '#121113' },
   ],
   initialScale: 1,
   maximumScale: 1,
@@ -36,15 +36,13 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <>
-      <html lang="en" suppressHydrationWarning>
-        <head />
-        <body className={cn('antialiased', fontSans.className, fontSans.variable)}>
-          <Providers>
-            <main className="relative flex min-h-dvh flex-col">{children}</main>
-          </Providers>
-        </body>
-      </html>
-    </>
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body className={cn('antialiased', fontSans.className, fontSans.variable)}>
+        <Providers>
+          <main className="relative flex min-h-dvh flex-col">{children}</main>
+        </Providers>
+      </body>
+    </html>
   )
 }

@@ -1,7 +1,7 @@
 const appName = 'The Secret Chat'
 const appDesc = 'The Secret Chat is a simple and open-source chat app.'
 const appUrl = 'https://thesecretchat.vercel.app/'
-export const appOgUrl = `https://thesecretchat.vercel.app/og?title=${appName}&description=${appDesc}`
+export const appOgUrl = `/og?title=${encodeURIComponent(appName)}&description=${encodeURIComponent(appDesc)}`
 
 export const siteConfig = {
   name: appName,
