@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { debounce, throttle } from 'lodash'
 import { WindIcon } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { useGifs } from '@/hooks/use-gifs'
 import {
   Dialog,
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { BlurImage } from '../blur-image'
+import { Icons } from '../icons'
 import { Button } from '../ui/button'
 import { Card, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Skeleton } from '../ui/skeleton'
@@ -29,7 +31,8 @@ export function GifPickerDialog({ onSelect, trigger }: GifPickerDialogProps) {
   const [search, setSearch] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [openDialog, setOpenDialog] = useState(false)
-  const { data: gifs, isLoading } = useGifs(debouncedQuery)
+  const { data: infiniteGifs, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = useGifs(debouncedQuery)
+  const gifs = infiniteGifs?.pages.flatMap((page) => page.data) ?? []
 
   const updateQuery = useMemo(
     () =>
@@ -72,7 +75,7 @@ export function GifPickerDialog({ onSelect, trigger }: GifPickerDialogProps) {
         </p>
 
         {isLoading ? (
-          <div className="grid max-h-96 grid-cols-2 place-items-center gap-2 overflow-y-auto rounded-lg sm:grid-cols-3">
+          <div className="grid max-h-96 grid-cols-3 place-items-center gap-2 overflow-y-auto rounded-lg">
             {Array.from(Array(15).keys()).map((n) => (
               <Skeleton key={`${n}-fig-skeleton`} className="h-24 w-full sm:h-20" />
             ))}
@@ -80,20 +83,38 @@ export function GifPickerDialog({ onSelect, trigger }: GifPickerDialogProps) {
         ) : (
           gifs &&
           (gifs.length > 0 ? (
-            <div className="overflow-hidden rounded-lg">
-              <div className="grid max-h-96 grid-cols-2 place-items-center gap-2 overflow-y-auto rounded-lg sm:grid-cols-3">
+            <div className="flex flex-col gap-4 overflow-hidden rounded-lg">
+              <div className="grid max-h-96 grid-cols-3 place-items-center gap-2 overflow-y-auto rounded-lg">
                 {gifs.map((gif) => (
                   <Button
-                    key={gif.id}
                     type="button"
                     variant="unstyled"
                     aria-label={`${gif.title}-gif`}
                     className="h-24 w-full hover:scale-90 sm:h-20"
+                    key={`${gif.id}-${gif.images.fixed_height.url}`}
                     onClick={() => throttledSelect(gif.images.fixed_height.url)}
                   >
-                    <BlurImage className="object-contain" src={gif.images.fixed_height_small.url} alt={gif.title} />
+                    <BlurImage className="object-contain" src={gif.images.fixed_height.url} alt={gif.title} />
                   </Button>
                 ))}
+
+                {hasNextPage && (
+                  <>
+                    <div />
+                    <Button
+                      size="sm"
+                      type="button"
+                      variant="outline"
+                      className="relative"
+                      onClick={() => fetchNextPage()}
+                      disabled={isFetchingNextPage}
+                    >
+                      <span className={cn(isFetchingNextPage && 'invisible')}>Load more</span>
+                      {isFetchingNextPage && <Icons.Spinner className="absolute" />}
+                    </Button>
+                    <div />
+                  </>
+                )}
               </div>
             </div>
           ) : (

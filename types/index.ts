@@ -1,3 +1,4 @@
+import type { IGif } from '@giphy/js-types'
 import type { JSONValue } from '@twilio/conversations'
 
 export type UserAttributes = {
@@ -20,3 +21,17 @@ export type ChatAttributes = {
   description?: string
   chatLogoUrl?: string
 } & JSONValue
+
+export interface GiphyResponse {
+  data: IGif[]
+  meta: {
+    msg: string
+    status: number
+    response_id: string
+  }
+  pagination: {
+    count: number
+    offset: number
+    total_count: number
+  }
+}
