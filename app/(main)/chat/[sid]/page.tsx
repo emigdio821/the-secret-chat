@@ -1,8 +1,6 @@
 import { cache } from 'react'
 import type { Metadata } from 'next'
-import type { ChatAttributes } from '@/types'
 import { Twilio } from 'twilio'
-import { appOgUrl } from '@/config/site'
 import { envServer } from '@/lib/zod-schemas/env/server.schema'
 import { ActiveChatContainer } from '@/components/active-chat/active-chat-container'
 
@@ -20,34 +18,9 @@ const getChatInfo = cache(async (chatId: string) => {
 export async function generateMetadata(props: ChatPageProps) {
   const params = await props.params
   const chat = await getChatInfo(params.sid)
-  const chatAttrs = chat.attributes ? (JSON.parse(chat.attributes) as ChatAttributes | undefined) : undefined
 
   return {
     title: chat.friendlyName,
-    description: chatAttrs?.description,
-    openGraph: {
-      type: 'website',
-      title: chat.friendlyName,
-      description: chatAttrs?.description,
-      url: appOgUrl,
-      images: [
-        {
-          url: `/og?title=${encodeURIComponent(chat.friendlyName)}&description=${encodeURIComponent(chatAttrs?.description || '')}`,
-        },
-      ],
-    },
-
-    twitter: {
-      card: 'summary_large_image',
-      title: chat.friendlyName,
-      description: chatAttrs?.description,
-      images: [
-        {
-          url: `/og?title=${encodeURIComponent(chat.friendlyName)}&description=${encodeURIComponent(chatAttrs?.description || '')}`,
-        },
-      ],
-      creator: '@emigdio821',
-    },
   } satisfies Metadata
 }
 
