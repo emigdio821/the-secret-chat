@@ -10,9 +10,7 @@ interface ChatPageProps {
   params: Promise<{ sid: string }>
 }
 
-export const revalidate = 10
-
-export const getChatInfo = cache(async (chatId: string) => {
+const getChatInfo = cache(async (chatId: string) => {
   const client = new Twilio(envServer.TWILIO_ACCOUNT_SID, envServer.TWILIO_AUTH_TOKEN)
   const service = client.conversations.v1.services(envServer.TWILIO_SERVICE_SID)
   const conversation = await service.conversations(chatId).fetch()
