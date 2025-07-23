@@ -412,6 +412,7 @@ function SidebarGroupAction({
         'after:absolute after:-inset-2 md:after:hidden',
         'group-data-[collapsible=icon]:hidden',
         'data-[state=open]:bg-sidebar-accent',
+        'disabled:pointer-events-none disabled:opacity-50',
         className,
       )}
       {...props}

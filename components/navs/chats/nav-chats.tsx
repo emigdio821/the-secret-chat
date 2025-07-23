@@ -1,6 +1,10 @@
 'use client'
 
+import { useCallback, useMemo, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { throttle } from 'lodash'
 import { RotateCwIcon } from 'lucide-react'
+import { UNREAD_CHAT_MSGS_QUERY } from '@/lib/constants'
 import { useSearchChatsInputStore } from '@/lib/stores/search-chats-input.store'
 import { useUserChats } from '@/hooks/chat/use-user-chats'
 import {
@@ -17,8 +21,19 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { NavChatsItem } from './nav-chats-item'
 
 export function NavChats() {
+  const queryClient = useQueryClient()
+  const [isRefetching, setRefetching] = useState(false)
   const searchValue = useSearchChatsInputStore((state) => state.search)
-  const { data: chats, error, isLoading, isRefetching, refetch } = useUserChats(searchValue)
+  const { data: chats, error, isLoading, refetch } = useUserChats(searchValue)
+
+  const handleRefetchChats = useCallback(async () => {
+    setRefetching(true)
+    await refetch()
+    await queryClient.invalidateQueries({ queryKey: [UNREAD_CHAT_MSGS_QUERY], exact: false })
+    setRefetching(false)
+  }, [refetch, queryClient])
+
+  const throttledRefetchChats = useMemo(() => throttle(handleRefetchChats, 5000), [handleRefetchChats])
 
   return (
     <SidebarGroup>
@@ -28,7 +43,12 @@ export function NavChats() {
       ) : (
         <Tooltip>
           <TooltipTrigger asChild>
-            <SidebarGroupAction disabled={isRefetching} aria-label="Refetch chats">
+            <SidebarGroupAction
+              disabled={isRefetching}
+              aria-label="Refetch chats"
+              onClick={throttledRefetchChats}
+              className="text-muted-foreground"
+            >
               <RotateCwIcon />
             </SidebarGroupAction>
           </TooltipTrigger>

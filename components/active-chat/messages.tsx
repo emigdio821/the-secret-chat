@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import type { Conversation } from '@twilio/conversations'
 import { throttle } from 'lodash'
 import { ArrowDownIcon, BugIcon, RotateCwIcon, WindIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
+import { UNREAD_CHAT_MSGS_QUERY, USER_CHATS_QUERY } from '@/lib/constants'
 import { useChatAutoScrollStore } from '@/lib/stores/chat-autoscroll.store'
 import { useTypingParticipantsStore } from '@/lib/stores/typing-participants.store'
 import { useChatMessages } from '@/hooks/chat/use-chat-messages'
@@ -22,6 +24,7 @@ interface MessagesProps {
 }
 
 export function Messages({ chat }: MessagesProps) {
+  const queryClient = useQueryClient()
   const { data: session } = useSession()
   const msgsContainerRef = useRef<HTMLDivElement>(null)
   const suppressScrollRef = useRef(false)
@@ -100,6 +103,11 @@ export function Messages({ chat }: MessagesProps) {
 
   const throttledScroll = useMemo(() => throttle(handleScroll, 300), [handleScroll])
 
+  const handleAfterLoadMessages = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: [USER_CHATS_QUERY] })
+    await queryClient.invalidateQueries({ queryKey: [UNREAD_CHAT_MSGS_QUERY, chat.sid] })
+  }, [queryClient, chat.sid])
+
   useEffect(() => {
     if (autoScroll && messages?.length) {
       const el = msgsContainerRef.current
@@ -113,6 +121,12 @@ export function Messages({ chat }: MessagesProps) {
       }
     }
   }, [autoScroll, messages])
+
+  useEffect(() => {
+    if (queryMessages) {
+      handleAfterLoadMessages()
+    }
+  }, [handleAfterLoadMessages, queryMessages])
 
   if (isLoading) {
     return <Loader msg="Retrieving chat messages..." />
