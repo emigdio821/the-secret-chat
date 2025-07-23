@@ -27,6 +27,7 @@ export function Providers({ children }: ProvidersProps) {
         <QueryClientProvider client={queryClient}>
           {children}
           <Toaster
+            position="top-center"
             expand
             icons={{
               error: <CircleAlertIcon className="size-4" />,

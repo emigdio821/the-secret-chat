@@ -139,64 +139,62 @@ export function Messages({ chat }: MessagesProps) {
   }
 
   return (
-    <>
-      <div className="flex h-full flex-col gap-4">
-        <div className="relative h-full w-full overflow-hidden rounded-lg border">
-          <div
-            ref={msgsContainerRef}
-            onScroll={throttledScroll}
-            className="absolute h-full w-full overflow-y-auto rounded-lg"
-          >
-            {messages.length > 0 ? (
-              <div className="flex flex-col gap-2 p-4">
-                {hasNextPage && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="self-end"
-                    disabled={isFetchingNextPage}
-                    onClick={handleFetchOlderMessages}
-                  >
-                    {isFetchingNextPage ? 'Fetching older messages...' : 'Load more messages'}
-                    {isFetchingNextPage && <Icons.Spinner className="size-4" />}
-                  </Button>
-                )}
-                <AnimatePresence initial={false}>
-                  {session &&
-                    messages.map((message) => <MessageItem key={message.sid} session={session} message={message} />)}
-                </AnimatePresence>
-              </div>
-            ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-2">
-                <WindIcon className="text-muted-foreground size-12" />
-                <span className="text-muted-foreground text-sm">This conversation is empty</span>
-              </div>
-            )}
-          </div>
-
-          <AnimatePresence>
-            {typingParticipants.length > 0 && <TypingIndicator participants={typingParticipants} />}
-          </AnimatePresence>
-
-          <AnimatePresence initial={false}>
-            {showScrollBottom && (
-              <Button type="button" size="icon" className="absolute right-4 bottom-4 size-6 transition-colors" asChild>
-                <motion.button
+    <div className="flex h-full flex-col gap-4">
+      <div className="relative h-full w-full overflow-hidden rounded-lg border">
+        <div
+          ref={msgsContainerRef}
+          onScroll={throttledScroll}
+          className="absolute h-full w-full overflow-y-auto rounded-lg"
+        >
+          {messages.length > 0 ? (
+            <div className="flex flex-col gap-2 p-4">
+              {hasNextPage && (
+                <Button
                   type="button"
-                  onClick={scrollBottom}
-                  initial={{ y: 5, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -5, opacity: 0 }}
+                  variant="outline"
+                  className="self-end"
+                  disabled={isFetchingNextPage}
+                  onClick={handleFetchOlderMessages}
                 >
-                  <ArrowDownIcon className="size-3" />
-                  <span className="sr-only">Scroll bottom</span>
-                </motion.button>
-              </Button>
-            )}
-          </AnimatePresence>
+                  {isFetchingNextPage ? 'Fetching older messages...' : 'Load more messages'}
+                  {isFetchingNextPage && <Icons.Spinner className="size-4" />}
+                </Button>
+              )}
+              <AnimatePresence initial={false}>
+                {session &&
+                  messages.map((message) => <MessageItem key={message.sid} session={session} message={message} />)}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center gap-2">
+              <WindIcon className="text-muted-foreground size-12" />
+              <span className="text-muted-foreground text-sm">This conversation is empty</span>
+            </div>
+          )}
         </div>
-        <ActiveChatBottomActions chat={chat} />
+
+        <AnimatePresence>
+          {typingParticipants.length > 0 && <TypingIndicator participants={typingParticipants} />}
+        </AnimatePresence>
+
+        <AnimatePresence initial={false}>
+          {showScrollBottom && (
+            <Button type="button" size="icon" className="absolute right-4 bottom-4 size-6 transition-colors" asChild>
+              <motion.button
+                type="button"
+                onClick={scrollBottom}
+                initial={{ y: 5, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -5, opacity: 0 }}
+              >
+                <ArrowDownIcon className="size-3" />
+                <span className="sr-only">Scroll bottom</span>
+              </motion.button>
+            </Button>
+          )}
+        </AnimatePresence>
       </div>
-    </>
+      <ActiveChatBottomActions chat={chat} />
+    </div>
   )
 }

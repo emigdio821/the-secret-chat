@@ -23,7 +23,7 @@ export function BlurImage({ alt, transparent = false, className, ...props }: Blu
         // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         className={cn(
           'rounded-[inherit] object-cover duration-700 ease-in-out',
-          isLoading ? 'scale-110 opacity-25 blur-2xl' : 'blur-0 scale-100 opacity-100',
+          isLoading ? 'scale-110 opacity-25 blur-xl grayscale-50' : 'blur-0 scale-100 opacity-100',
           className,
         )}
         onLoad={() => {
