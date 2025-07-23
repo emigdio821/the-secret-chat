@@ -6,6 +6,7 @@ import { ImageViewer } from '@/components/image-viewer'
 interface MessageMediaItemProps {
   body: string | null
   isGif: boolean | undefined
+  isSticker: boolean | undefined
   isAudio: boolean | undefined
   isRawImage: boolean | undefined
   rawMedia: Media | undefined
@@ -13,10 +14,14 @@ interface MessageMediaItemProps {
 }
 
 export function MessageMediaItem(props: MessageMediaItemProps) {
-  const { isGif, isRawImage, isAudio, body, msgMedia, rawMedia } = props
+  const { isGif, isSticker, isRawImage, isAudio, body, msgMedia, rawMedia } = props
 
-  if (isGif) {
-    return msgMedia.loading ? <Skeleton className="h-20 w-28" /> : <ImageViewer url={body ?? ''} title="GIPHY" />
+  if (isGif || isSticker) {
+    return msgMedia.loading ? (
+      <Skeleton className="h-20 w-28" />
+    ) : (
+      <ImageViewer url={body ?? ''} title="GIPHY" transparentTrigger={isSticker} />
+    )
   }
 
   if (isRawImage) {

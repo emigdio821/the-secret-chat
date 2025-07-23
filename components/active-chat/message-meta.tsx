@@ -4,6 +4,7 @@ import { formatDate } from '@/lib/utils'
 
 interface MessageMetaProps {
   isGif: boolean | undefined
+  isSticker: boolean | undefined
   author: string | null
   isAuthor: boolean
   dateCreated: Date | null
@@ -13,13 +14,13 @@ interface MessageMetaProps {
 }
 
 export function MessageMeta(props: MessageMetaProps) {
-  const { dateCreated, isGif, msgAttrs, partAttrs, author, rawMedia, isAuthor } = props
+  const { dateCreated, isGif, isSticker, msgAttrs, partAttrs, author, rawMedia, isAuthor } = props
 
   return (
     <div className="text-muted-foreground mt-2 flex flex-col text-[11px]">
       <span>
         {dateCreated && <span>{formatDate(dateCreated)}</span>}
-        {isGif && ' · (via GIPHY)'}
+        {(isGif || isSticker) && ' · (via GIPHY)'}
         {msgAttrs?.isEdited && ' · (edited)'}
         {rawMedia?.contentType && ` · (${rawMedia?.contentType})`}
       </span>

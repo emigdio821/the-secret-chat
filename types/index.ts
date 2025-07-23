@@ -14,6 +14,7 @@ export type ParticipantAttributes = {
 
 export type MessageAttributes = {
   gif?: boolean
+  sticker?: boolean
   isEdited?: boolean
 } & JSONValue
 
@@ -34,4 +35,9 @@ export interface GiphyResponse {
     offset: number
     total_count: number
   }
+}
+
+export enum GiphyType {
+  Gif = 'gif',
+  Sticker = 'sticker',
 }

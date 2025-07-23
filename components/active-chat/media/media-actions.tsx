@@ -1,6 +1,7 @@
 import { useId, useState } from 'react'
+import { GiphyType, type MessageAttributes } from '@/types'
 import type { Conversation } from '@twilio/conversations'
-import { ImageIcon, MicIcon, PaperclipIcon, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
+import { ImageIcon, MicIcon, PaperclipIcon, Pause, SendHorizonal, StickerIcon, Trash2, Upload } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { toast } from 'sonner'
 import { useAudioRecorder } from '@/hooks/use-audio-recorder'
@@ -14,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { GifPickerDialog } from '@/components/dialogs/gif-picker-dialog'
+import { StickerPickerDialog } from '@/components/dialogs/sticker-picker-dialog'
 
 export function MediaActions({ chat }: { chat: Conversation }) {
   const fileInputId = useId()
@@ -43,15 +45,20 @@ export function MediaActions({ chat }: { chat: Conversation }) {
     }
   }
 
-  async function handleSendGif(url: string) {
+  async function handleSendGiphy(url: string, type: GiphyType) {
+    const msgAttrPayload: MessageAttributes = {}
+    if (type === GiphyType.Gif) {
+      msgAttrPayload.gif = true
+    } else if (type === GiphyType.Sticker) {
+      msgAttrPayload.sticker = true
+    }
+
     try {
-      await chat.sendMessage(url, {
-        gif: true,
-      })
+      await chat.sendMessage(url, msgAttrPayload)
       setOpenActions(false)
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
-      console.error('[send_gif]', errMessage)
+      console.error('[send_giphy]', errMessage)
     }
   }
 
@@ -173,7 +180,16 @@ export function MediaActions({ chat }: { chat: Conversation }) {
                         Pick a GIF
                       </DropdownMenuItem>
                     }
-                    onSelect={handleSendGif}
+                    onSelect={(url) => handleSendGiphy(url, GiphyType.Gif)}
+                  />
+                  <StickerPickerDialog
+                    trigger={
+                      <DropdownMenuItem disabled={audioRecorder.isRecording} onSelect={(e) => e.preventDefault()}>
+                        <StickerIcon className="size-4" />
+                        Pick a sticker
+                      </DropdownMenuItem>
+                    }
+                    onSelect={(url) => handleSendGiphy(url, GiphyType.Sticker)}
                   />
                   <DropdownMenuItem onSelect={handleUploadImage} disabled={audioRecorder.isRecording}>
                     <Upload className="size-4" />

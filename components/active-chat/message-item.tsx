@@ -28,7 +28,8 @@ export function MessageItem({ message, session }: MessageItemProps) {
   const partAttrs = participant?.attributes as ParticipantAttributes | undefined
   const msgAttrs = message.attributes as MessageAttributes | undefined
   const isGif = msgAttrs?.gif
-  const isEditable = !isRawImage && !isGif && !isAudio
+  const isSticker = msgAttrs?.sticker
+  const isEditable = !isRawImage && !isGif && !isSticker && !isAudio
   const { msgMedia } = useMessageMedia(rawMedia)
 
   const avatarUrl = isAuthor
@@ -56,6 +57,7 @@ export function MessageItem({ message, session }: MessageItemProps) {
           <MessageMediaItem
             body={body}
             isGif={isGif}
+            isSticker={isSticker}
             isAudio={isAudio}
             msgMedia={msgMedia}
             rawMedia={rawMedia}
@@ -65,6 +67,7 @@ export function MessageItem({ message, session }: MessageItemProps) {
 
         <MessageMeta
           isGif={isGif}
+          isSticker={isSticker}
           author={author}
           msgAttrs={msgAttrs}
           isAuthor={isAuthor}
