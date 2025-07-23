@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import type { Conversation } from '@twilio/conversations'
 import { ImageIcon, MicIcon, PaperclipIcon, Pause, SendHorizonal, Trash2, Upload } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
@@ -18,6 +18,7 @@ import { GifPickerDialog } from '@/components/dialogs/gif-picker-dialog'
 export function MediaActions({ chat }: { chat: Conversation }) {
   const fileInputId = useId()
   const audioRecorder = useAudioRecorder()
+  const [openActions, setOpenActions] = useState(false)
   function handleUploadImage() {
     const fileInput = document.getElementById(fileInputId)
     fileInput?.click()
@@ -47,6 +48,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
       await chat.sendMessage(url, {
         gif: true,
       })
+      setOpenActions(false)
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.error('[send_gif]', errMessage)
@@ -65,6 +67,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
       formData.append('file', file)
 
       await chat.sendMessage(formData)
+      setOpenActions(false)
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : err
       console.error('[send_audio]', errMessage)
@@ -75,7 +78,7 @@ export function MediaActions({ chat }: { chat: Conversation }) {
 
   return (
     <>
-      <DropdownMenu modal={false}>
+      <DropdownMenu open={openActions} onOpenChange={setOpenActions}>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"

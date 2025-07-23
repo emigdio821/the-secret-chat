@@ -113,7 +113,7 @@ export function Messages({ chat }: MessagesProps) {
       const el = msgsContainerRef.current
       if (el) {
         suppressScrollRef.current = true
-        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+        el.scrollTo({ top: el.scrollHeight })
 
         setTimeout(() => {
           suppressScrollRef.current = false
@@ -174,7 +174,7 @@ export function Messages({ chat }: MessagesProps) {
                   {isFetchingNextPage && <Icons.Spinner className="size-4" />}
                 </Button>
               )}
-              <AnimatePresence initial={false}>
+              <AnimatePresence>
                 {session &&
                   messages.map((message) => <MessageItem key={message.sid} session={session} message={message} />)}
               </AnimatePresence>

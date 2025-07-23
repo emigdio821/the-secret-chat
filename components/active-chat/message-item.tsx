@@ -18,7 +18,7 @@ interface MessageItemProps {
 
 export function MessageItem({ message, session }: MessageItemProps) {
   const user = session.user
-  const { author, sid, body, dateCreated } = message
+  const { author, body, dateCreated } = message
   const isAuthor = author === user?.email
   const hasMedia = message.type === 'media'
   const rawMedia = message.attachedMedia?.[0]
@@ -38,10 +38,10 @@ export function MessageItem({ message, session }: MessageItemProps) {
   return (
     <motion.div
       layout
-      key={sid}
       animate={{ opacity: 1, x: 0 }}
       initial={{ opacity: 0, x: isAuthor ? -50 : 50 }}
       exit={{ opacity: 0, x: -50 }}
+      style={{ originX: isAuthor ? 1 : 0 }}
       className={cn('flex max-w-[75%] items-center gap-2', {
         'flex-row-reverse self-end': isAuthor,
       })}
